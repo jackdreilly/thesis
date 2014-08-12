@@ -1,0 +1,18 @@
+This dissertation develops a general, scalable framework for controlling dynamical, networked systems based on mathematical optimization theory, with a strong focus on applications to freeway traffic management. The generality of the framework allows for controllers to consider arbitrary high-level objectives applied to systems with complex, nonlinear dynamics.
+
+The dissertation presents a continuous freeway traffic model and its discretization developed specifically for onramp metering control, the application serving as the motivating example behind the theory developed subsequently. To apply effective control on such systems, a discrete-adjoint-based model-predictive-control (MPC) approach for controlling networked systems of conservation laws is presented, with explicit derivations for ramp metering applications. Linear scalability of the method with respect to network size and time horizon is derived for the discrete adjoint computations. To enable a more asynchronous control architecture, the dissertation presents a distributed optimization algorithm for dynamical, networked systems. The algorithm allows for a physical network to be partitioned into subnetworks that optimize locally and communicate only with adjacent subnetworks to achieve a globally optimal performance. 
+
+Within the context of the \emph{Connected Corridors} project associated with UC Berkeley PATH, the developed theory was implemented in a production-level traffic management and simulation environment. Numerical examples using realistic, calibrated freeway networks are presented alongside the theory to motivate the highly practical aspects of the work. Simulations demonstrate the superiority of the MPC approach over existing methods widely used in practice.
+
+The dissertation presents an applications of the developed optimization tools to an investigation of the security and vulnerabilities of traffic control systems. The potential impact of a compromise of freeway traffic metering lights is analyzed using MPC and multi-objective optimization tools. Several realizable scenarios that exploit traffic system vulnerability locations are constructed and simulated to illustrate the severity of compromises. 
+
+% effective management of transportation systems is crucial to supporting increasing vehicle demand into the future.
+
+% To improve further the scalability of the adjoint approach and
+
+
+% A taxonomy of potential attack vectors is developed to classify the cost and controllability of different the different attacks, among other features. 
+
+% Explicit derivations of the approach are given for ramp metering applications along with numerical simulations on realistic freeway models to demonstrate the superiority of the MPC approach over existing methods widely used in practice.
+
+% The splitting technique utilizes an asynchronous extension of the alternating direction method of multipliers algorithm that permits subproblems to apply the previously-developed discrete adjoint method.

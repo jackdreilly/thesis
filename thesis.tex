@@ -1,0 +1,54 @@
+\documentclass[12pt]{ucthesis}
+%I removed natbib, deluxe table, bibsetup,lscape,
+\usepackage{aasmacros,algorithm, algorithmic, amsmath, amsfonts,amssymb,amsthm,array,color,enumerate,epsfig,graphicx,longtable,multirow,psfrag}
+\usepackage[pagebackref=true]{hyperref}
+% \usepackage[font=normal,justification=raggedright,singlelinecheck=false]{caption}
+\usepackage[caption=false,font=normal,justification=raggedright,singlelinecheck=false]{subfig}
+%\usepackage{titlesec}
+%\titlespacing*{\chapter}{0pt}{-50pt}{20pt}
+%\titleformat{\chapter}[display]{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+%\citestyle{aa}
+\bibliographystyle{plain}
+%% below needs to be after biliographystyle to make bib single-spaced
+\usepackage{tweak_ucthesis}
+\usepackage{todonotes}
+
+%\nofiles %% Uncomment for final edit of thesis.lof and thesis.lot
+
+%% kluge to denote abstracts within thesis chapters
+%\newcommand{\chabstract}{\medskip \bigskip {\bf \Large \centerline{Abstract} \bigskip}}
+%% kluge to denote acknowledgements within thesis chapters
+%\newcommand{\chacknowledgements}{\medskip \bigskip {\bf \Large \noindent Acknowledgements \bigskip \nopagebreak}}
+%% kluge to fix figure/table numbers
+%\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
+%\renewcommand{\thetable}{\thechapter.\arabic{table}}
+
+%new command for theorems and all, the last bracket means to number within each chapter only
+\newtheorem{remark}{Remark}[chapter]
+%\renewcommand{\theremark}{\thechapter.\arabic{remark}}[chapter]
+\newtheorem{prop}{Proposition}[chapter]
+%\renewcommand{\theprop}{\thechapter.\arabic{prop}}
+\newtheorem{definition}{Definition}[chapter]
+%\renewcommand{\thedefinition}{\thechapter.\arabic{definition}}
+\newtheorem{condition}{Condition}[chapter]
+%\renewcommand{\thecondition}{\thechapter.\arabic{condition}}
+\newtheorem{theorem}{Theorem}[chapter]
+%\renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{assumption}{Assumption}[chapter]
+%\renewcommand{\thelemma}{\thechapter.\arabic{lemma}}
+
+%% if want to only compile parts
+%\includeonly{frontmatter}
+%\includeonly{intro/intro}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\begin{document}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\include{frontmatter}
+
+\input{body}
+
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliography{library}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\end{document}

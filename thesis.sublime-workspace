@@ -1,0 +1,1460 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "thesis.tex",
+			"settings":
+			{
+				"buffer_size": 2504,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "body.tex",
+			"settings":
+			{
+				"buffer_size": 111,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "conclusion.tex",
+			"settings":
+			{
+				"buffer_size": 119,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "adjoint.tex",
+			"settings":
+			{
+				"buffer_size": 611,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "distributed.tex",
+			"settings":
+			{
+				"buffer_size": 257,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "security.tex",
+			"settings":
+			{
+				"buffer_size": 436,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "model.tex",
+			"settings":
+			{
+				"buffer_size": 487,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "acknowledgements.tex",
+			"settings":
+			{
+				"buffer_size": 3726,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "abstract.tex",
+			"settings":
+			{
+				"buffer_size": 2999,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "thesis.sublime-project",
+			"settings":
+			{
+				"buffer_size": 134,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "frontmatter.tex",
+			"settings":
+			{
+				"buffer_size": 1508,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 87.0,
+		"selected_items":
+		[
+			[
+				"clean",
+				"LaTeXing: Clean up (Remove) all Nonessential Files"
+			],
+			[
+				"cleran",
+				"LaTeXing: Clean up (Remove) all Nonessential Files"
+			],
+			[
+				"clea",
+				"LaTeXing: Clean up (Remove) all Nonessential Files"
+			],
+			[
+				"CLEAN",
+				"LaTeXing: Clean up (Remove) all Nonessential Files"
+			],
+			[
+				"build",
+				"Build: Choose Quick Build"
+			],
+			[
+				"texcoun",
+				"LaTeXing: Texcount"
+			],
+			[
+				"count",
+				"LaTeXing: Texcount"
+			],
+			[
+				"texcount",
+				"LaTeXing: Texcount"
+			],
+			[
+				"texcou",
+				"LaTeXing: Texcount"
+			],
+			[
+				"cache",
+				"LaTeXing: Rebuild Cache"
+			],
+			[
+				"rebuild",
+				"LaTeXing: Rebuild Cache"
+			],
+			[
+				"cle",
+				"LaTeXing: Clean up (Remove) all Nonessential Files"
+			],
+			[
+				"cou",
+				"LaTeXing: Texcount"
+			],
+			[
+				"coun",
+				"LaTeXing: Texcount"
+			],
+			[
+				"sync",
+				"LaTeXing: Synchronise Remote Data"
+			],
+			[
+				"install li",
+				"LaTeXing: Install License"
+			],
+			[
+				"settings user",
+				"Preferences: LaTeXing Settings - User"
+			],
+			[
+				"latexing",
+				"Preferences: LaTeXing Settings - User"
+			],
+			[
+				"latexing cle",
+				"LaTeXing: Clean Temporary Output Dictionary"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"synch",
+				"LaTeXing: Synchronise Remote Data"
+			],
+			[
+				"syntax latex",
+				"Set Syntax: LaTeXing"
+			],
+			[
+				"bibte",
+				"Set Syntax: BibTeX"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"latex",
+				"LaTeXTools: Jump to PDF"
+			],
+			[
+				"recon",
+				"LaTeXTools: Reconfigure and migrate settings"
+			],
+			[
+				"reconfi",
+				"LaTeXTools: Reconfigure and migrate settings"
+			]
+		],
+		"width": 521.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/jdr/articles/thesis/intro.tex",
+		"/Users/jdr/articles/thesis/library.bib",
+		"/Users/jdr/articles/thesis/dedication.tex",
+		"/Users/jdr/articles/thesis/aasmacros.sty",
+		"/Users/jdr/articles/thesis/ucthesis.cls",
+		"/Users/jdr/articles/thesis/tweak_ucthesis.sty",
+		"/Users/jdr/articles/thesis/frontmatter/acknowledgements.tex",
+		"/Users/jdr/articles/thesis/thesis.aux",
+		"/Users/jdr/articles/thesis/thesis.tex",
+		"/Users/jdr/articles/smartAmericaArticle/attacking-the-freeway.tex",
+		"/Users/jdr/articles/smartAmericaArticle/box-objective.tex",
+		"/Users/jdr/articles/smartAmericaArticle/article.tex",
+		"/Users/jdr/articles/smartAmericaArticle/article-trb.tex",
+		"/Users/jdr/runner/MatlabRunner/runner/demo.properties",
+		"/Users/jdr/runner/MatlabRunner/runner/demo.xml",
+		"/Users/jdr/articles/smartAmericaArticle/article-journal.tex",
+		"/Users/jdr/articles/smartAmericaArticle/article-journal.tdo",
+		"/Users/jdr/articles/smartAmericaArticle/article-journal.aux",
+		"/Users/jdr/articles/smartAmericaArticle/document-author-trb.tex",
+		"/Users/jdr/runner/beats/runner/demo.xml",
+		"/Users/jdr/runner/beats/runner/demo.properties",
+		"/Users/jdr/runner/L0-utilities/beats_python_tools/freeway_network.py",
+		"/Users/jdr/runner/beats/doc/edu/berkeley/path/beats/Runner.html",
+		"/Users/jdr/runner/beats/util/verification/run-sirius.sh",
+		"/Users/jdr/runner/beats/doc/edu/berkeley/path/beats/Runner.InvalidUsageException.html",
+		"/Users/jdr/runner/beats/README",
+		"/Users/jdr/runner/beats/doc/edu/berkeley/path/beats/simulator/JaxbObjectFactory.html",
+		"/Users/jdr/runner/beats/target/classes/META-INF/sun-jaxb.episode",
+		"/Users/jdr/runner/beats/target/generated-sources/xjc/edu/berkeley/path/beats/jaxb/Link.java",
+		"/Users/jdr/runner/beats/test-jar.bat",
+		"/Users/jdr/runner/beats/src/main/java/edu/berkeley/path/beats/actuator/ActuatorVSL.java",
+		"/Users/jdr/runner/beats/src/main/java/edu/berkeley/path/beats/simulator/output/XMLOutputReader.java",
+		"/Users/jdr/runner/beats/src/main/java/edu/berkeley/path/beats/simulator/output/OutputWriterXML.java",
+		"/Users/jdr/runner/beats/src/main/java/edu/berkeley/path/beats/simulator/JaxbObjectFactory.java",
+		"/Users/jdr/runner/beats/doc/edu/berkeley/path/beats/simulator/Scenario.html",
+		"/Users/jdr/runner/beats/src/main/java/edu/berkeley/path/beats/util/scenario/ScenarioSaverBase.java",
+		"/Users/jdr/runner/beats/data/config/scenario_twotypes.xml",
+		"/Users/jdr/runner/beats/data/config/_scenario_constantsplits.xml",
+		"/Users/jdr/runner/beats/data/test/fixture/_scenario_constantsplits_inflow_SOV_0.txt",
+		"/Users/jdr/runner/beats/util/config_tools/subdivide_cells/subdivide_cells.m",
+		"/Users/jdr/runner/beats/data/Short_COPYRIGHT_Relteq.txt",
+		"/Users/jdr/runner/beats/doc/stylesheet.css",
+		"/Users/jdr/articles/smartAmericaArticle/abstract_section.tex",
+		"/Users/jdr/articles/smartAmericaArticle/document-author.tex",
+		"/Users/jdr/articles/smartAmericaArticle/document-author-journal.tex",
+		"/Users/jdr/articles/smartAmericaArticle/article.spl",
+		"/Users/jdr/articles/smartAmericaArticle/cod-setup-trb.tex",
+		"/Users/jdr/articles/smartAmericaArticle/congestion-on-demand.tex",
+		"/Users/jdr/articles/smartAmericaArticle/conclusion.tex",
+		"/Users/jdr/articles/smartAmericaArticle/fhoc-trb.tex",
+		"/Users/jdr/articles/smartAmericaArticle/freeway-trb.tex",
+		"/Users/jdr/articles/smartAmericaArticle/attacks.tex",
+		"/Users/jdr/articles/smartAmericaArticle/abstract-trb.tex",
+		"/Users/jdr/articles/smartAmericaArticle/abstract.tex",
+		"/Users/jdr/articles/smartAmericaArticle/moo.tex",
+		"/Users/jdr/articles/smartAmericaArticle/pf-trb.tex",
+		"/Users/jdr/articles/smartAmericaArticle/pf-journal.tex",
+		"/Users/jdr/articles/smartAmericaArticle/library.bib",
+		"/Users/jdr/articles/smartAmericaArticle/packages-trb.tex",
+		"/Users/jdr/articles/smartAmericaArticle/packages.tex",
+		"/Users/jdr/articles/smartAmericaArticle/fhoc.tex",
+		"/Users/jdr/articles/smartAmericaArticle/freeway.tex",
+		"/Users/jdr/articles/smartAmericaArticle/trb-stuff.tex",
+		"/Users/jdr/articles/smartAmericaArticle/bib.tex",
+		"/Users/jdr/articles/smartAmericaArticle/cod-examples.tex",
+		"/Users/jdr/articles/smartAmericaArticle/cod-setup.tex",
+		"/Users/jdr/articles/smartAmericaArticle/body-trb.tex",
+		"/Users/jdr/articles/smartAmericaArticle/catch-me-if-you-can.tex",
+		"/Users/jdr/articles/smartAmericaArticle/fhoc-trb-journal.tex",
+		"/Users/jdr/articles/smartAmericaArticle/ecrc.sty",
+		"/Users/jdr/articles/smartAmericaArticle/trb.bst",
+		"/Users/jdr/articles/smartAmericaArticle/header-author.tex",
+		"/Users/jdr/articles/smartAmericaArticle/header-author-journal.tex",
+		"/Users/jdr/articles/smartAmericaArticle/commands-trb.tex",
+		"/Users/jdr/articles/smartAmericaArticle/article-journal.spl",
+		"/Users/jdr/articles/smartAmericaArticle/scalarization.tex",
+		"/Users/jdr/articles/smartAmericaArticle/intro.tex",
+		"/Users/jdr/Downloads/Template/ecrc.sty",
+		"/Users/jdr/Downloads/Template/elsarticle-num.bst",
+		"/Users/jdr/Downloads/Template/elsarticle.cls",
+		"/Users/jdr/Downloads/Template/elsevier-logo-3p.pdf",
+		"/Users/jdr/Downloads/Template/SDlogo-3p.pdf",
+		"/Users/jdr/Desktop/convert-pics.py",
+		"/Users/jdr/articles/smartAmericaArticle/talk-abstract.tex",
+		"/Users/jdr/articles/smartAmericaArticle/last-table.tex",
+		"/Users/jdr/articles/smartAmericaArticle/article-trb.tdo",
+		"/Users/jdr/articles/smartAmericaArticle/article-trb.aux",
+		"/Users/jdr/articles/smartAmericaArticle/morse-attack.tex",
+		"/Users/jdr/articles/smartAmericaArticle/problem-formulation.tex",
+		"/Users/jdr/articles/smartAmericaArticle/cal-logo.tex",
+		"/Users/jdr/Library/Application Support/Sublime Text 3/Packages/User/LaTeXing.sublime-settings",
+		"/Users/jdr/articles/smartAmericaArticle/custom.bib",
+		"/Users/jdr/articles/smartAmericaArticle/Remote.bib",
+		"/Users/jdr/articles/smartAmericaArticle/box-objective.fdb_latexmk",
+		"/Users/jdr/articles/smartAmericaArticle/body.tex",
+		"/Users/jdr/articles/smartAmericaArticle/article-trb.log",
+		"/Users/jdr/articles/smartAmericaArticle/article-trb.bbl",
+		"/Users/jdr/articles/smartAmericaArticle/README",
+		"/Users/jdr/articles/smartAmericaArticle/commands.tex",
+		"/Users/jdr/articles/smartAmericaArticle/article.tdo",
+		"/Users/jdr/articles/smartAmericaArticle/article.aux",
+		"/Users/jdr/articles/smartAmericaArticle/article.fdb_latexmk",
+		"/Users/jdr/Library/Application Support/Sublime Text 3/Packages/LaTeXTools/README.markdown"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			"*tex",
+			"",
+			"demo.xml",
+			"*tex",
+			"",
+			"*tex",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			".\n",
+			"Results",
+			"chapter",
+			"practicioners",
+			"traffic",
+			"frontmatter/",
+			"frontmatter",
+			".}",
+			"Computation of the Adjo",
+			"..",
+			"prevailingProfile.tAbs",
+			"prevailingProfile",
+			"prevailing",
+			"<fundamentalDiagramProfile",
+			"<link ",
+			"<link id=",
+			"<link ",
+			"<link",
+			"Cont",
+			"protected",
+			"final ",
+			"private",
+			"ly",
+			"final",
+			"a posteriori",
+			"congestion-on-demand",
+			"}s",
+			"\\ramp",
+			"\\density",
+			"\\supply",
+			"pfracasdfasdf",
+			"pfracasdf",
+			"pfrac",
+			"\\fout",
+			"\\fin",
+			"\\splitratio",
+			"\\congspeed",
+			"\\ffspeed",
+			"\\densitydiscrete",
+			"\\rampDemand",
+			"\\link",
+			"\\demand",
+			"\\tind",
+			"natbib",
+			"logo",
+			"pdf",
+			"3p",
+			"unn",
+			"unneccessary",
+			"arrouse",
+			"arro",
+			"arrouse",
+			"ob j",
+			"occurence",
+			"instatiation",
+			"vul",
+			"vulnerabily",
+			"vulnerabities",
+			"atacks",
+			"transititon",
+			"article",
+			"Section~\\ref",
+			"figure",
+			"cal_logo",
+			"catchme",
+			"postmile",
+			"box3",
+			"I15presen",
+			"subparagraph",
+			"Martin, et al.",
+			"Reilly",
+			"\\d*",
+			"Onramp Metering Model",
+			"\\paragraph{\\textbf{",
+			"\\paragraph{\\emph{",
+			"\\\\paragraph\\{\\\\emph\\{",
+			"ontroller box",
+			"box",
+			"2070",
+			"A",
+			"jam",
+			"cyber",
+			"\\\\todo",
+			"freeway y",
+			"([Rr])amp-meter",
+			"([Rr])amp meter",
+			"([Rr])amp-meter",
+			"\\",
+			"Muralidha",
+			"Muralidharana",
+			"Zetter",
+			"zetter",
+			"Zetter",
+			"Rosenberg",
+			"Grad2009",
+			"Shelby",
+			"delle2014",
+			"Reilly",
+			"giles2010",
+			"Shelby",
+			"screen shot",
+			"indication",
+			"Aim",
+			"aimsun",
+			"gender",
+			"([Ss])pace and time diagram",
+			"prop:scalarization",
+			"Scalarization",
+			"Morse",
+			"finite horizon",
+			"off-ramp",
+			"Off-ramp",
+			"On-ramp",
+			"on-ramp",
+			"paragraph\\{(.*)\\}",
+			"paragraph{(.*)}",
+			"paragraph",
+			"hfill",
+			"TABLE 1",
+			"Driver",
+			"(\\W+)Car([s]*)(\\W+)",
+			"(\\W+)car([s]*)(\\W+)",
+			"(\\W+)car(\\W+)",
+			"\\W+car\\W+",
+			"[:punct:]car[:punct:]",
+			"\\scar",
+			"\\wcar",
+			"Equation~\\ref"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"",
+			"public",
+			" ",
+			"public",
+			"",
+			"a~posteriori",
+			"}{s}",
+			"r",
+			"\\rho",
+			"\\sigma",
+			"f^{\\text{out}}",
+			"f^{\\text{in}}",
+			"\\beta",
+			"w",
+			"v",
+			"\\rho",
+			"d",
+			"i",
+			"\\delta",
+			"k",
+			"",
+			"\\paragraph{\\underline{",
+			"\\\\paragraph\\{\\\\underline\\{",
+			"ontrol box",
+			"\\1amp meter",
+			"",
+			"\\1pace-time diagram",
+			"offramp",
+			"Onramp",
+			"onramp",
+			"paragraph\\{\\\\textbf\\{\\1\\}\\}",
+			"driver",
+			"\\1Vehicle\\2\\3",
+			"\\1vehicle\\2\\3",
+			"\\1vehicle\\2",
+			"Equation~\\eqref",
+			"Equation \\eqref",
+			"cenario",
+			"Pareto front",
+			"Pareto set",
+			":",
+			"spatial"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 6,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "thesis.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2504,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								777,
+								777
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "body.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 111,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								110,
+								110
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "conclusion.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 119,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								101,
+								101
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "adjoint.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 611,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								610,
+								610
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "distributed.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 257,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								256,
+								256
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "security.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 436,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								436,
+								436
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "model.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 487,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								285,
+								285
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "acknowledgements.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3726,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3584,
+								3584
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "abstract.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2999,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2211,
+								2211
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "thesis.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 134,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								56,
+								56
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "frontmatter.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1508,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								855,
+								855
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 209.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "thesis.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"intro",
+				"intro.tex"
+			],
+			[
+				"adjoint",
+				"adjoint.tex"
+			],
+			[
+				"librar",
+				"library.bib"
+			],
+			[
+				"front",
+				"frontmatter.tex"
+			],
+			[
+				"model",
+				"model.tex"
+			],
+			[
+				"thes",
+				"thesis.tex"
+			],
+			[
+				"thesi",
+				"thesis.tex"
+			],
+			[
+				"abs",
+				"abstract.tex"
+			],
+			[
+				"ack",
+				"acknowledgements.tex"
+			],
+			[
+				"dedic",
+				"dedication.tex"
+			],
+			[
+				"fron",
+				"frontmatter.tex"
+			],
+			[
+				"thessub",
+				"thesis.sublime-project"
+			],
+			[
+				"abstra",
+				"abstract.tex"
+			],
+			[
+				"theste",
+				"thesis.tex"
+			],
+			[
+				"morse",
+				"morse-attack.tex"
+			],
+			[
+				"moo-jo",
+				"moo-journal.tex"
+			],
+			[
+				"moo.",
+				"moo.tex"
+			],
+			[
+				"frejourn",
+				"freeway-trb-journal.tex"
+			],
+			[
+				"artijo",
+				"article-journal.tex"
+			],
+			[
+				"demo.x",
+				"runner/demo.xml"
+			],
+			[
+				"articjoutex",
+				"article-journal.tex"
+			],
+			[
+				"doc",
+				"document-author-journal.tex"
+			],
+			[
+				"demo.",
+				"runner/demo.properties"
+			],
+			[
+				"demo",
+				"runner/demo.xml"
+			],
+			[
+				"demo.xml",
+				"runner/demo.xml"
+			],
+			[
+				"runner.java",
+				"src/main/java/edu/berkeley/path/beats/Runner.java"
+			],
+			[
+				"jaxbobje",
+				"src/main/java/edu/berkeley/path/beats/simulator/JaxbObjectFactory.java"
+			],
+			[
+				"scenario.java",
+				"src/main/java/edu/berkeley/path/beats/simulator/Scenario.java"
+			],
+			[
+				"docjour",
+				"document-author-journal.tex"
+			],
+			[
+				"docue",
+				"document-author-journal.tex"
+			],
+			[
+				"article-",
+				"article-journal.tex"
+			],
+			[
+				"catme",
+				"catch-me-if-you-can-journal.tex"
+			],
+			[
+				"cal-",
+				"cal-logo.tex"
+			],
+			[
+				"box-",
+				"box-objective.tex"
+			],
+			[
+				"codsetjour",
+				"cod-setup-trb-journal.tex"
+			],
+			[
+				"atta",
+				"attacks-journal.tex"
+			],
+			[
+				"cod",
+				"congestion-on-demand-journal.tex"
+			],
+			[
+				"codseju",
+				"cod-setup-trb-journal.tex"
+			],
+			[
+				"cong",
+				"congestion-on-demand-journal.tex"
+			],
+			[
+				"scala",
+				"scalarization.tex"
+			],
+			[
+				"mooj",
+				"moo-journal.tex"
+			],
+			[
+				"fhoc",
+				"fhoc-trb-journal.tex"
+			],
+			[
+				"fre",
+				"freeway-trb-journal.tex"
+			],
+			[
+				"ftrbj",
+				"fhoc-trb-journal.tex"
+			],
+			[
+				"pf",
+				"pf-journal.tex"
+			],
+			[
+				"attack",
+				"attacking-the-freeway.tex"
+			],
+			[
+				"abstrac",
+				"abstract.tex"
+			],
+			[
+				"scalar",
+				"scalarization.tex"
+			],
+			[
+				"moo.te",
+				"moo.tex"
+			],
+			[
+				"moo",
+				"moo.tex"
+			],
+			[
+				"moo-j",
+				"moo-journal.tex"
+			],
+			[
+				"pf-",
+				"pf-journal.tex"
+			],
+			[
+				"packa",
+				"packages.tex"
+			],
+			[
+				"todo",
+				"todos.tex"
+			],
+			[
+				"fhoxj",
+				"fhoc-trb-journal.tex"
+			],
+			[
+				"frejou",
+				"freeway-trb-journal.tex"
+			],
+			[
+				"bib",
+				"bib-journal.tex"
+			],
+			[
+				"artijou",
+				"article-journal.tex"
+			],
+			[
+				"fhox",
+				"fhoc-trb-journal.tex"
+			],
+			[
+				"freeway",
+				"freeway-trb-journal.tex"
+			],
+			[
+				"fhoc-",
+				"fhoc-trb-journal.tex"
+			],
+			[
+				"attacks",
+				"attacks-journal.tex"
+			],
+			[
+				"codex",
+				"cod-examples-journal.tex"
+			],
+			[
+				"congestion",
+				"congestion-on-demand-journal.tex"
+			],
+			[
+				"cal",
+				"cal-logo.tex"
+			],
+			[
+				"codsetj",
+				"cod-setup-trb-journal.tex"
+			],
+			[
+				"codset",
+				"cod-setup-trb.tex"
+			],
+			[
+				"congest",
+				"congestion-on-demand-journal.tex"
+			],
+			[
+				"body",
+				"body.tex"
+			],
+			[
+				"at",
+				"attacking-the-freeway.tex"
+			],
+			[
+				"boxobj",
+				"box-objective.tex"
+			],
+			[
+				"duc",
+				"document-author-trb.tex"
+			],
+			[
+				"fho",
+				"fhoc-trb.tex"
+			],
+			[
+				"pf-j",
+				"pf-journal.tex"
+			],
+			[
+				"pftrb",
+				"pf-trb.tex"
+			],
+			[
+				"trb-jour",
+				"freeway-trb-journal.tex"
+			],
+			[
+				"fretr",
+				"freeway-trb.tex"
+			],
+			[
+				"freewa",
+				"freeway-trb.tex"
+			],
+			[
+				"catch",
+				"catch-me-if-you-can.tex"
+			],
+			[
+				"codexam",
+				"cod-examples.tex"
+			],
+			[
+				"headx",
+				"header-author-journal.tex"
+			],
+			[
+				"pack",
+				"packages.tex"
+			],
+			[
+				"comma",
+				"commands.tex"
+			],
+			[
+				"artjoute",
+				"article-journal.tex"
+			],
+			[
+				"ecr",
+				"ecrc.sty"
+			],
+			[
+				"heau",
+				"header-author-journal.tex"
+			],
+			[
+				"artjour",
+				"article-journal.tex"
+			],
+			[
+				"artjou",
+				"article-journal.spl"
+			],
+			[
+				"abst",
+				"abstract.tex"
+			],
+			[
+				"doca",
+				"document-author-trb.tex"
+			],
+			[
+				"header",
+				"header-author.tex"
+			],
+			[
+				"artic",
+				"article.tex"
+			],
+			[
+				"artitr",
+				"article-trb.tex"
+			],
+			[
+				"arttr",
+				"article-trb.tex"
+			],
+			[
+				"art",
+				"article-trb.tex"
+			],
+			[
+				"boxo",
+				"box-objective.tex"
+			],
+			[
+				"boxob",
+				"box-objective.tex"
+			],
+			[
+				"docu",
+				"document-author-trb.tex"
+			],
+			[
+				"cod-settr",
+				"cod-setup-trb.tex"
+			],
+			[
+				"cod-set",
+				"cod-setup-trb.tex"
+			],
+			[
+				"box",
+				"box-objective.tex"
+			],
+			[
+				"catche",
+				"catch-me-if-you-can.tex"
+			],
+			[
+				"catchme",
+				"catch-me-if-you-can.tex"
+			],
+			[
+				"attac",
+				"attacks.tex"
+			],
+			[
+				"moo.t",
+				"moo.tex"
+			],
+			[
+				"artt",
+				"article-trb.tex"
+			],
+			[
+				"arttrb",
+				"article-trb.tex"
+			],
+			[
+				"atr",
+				"article-trb.tex"
+			],
+			[
+				"cat",
+				"catch-me-if-you-can.tex"
+			],
+			[
+				"bo",
+				"box-objective.tex"
+			],
+			[
+				"codsettrb",
+				"cod-setup-trb.tex"
+			],
+			[
+				"artictr",
+				"article-trb.tex"
+			],
+			[
+				"trb.",
+				"trb.bst"
+			],
+			[
+				"call",
+				"cal-logo.tex"
+			],
+			[
+				"callo",
+				"cal-logo.tex"
+			],
+			[
+				"calo",
+				"cal-logo.tex"
+			],
+			[
+				"arttir",
+				"article-trb.tex"
+			],
+			[
+				"cod-",
+				"cod-examples.tex"
+			],
+			[
+				"codsettr",
+				"cod-setup-trb.tex"
+			],
+			[
+				"cono",
+				"congestion-on-demand.tex"
+			],
+			[
+				"attak",
+				"attacks.tex"
+			],
+			[
+				"moote",
+				"moo.tex"
+			],
+			[
+				"libr",
+				"library.bib"
+			],
+			[
+				"arttrbte",
+				"article-trb.tex"
+			],
+			[
+				"fhoc-t",
+				"fhoc-trb.tex"
+			],
+			[
+				"fretrb",
+				"freeway-trb.tex"
+			],
+			[
+				"artictrbtex",
+				"article-trb.tex"
+			],
+			[
+				"prob",
+				"problem-formulation.tex"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 173.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
