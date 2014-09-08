@@ -1,0 +1,418 @@
+%!TEX root =presentation.tex
+\section{Discrete adjoint method}
+
+\subsection{Optimization of a PDE-constrained system}
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+\begin{frame}{Optimization of a PDE-constrained system}
+
+\begin{block}{Optimization problem}
+\[
+\begin{aligned}
+&\text{minimize}_{u \in \Ucal} && \cost(x,u) \\
+&\text{subject to} &&\sys(x,u) = 0
+\end{aligned}
+\]
+\end{block}
+
+\begin{itemize}
+\item $x \in \Xcal \subseteq \Rbb^n$: state variables
+\item $u \in \Ucal  \subseteq \Rbb^m$: control variables
+\end{itemize}
+
+
+\[
+\begin{aligned}
+\cost: \Xcal \times \Ucal & \rightarrow \mathbb{R}\\
+(x,u) & \mapsto \cost(x,u)
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+\sys: \Xcal \times \Ucal & \rightarrow \mathbb{R}^{n_\sys}\\
+(x,u) & \mapsto \sys(x,u)
+\end{aligned}
+\]
+
+Want to do gradient descent. How to compute the gradient?
+\end{frame}
+
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+\subsection{Example: linear system}
+
+\begin{frame}{Example: linear system}
+\begin{block}{Discrete linear dynamics}
+\[
+x_{t+1} = A x_t + B u_t, \ t \in \{0, \dots, T-1 \}
+\]
+with initial condition $x_0$.
+\end{block}
+
+Let
+\begin{align*}
+& x = \left[ \begin{array}{c} x_1 \\ \vdots \\ x_T \end{array}\right] && u = \left[ \begin{array}{c} u_0 \\ \vdots \\ u_{T-1} \end{array}\right]
+\end{align*}
+%
+
+\end{frame}
+
+
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+\begin{frame}{Example: linear system}
+
+\begin{align*}
+x &= 
+\left[
+\begin{array}{c}
+A x_0 + B u_0 \\
+A x_1 + B u_1 \\
+\vdots \\
+A x_{T-1} + B u_{T-1}
+\end{array}
+\right] \\
+& =
+\left[
+\begin{array}{cccc} 
+0 &             &            & \\
+A & \ddots &           & \\
+   & \ddots & \ddots& \\
+   &            & A         & 0 
+\end{array}
+\right]
+x + 
+\left[\begin{array}{cccc}
+B &             &            & \\
+   & \ddots &             & \\
+   &             & \ddots & \\
+   &             &              &B
+\end{array} \right]
+u + 
+\left[\begin{array}{c}
+A x_0 \\
+0 \\
+\vdots \\
+0
+\end{array}\right]
+\end{align*}
+
+Can be written as 
+\[
+(\tilde{A} - I)x + \tilde{B} u + c = 0
+\]
+
+Note: $(\tilde{A} - I)$ is invertible (lower triangular, with $-1$ on diagonal). Good: system is deterministic!
+
+\end{frame}
+
+
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\newcommand \xuVector{\left[\begin{array}{c} x \\ u \end{array} \right]}
+\begin{frame}{Example: linear system}
+
+\begin{block}{Linear system}
+\[
+\sys_x x + \sys_u u + c = 0
+\]
+\end{block}
+
+\begin{itemize}
+\item $x \in \Rbb^{n}$ state
+\item $u \in \Rbb^{m}$ control, with $m \leq n$
+\item $\sys_x \in \Rbb^{n \times n}$, assume invertible
+\item $\sys_u \in \Rbb^{n \times m}$
+\item $c \in \Rbb^n$
+\end{itemize}
+
+want to minimize linear cost function
+\[
+\begin{aligned}
+&\text{minimize}_{u \in \Ucal} && \cost_x x + \cost_u u \\
+&\text{subject to} && \sys_x x + \sys_u u + c = 0
+\end{aligned}
+\]
+
+$\cost_x \in \Rbb^{1\times n}$ and $\cost_u \in \Rbb^{1 \times m}$ are given row vectors.
+
+\end{frame}
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Example: linear system}
+
+\begin{block}{Optimization problem}
+\[
+\begin{aligned}
+&\text{minimize}_{u \in \Ucal} && \cost_x x + \cost_u u \\
+&\text{subject to} && \sys_x x + \sys_u u + c = 0
+\end{aligned}
+\]
+\end{block}
+An equivalent problem is
+\[
+\text{minimize}_{u \in \Ucal} - \cost_x \sys_x^{-1}(\sys_u u + c) + \cost_u u
+\]
+and the gradient is
+\begin{block}{Gradient}
+\[
+\nabla_u \cost = \alert{- \cost_x \sys_x^{-1} \sys_u} + \cost_u
+\]
+\end{block}
+
+\end{frame}
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+\begin{frame}{Example: linear system}
+\small
+\begin{block}{Gradient}
+\[
+\nabla_u \cost = - \cost_x \sys_x^{-1} \sys_u + \cost_u
+\]
+\end{block}
+Two ways to compute the first term
+
+\begin{minipage}[t]{0.50\textwidth}
+\small
+\begin{block}{Forward}
+\[
+\begin{aligned}
+& \cost_x \alert{M} \\
+& \sys_x \alert{M} = - \sys_u
+\end{aligned}
+\]
+\end{block}
+Solve for $\alert{M \in \Rbb^{n \times m}}$: $m$ inversions
+\[
+\sys_x \left[\begin{array}{c|c|c} M_1 & \dots & M_m \end{array} \right] = \left[\begin{array}{c|c|c} \sys_{u_1} & \dots & \sys_{u_m} \end{array} \right]
+\]
+Cost $O(mn^2)$.\\
+Then product $1\times n$ times $n \times m$: $O(nm)$
+
+\end{minipage}\hfill
+%------------------------------------------------------------------------------
+\begin{minipage}[t]{0.46\textwidth}
+\small
+\begin{block}{Adjoint}
+\[
+\begin{aligned}
+& {\color{Green}\lambda^T} \sys_u \\
+& {\color{Green}\lambda^T} \sys_x = -\cost_x
+\end{aligned}
+\]
+\end{block}
+Solve for $\color{Green} \lambda \in \Rbb^{n} $: $1$ inversion
+\[
+\sys_x^T \lambda = -\cost_x^T
+\]
+Cost $O(n^2)$.\\
+Then product $1\times n$ times $n \times m$: $O(nm)$
+
+\end{minipage}
+
+\end{frame}
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+\subsection{Solving the original problem}
+
+
+
+\begin{frame}{Optimization of a PDE-constrained system}
+\small
+%------------------------------------------------------------------------------
+\begin{minipage}[t]{0.44\textwidth}
+\begin{block}{General problem}
+\[
+\begin{aligned}
+&\text{minimize}_{u \in \Ucal} && \cost(x,u) \\
+&\text{subject to} &&\sys(x,u) = 0
+\end{aligned}
+\]
+\end{block}
+\vspace{-0.2cm}
+\[
+\nabla_u \cost = \frac{\partial \cost}{\partial x} \alert{\nabla_u x} + \frac{\partial \cost}{\partial u}
+\]
+On trajectories, $\sys(x, u) = 0$ constant, thus $\nabla_u \sys = 0$
+\[
+\frac{\partial \sys}{\partial x} \alert{\nabla_u x} + \frac{\partial \sys}{\partial u} = 0
+\]
+\vspace{-0.5cm}
+\uncover<3>{
+\begin{block}{Adjoint}
+\[
+\frac{\partial \sys}{\partial x}^T {\color{Green}\lambda} = -\frac{\partial \cost}{\partial x}
+\]
+\end{block}
+then
+\[
+\nabla_u \cost = {\color{Green}\lambda^T} \frac{\partial \sys}{\partial u} + \frac{\partial \cost}{\partial u}
+\]
+}
+\end{minipage}\hfill
+%------------------------------------------------------------------------------
+\begin{minipage}[t]{0.52\textwidth}
+\begin{block}{Linear system}
+\[
+\begin{aligned}
+&\text{minimize}_{u \in \Ucal} && \cost_x x + \cost_u u \\
+&\text{subject to} && \sys_x x + \sys_u u + c = 0
+\end{aligned}
+\]
+\end{block}
+\vspace{-0.2cm}
+\[
+\nabla_u \cost = \cost_x \alert{M} + \cost_u
+\]
+\vspace{0.9cm}
+\[
+\sys_x \alert{M} = - \sys_u
+\]
+\uncover<2, 3>{
+Instead, solve for $\color{Green}\lambda \in \Rbb^{n}$
+\begin{block}{Adjoint}
+\[
+\sys_x^T {\color{Green}\lambda} = -\cost_x^T
+\]
+\end{block}
+then
+\[
+\nabla_u \cost = {\color{Green}\lambda^T} \sys_u + \cost_u
+\]
+}
+\end{minipage}
+
+
+
+\end{frame}
+
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}{Computing $\nabla_u \cost(x, u)$}
+
+Want to evaluate
+\begin{align*}
+&\frac{\partial \cost}{\partial x} \alert{\nabla_u x} \\
+&\text{where } \frac{\partial \sys}{\partial x} \alert{\nabla_u x} + \frac{\partial \sys}{\partial u} = 0
+\end{align*}
+
+\pause If $\lambda$ is solution to the adjoint equation
+\[
+\frac{\partial \cost}{\partial x} + {\color{Green}\lambda^T} \frac{\partial \sys}{\partial x} = 0
+\]
+\pause Then
+\[
+\frac{\partial \cost}{\partial x} \alert{\nabla_u x} = -{\color{Green}\lambda^T} \frac{\partial \sys}{\partial x} \alert{\nabla_u x} = {\color{Green}\lambda^T} \frac{\partial \sys}{\partial u}
+\]
+
+\end{frame}
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+\begin{frame}{Adjoint solution $\lambda$}
+
+\[
+\nabla_u \cost = \lambda^T \frac{\partial \sys}{\partial u} + \frac{\partial \cost}{\partial u}
+\]
+
+% Also useful for sensitivity analysis.
+
+% \begin{block}{Sensitivity analysis}
+% $\lambda_k$ is the effe $\sys_k$
+% \end{block}
+
+
+\end{frame}
+
+
+\subsection{Optimization algorithm using adjoint} % (fold)
+\label{sub:optimization_algorithm_using_adjoint}
+
+
+\begin{frame}{Optimization algorithm}
+
+\begin{algorithm}[H]
+
+\begin{spacing}{1.3}
+\begin{algorithmic}
+\State Pick initial control $u^{init}$
+\While{not converged}
+\State $x = forwardSim(u,IC, BC)$ \hfill solve for state trajectory (forward system)
+\State $\lambda = adjointSln(x,u)$ \hfill solve for adjoint parameters (adjoint system)
+\State $\Delta u = \nabla_u \cost = \lambda^T \frac{\partial \sys}{\partial u} + \frac{\partial \cost}{\partial u}$ \hfill Compute the gradient (search direction)
+\State $ u \gets u + t \Delta u $ \hfill update $u$ using line search along $\Delta u$
+\EndWhile
+\end{algorithmic}
+\end{spacing}
+
+\caption{Gradient descent loop}
+\end{algorithm}
+
+\end{frame}
+
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+\begin{frame}{Line search}
+
+Example 1: decreasing step size
+\[
+t^{(k)} = t^{(1)} /k 
+\]
+
+
+Example 2: backtracking line-search
+\begin{itemize}
+\item fix parameters $ 0 < \alpha < 0.1$ and $0 < \beta < 1$
+\item given search direction $\Delta u$
+\end{itemize}
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\While{$\cost(u + t \Delta u) - \cost(u) > \alpha (\nabla_u \cost)^T ( t \Delta u)$}
+\State $t \gets \beta t$
+\EndWhile
+\end{algorithmic}
+\caption{Backtracking line search}
+\end{algorithm}
+
+\end{frame}
+
+%-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+\begin{frame}{Other descent methods}
+
+\begin{itemize}
+	\item General purpose nonlinear solvers.
+	\begin{itemize}
+		\item fmincon
+		\item ipopt
+	\end{itemize}
+	\item Attempt to find \textbf{global} solutions, rather than terminating in a local minima.
+	\item Often use quasi-Newton methods to estimate second-order information.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[t]\frametitle{Constraints on control}
+
+What if there are physical constraints on the permissible control values $u$?
+
+\begin{equation}
+    u_{\min} \le u \le u_{\max}
+\end{equation}
+    
+\begin{block}{Barrier functions}
+\begin{equation}
+\tilde{\cost}\left(\state,\control,\epsilon\right)=\cost\left(\state,\control\right)-\barrierTerm\sum_{\convar\in\control}\log\left(\left(u_{\max}-\convar\right)\left(\convar-u_{\min}\right)\right)\label{eq:full-tilde}
+\end{equation}
+Then have $\barrierTerm\in\mathbb{R}^{+}$ tend to zero.
+\end{block}
+
+
+\end{frame}
+
+% subsection optimization_algorithm_using_adjoint (end)

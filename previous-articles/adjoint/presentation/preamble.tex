@@ -1,0 +1,42 @@
+%!TEX root =presentation.tex
+\usetheme{Szeged} % My favorite!
+
+% \usecolortheme{beetle} % Simple and clean template
+% Uncomment the following line if you want %
+% page numbers and using Warsaw theme%
+\setbeamertemplate{footline}[page number]
+%\setbeamercovered{transparent}
+\setbeamercovered{invisible}
+% To remove the navigation symbols from 
+% the bottom of slides%
+\setbeamertemplate{navigation symbols}{} 
+
+%
+\usepackage{graphicx}
+\usepackage{bm}         % For typesetting bold math (not \mathbold)
+\logo{\includegraphics[height=0.6cm]{berkeley.png}}
+%
+\title[Discrete adjoint method]{Discrete adjoint method \\ with applications to PDE networks and ramp metering}
+\author{Jack Reilly}
+\institute[UC Berkeley]
+{
+University of California Berkeley \\
+\medskip
+{\emph{jackdreilly@berkeley.edu}}
+}
+\date{\today}
+
+\AtBeginSection[] {
+  \begin{frame}[plain]
+    \frametitle{Overview}
+    \tableofcontents[currentsection]
+  \end{frame}
+  \addtocounter{framenumber}{-1}
+}
+
+\setcounter{tocdepth}{2}
+
+\input{libraries}
+
+
+\input{commands}

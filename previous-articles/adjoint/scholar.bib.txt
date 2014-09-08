@@ -1,0 +1,8 @@
+@inproceedings{jacquet2006optimal,
+  title={Optimal control of scalar one-dimensional conservation laws},
+  author={Jacquet, Denis and Krstic, Miroslav and Canudas de Wit, C},
+  booktitle={American Control Conference, 2006},
+  pages={6--pp},
+  year={2006},
+  organization={IEEE}
+}

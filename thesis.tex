@@ -4,6 +4,7 @@
 \usepackage[pagebackref=true]{hyperref}
 % \usepackage[font=normal,justification=raggedright,singlelinecheck=false]{caption}
 \usepackage[caption=false,font=normal,justification=raggedright,singlelinecheck=false]{subfig}
+\usepackage{fixltx2e}
 %\usepackage{titlesec}
 %\titlespacing*{\chapter}{0pt}{-50pt}{20pt}
 %\titleformat{\chapter}[display]{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
@@ -12,7 +13,10 @@
 %% below needs to be after biliographystyle to make bib single-spaced
 \usepackage{tweak_ucthesis}
 \usepackage{todonotes}
-
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{wrapfig}
+\input{commands}
 %\nofiles %% Uncomment for final edit of thesis.lof and thesis.lot
 
 %% kluge to denote abstracts within thesis chapters
@@ -48,7 +52,7 @@
 
 \input{body}
 
-\addcontentsline{toc}{chapter}{Bibliography}
+% \addcontentsline{toc}{chapter}{Bibliography}
 \bibliography{library}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \end{document}

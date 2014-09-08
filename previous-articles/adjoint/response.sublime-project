@@ -1,0 +1,13 @@
+{
+	"options": {
+		"root": "restart.tex",
+		"pdf": "restart"
+		},
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	]
+}

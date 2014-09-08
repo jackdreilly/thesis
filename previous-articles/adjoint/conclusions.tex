@@ -1,0 +1,22 @@
+%!TEX root =restart.tex
+\section{Conclusions\label{sec:Conclusions}}
+
+This article has detailed a simple framework for finite-horizon optimal control 
+methods on a network of scalar conservation laws derived from first 
+discretizing the network via the Godunov method, then applying the discrete 
+adjoint to this system. To tailor the framework to a specific application, one 
+need only provide the partial derivatives of the Riemann solver at a network 
+junction as well as the partial derivatives of the objective. Furthermore, we 
+show that for this class of problems, the sparsity pattern allows the problem 
+to be implemented with only linear memory and linear computational complexity 
+with respect to the number of state and control parameters. We demonstrate the 
+scalability of the approach by implementing a coordinated ramp metering 
+algorithm using the adjoint method and applying the algorithm to the I-15 South 
+freeway in California. The algorithm runs in a fraction of real-time 
+and produces significant improvements over existing algorithms. The ramp 
+metering algorithm has been fully implemented within Connected 
+Corridors~\cite{CC} system, a project by UC Berkeley and PATH for integrated 
+corridor management, as a component of the traffic simulator module. Future 
+work includes investigating decentralized, coordinated control schemes over physical 
+networks via the adjoint method to allow traffic control strategies to scale to 
+regional-scale networks.

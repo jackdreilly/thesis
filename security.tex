@@ -1,15 +1,35 @@
 \chapter{Security of Traffic Control Systems}
 \label{chapter:security}
 
+Public traffic infrastructure is arriving in the cyber age with increasing connectivity between the different segments of roadways. For example, freeways are commonly instrumented with loop detectors that allow for real-time monitoring of roadway speeds~\cite{jia2001pems}. Estimates of road traffic conditions are then fed directly into onramp traffic light metering algorithms which regulate traffic flow to improve congestion~\cite{Papageorgiou1991}. Finally, these metering algorithms can be coordinated and controlled by a remote command and monitoring center, leading to a regional network of interconnected sensors and controllers~\cite{Reilly2013b}.
+
+Increased efforts to build systems which understand and utilize the interconnectivity are evidenced by \emph{integrated-corridor-managament} (ICM) projects such as \emph{Connected Corridors}~\cite{miller2010san} and mobile applications which use GPS probe data to improve navigation~\cite{Work2010Traffic}.
+
+This connectivity offers great potential to better analyze, control and manage traffic but also poses a significant security risk. A compromise at any level of the traffic control infrastructure can lead to both direct access of an attacker to alter traffic lights and changeable message signs, and indirect access via spoofing of sensor readings, which may \emph{trick} the control algorithms to respond to false conditions.
+
+A number of traffic-related attacks of infrastructure systems have already been demonstrated in the past few years. A man-in-the-middle attack on GPS coordinate transmissions from mobile navigation applications showed it is possible to trick navigation services into inferring non-existent jams~\cite{jeske2013floating}, while a similar attack used a fleet of mobile phone emulators to mimic the presence of many virtual vehicles on a roadway~\cite{TUFNELL2014}. A popular vehicle-detection sensor was revealed to use a type of wireless protocol vulnerable to data injection attacks, and a demonstration showed that the access point could be tricked into receiving arbitrary readings~\cite{Zetter2014Custom}. Cyber attacks on a centralized command center remain a serious threat given the frequent discovery of networking vulnerabilities, such as the Heartbleed bug~\cite{Codenomicon2014}. Even insider attacks on command centers have precedent as two Los Angeles traffic engineers in 2009 were found guilty of intentionally creating massive delays by adjusting signal times at key intersections~\cite{Grad2009Custom}.
+
+Given the existence of such vulnerabilities and the scale at which they can be exploited, understanding the nature and costs of such attacks becomes paramount to public safety. In this chapter, we present a systematic approach to analyzing the topic of traffic control system vulnerabities and their potential impact.
+
+To do so, we begin by constructing a taxonomy of different vulnerabily locations in traffic control systems, defining three distinct layers: physical, close-proximity, and virtual. Difficulty, impact, and cost values are also associated with each potential attack.  We motivate our classifications by presenting two scenarios that combine a number of attacks to accomplish a high-level goal.
+
+We then focus our analysis on an in-depth exploration of freeway attacks using coordinated, ramp metering. To achieve this, we develop a method based on adjoint computations and finite-horizon optimal control for finding optimal metering rates to create a desired disruption on the freeway. We additionally give an overview of multi-objective optimization and discuss how such an approach is useful for solving high-level attack objectives which contain many conflicting sub-goals, such as permitting a fleeing vehicle to escape pursuants on a particular freeway stretch without overly congesting freeway regions irrelevant to the pursuit.
+
+The contributions of this chapter are as follows. We present a classification of a broad set of attacks on traffic control systems with their relation to the underlying physical and cyber infrastructure. Mathematical formulations based optimal control and adjoint-based methods are used to show exactly how an attacker can exploit these weaknesses. Explicit algorithms using these tools for coordinated ramp metering attacks are derived and presented. Finally, we provide numerical evidence and novel results of the feasibility of these attacks via simulations modeled after actual freeway networks.
+
+The rest of the chapter is organized as follows. Section~\ref{sec:traffic-system-vulnerabilities} summarizes and classifies the vulnerabilities of traffic control systems. Section~\ref{sec:problemformulation} gives a mathematical approach for carrying out a class of the presented attacks.  Section~\ref{sec:attacks} gives two detailed applications of the mathematical approach to ramp metering attacks. The first application shows how ramp metering can allow an attacker to cause congestion in precise locations and at precise moments in time along a freeway. Simulations are applied to a full-sized model of a 19.4 mile stretch of the I15 South Freeway in San Diego, California. Results are shown for both a custom macroscopic flow simulator as well as an Aimsun~\cite{barcelo2001microscopic} microscopic model. The second application finds a strategy to solve the aforementioned problem of allowing a fleeing vehicles to escape pursuants. Numerical results are presented, as well as a discussion of the benefits of the multi-objective optimization method. We conclude with some future areas of study for traffic system security.
+
+
 \section{Traffic Control Systems and Vulnerabilities}
 
-\subsection{Infrastructure Model}
 
 \subsection{Vulnerability Classification}
+\ref{sec:traffic-system-vulnerabilities}
 
 \subsection{SmartAmerica Demonstration: VIP Lane}
 
 \section{Coordinated Ramp Metering Attacks}
+\ref{sec:problemformulation}
 
 \subsection{Optimal Control Model}
 

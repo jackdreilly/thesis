@@ -1,0 +1,101 @@
+
+\section*{Nomenclature}
+
+\begin{longtable}{|c|c|c|}
+	\hline 
+	Variable  & Space  & Meaning\tabularnewline
+	\hline 
+	\hline 
+	$t$  & $\mathbb{R}_{+}$  & time\tabularnewline
+	\hline 
+	$x$  & $\mathbb{R}$  & space\tabularnewline
+	\hline 
+	$\nlinks$  & $\mathbb{N}$  & Number of links\tabularnewline
+	\hline 
+	$\jns$  &  & Set of junctions\tabularnewline
+	\hline 
+	$\links=\left[1,\nlinks\right]$  & $\mathbb{N}^{N}$  & Set of links\tabularnewline
+	\hline 
+	$L_{\link}$  & $\mathbb{R}_{+}$  & Length of link $\link\in\links$\tabularnewline
+	\hline 
+	$\cvar_{i}\left(t,x\right)$  & $\mathbb{R}_{+}\times\left]0,L_{i}\right[\rightarrow\mathbb{R}$  & conserved quantity for link $\link\in\links$ as function of $x$\tabularnewline
+	\hline 
+	$\initstate$  & $BV\cap L_{\text{loc}}^{1}$  & continuous intialial condition\tabularnewline
+	\hline 
+	$\dvar_{\link}^{\tind}$  & $\mathbb{R}$  & discrete conserved quantity for link $i$ at time-step $k$\tabularnewline
+	\hline 
+	$f(\cvar)$  & $f:\mathbb{R}\rightarrow\mathbb{R}$  & flux function\tabularnewline
+	\hline 
+	$\initstate$  & $\mathbb{R}$  & Riemann data\tabularnewline
+	\hline 
+	$\cvar^{-}$  & $\mathbb{R}$  & Left state of the Riemann data\tabularnewline
+	\hline 
+	$\cvar^{+}$  & $\mathbb{R}$  & Right state of the Riemann data\tabularnewline
+	\hline 
+	$\bar{x}$  & $\mathbb{R}$  & Point of discontinuity in Riemann problem\tabularnewline
+	\hline 
+	$\ssvar$  & $\mathbb{R}$  & Self-similar solution of the Riemann problem\tabularnewline
+	\hline 
+	$n_{J}$  & $\mathbb{N}$  & Number of incoming links at a junction J\tabularnewline
+	\hline 
+	$m_{J}$  & $\mathbb{N}$  & Number of outgoing links at a junction J\tabularnewline
+	\hline 
+	$\Inc\left(\jn\right)=\tuple{\jlink{\jn}1}{\jlink{\jn}{\ninc_{\jn}}}\subset\links$  &  & Set of incoming links at a junction J\tabularnewline
+	\hline 
+	$\Out\left(\jn\right)=\tuple{\jlink{\jn}{\ninc_{\jn}+1}}{\jlink{\jn}{\ninc_{\jn}+\nout_{\jn}}}\subset\links$  &  & Set of outgoing links at a junction J\tabularnewline
+	\hline 
+	$\jup{\link}\in\jns$  &  & Upstream junction for the link $\link\in\links$\tabularnewline
+	\hline 
+	$\jdown{\link}\in\jns$  &  & Downstream junction for the link $\link\in\links$\tabularnewline
+	\hline 
+	$\RS$  & $\mathbb{R}^{m+n}\rightarrow\mathbb{R}^{m+n}$  & Riemann Solver\tabularnewline
+	\hline 
+	$\trace{\cvar}_{\link}$  & $\mathbb{R}^{m+n}$  & Trace for a link $i$ at the junction\tabularnewline
+	\hline 
+	$\Delta t$  & $\mathbb{R}$  & Time grid size\tabularnewline
+	\hline 
+	$\Delta x$  & $\mathbb{R}$  & Space grid size\tabularnewline
+	\hline 
+	$t^{\tind}=k\Delta t$  & $k\in\mathbb{N}$  & Time grid points\tabularnewline
+	\hline 
+	$t^{\xind}=l\Delta x$  & $l\in\mathbb{Z}$  & Space grid points\tabularnewline
+	\hline 
+	$\lambda^{\max}$  & $\mathbb{R}$  & Wave speed\tabularnewline
+	\hline 
+	$\juncstate{\jn}{\tind}$  & $\mathbb{R}^{m_{\jn}+n_{\jn}}$  & state variables at a junction $\jn\in\jns$ at a time-step $\tind$\tabularnewline
+	\hline 
+	$T$  & $\mathbb{N}$  & Number of time steps\tabularnewline
+	\hline 
+	$\junctrace{\jn}{}$  & $\mathbb{R}^{m_{\jn}+n_{\jn}}$  & solution of $\RS$ at a junction $\jn\in\jns$ at a time-step $\tind$\tabularnewline
+	\hline 
+	$\junccon{\jn}{\tind}$  & $\mathbb{R}^{\ncontrols_{\jn}}$  & control variables at a junction $\jn\in\jns$ at a time-step $\tind$\tabularnewline
+	\hline 
+	$\syseq_{\link}^{\tind}$  & $\mathbb{R}^{\nlinks\ntime}\times\mathbb{R}^{\ncontrols\ntime}$  & update equation\tabularnewline
+	\hline 
+	$\cost$  & $\mathbb{R}^{\nlinks T}\times\mathbb{R}^{N_{\control}T}$  & cost function\tabularnewline
+	\hline 
+	$\lambda$  & $\mathbb{R}^{\nlinks\ntime}$  & adjoint variable\tabularnewline
+	\hline 
+	$D_{\state}$  & $\mathbb{N}$  & maximum junction degree on the network \tabularnewline
+	\hline 
+	$D_{\control}$  & $\mathbb{N}$  & maximum number of constraints \tabularnewline
+	\hline 
+	$\splitratio_{2\link}^{\tind}$  & $[0,1]$  & off-ramp split ratio \tabularnewline
+	\hline 
+	$\boundaryDemand{2\link-1}{\tind}$  &  & flux demand at the boundary of on-ramp $2\link-1$\tabularnewline
+	\hline 
+	$\barrierTerm$  &  & barrier penalty coefficient \tabularnewline
+	\hline 
+	$\demand_{2\left(\link-1\right)}$  &  & demand on the link $2(i-1)$ \tabularnewline
+	\hline 
+	$\rampDemand_{2\link-1}^{\tind}$  &  & demand from on-ramp $2\link-1$\tabularnewline
+	\hline 
+	$\supply_{2\link}^{\tind}$  &  & supply on the link $2i$ \tabularnewline
+	\hline 
+	$\ffspeed_{\link}$  & $\mathbb{R}_{+}$ & free flow speed for link $\link$\tabularnewline
+	\hline 
+	$\congspeed_{\link}$  & {[}0,1{]}  & congestion speed $\link$\tabularnewline
+	\hline 
+	$p_{2\left(\link-1\right)}$  & {[}0,1{]}  & merging parameter \tabularnewline
+	\hline 
+\end{longtable}

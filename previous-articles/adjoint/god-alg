@@ -1,0 +1,6 @@
+$\textbf{Input}$: initial state at time $t=\tind \Delta t$, $\left(\discrete{\link}{\tind}:\link\in\links\right)$
+$\textbf{Output}$: resulting state at time $t=\left(\tind + 1)\right) \Delta t$, $\left(\discrete{\link}{\tind+1}:\link\in\links\right)$
+
+for link $\link\in\links$:
+	# update density on link $\link$ with direct Godonuv fluxes
+	$\discrete{\link}{\tind+1}=\discrete{\link}{\tind}-\dfrac{\Delta t}{\Delta x}\left(\left(\god_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind}\right)\right)_{\link}-\left(\god_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind}\right)\right)_{\link}\right)$

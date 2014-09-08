@@ -1,0 +1,9 @@
+$\textbf{Input}$: initial state at time $t=\tind \Delta t$, $\left(\discrete{\link}{\tind}:\link\in\links\right)$
+$\textbf{Output}$: resulting state at time $t=\left(\tind + 1)\right) \Delta t$, $\left(\discrete{\link}{\tind+1}:\link\in\links\right)$
+
+for junction $\jn \in \jns$:
+	# Apply Riemann solver to $\jn$
+	$\junctrace{\jn}{\tind} = \RS\left(\juncstate{\jn}{\tind} \right)$
+for link $\link\in\links$:
+	# update density on link $\link$ with junction fluxes
+	$\discrete{\link}{\tind+1}=\discrete{\link}{\tind}-\dfrac{\Delta t}{\Delta x}\left(f\left(\left(\junctrace{\jdown{\link}}{\tind}\right)_{\link}\right)-f\left(\left(\junctrace{\jup{\link}}{\tind}\right)_{\link}\right)\right)$

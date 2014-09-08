@@ -1,0 +1,64 @@
+%!TEX root = restart.tex
+\subsection{State, Control, and Governing Equations\label{sec:State,-control,-and}}
+
+The rest of the article focuses on controlling systems of the form
+in Equation~\eqref{eq:composed-flux} in which some parts of the state
+can be controlled directly (for example, in the form of boundary control).
+We wish to solve the system in Equation~\eqref{eq:composed-flux} $T$
+time-steps forward, i.e. we wish to determine the discrete state values
+$\discrete{\link}{\tind}$ for all links $\link\in\links$ and all
+time-steps $\tind\in\intrange 0{\ntime-1}$. Furthermore, at each
+time-step $\tind$, we assume a set of ``control'' variables $\tuple{\condiscrete 1{\tind}}{\condiscrete{\ncontrols}{\tind}}\in\mathbb{R}^{\ncontrols}$
+that influence the solution of the Riemann problems at junctions,
+where $\ncontrols$ is the number of controlled values at each time-step,
+and each control may be updated at each time-step. We assume that
+a control may only influence a subset of junctions, which is a reasonable
+assumption if the controls have some spatial locality. Thus, for a
+junction $\jn\in\jns$, we assume without loss of generality that
+a subset of the control parameters $\tuple{\condiscrete{\cind_{\jn}^{1}}{\tind}}{\condiscrete{\cind_{\jn}^{\ncontrols_{\jn}}}{\tind}}\in\mathbb{R}^{\ncontrols_{\jn}}$
+influence the solution of the Riemann solver. Similar to the notation
+developed for state variables, for control variables, we define $\junccon{\jn}{\tind}\defeq\tuple{\condiscrete{\cind_{\jn}^{1}}{\tind}}{\condiscrete{\cind_{\jn}^{\ncontrols_{\jn}}}{\tind}}$
+as the concatenation of the control variables around the junction
+$\jn$. To account for the addition of controls, we modify the Riemann
+problem at a junction $\jn\in\jns$ at time-step $\tind$ to be a
+function of the current state of connecting links $\juncstate{\jn}{\tind}$,
+and the current control parameters $\junccon{\jn}{\tind}$. Then using
+the same notation as before, we express the Riemann solver as:
+
+\begin{eqnarray*}
+	\RS_{\jn}: & \mathbb{R}^{\ninc_{\jn}+\nout_{\jn}}\times\mathbb{R}^{\ncontrols_{\jn}} & \rightarrow\mathbb{R}^{\ninc_{\jn}+\nout_{\jn}}\\
+	& \left(\juncstate{\jn}{\tind},\junccon{\jn}{\tind}\right) & \mapsto\RS_{\jn}\left(\juncstate{\jn}{\tind},\junccon{\jn}{\tind}\right)=\junctrace{\jn}{\tind}.
+\end{eqnarray*}
+
+
+We represent the entire state of the solved system with the vector
+$\state\in\mathbb{R}^{\nlinks\ntime}$, where for $\link\in\links$
+and $k\in\intrange 0{\ntime-1}$, we have $\state_{\nlinks k+\link}=\discrete{\link}{\tind}$.
+Similarly, we represent the entire control vector by $\control\in\mathbb{R}^{\ncontrols\ntime}$,
+where $\control_{\ncontrols\tind+\cind}=\condiscrete{\cind}{\tind}$.
+
+For each state variable $\discrete{\link}{\tind}$, write the corresponding
+update equation $\syseq_{\link}^{\tind}$:
+
+\begin{eqnarray*}
+	\syseq_{\link}^{\tind}: & \mathbb{R}^{\nlinks\ntime}\times\mathbb{R}^{\ncontrols\ntime} & \rightarrow\mathbb{R}\\
+	& \left(\state,\control\right) & \mapsto\syseq_{\link}^{\tind}\left(\state,\control\right)=0.
+\end{eqnarray*}
+This takes the following form:
+
+\begin{eqnarray}
+	h_{\link}^{0}\left(\state,\control\right)=\discrete{\link}0-\initdiscrete_{\link} & =0\label{eq:init-ge}\\
+	\syseq_{\link}^{\tind}\left(\state,\control\right)=\discrete{\link}{\tind}-\discrete{\link}{\tind-1}+\frac{\Delta t}{L_{\link}}f\left(\RS_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)\right)_{\link}\nonumber \\
+	-\frac{\Delta t}{L_{\link}}f\left(\RS_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)\right)_{\link} & =0 & \forall k\in\intrange 2{\ntime-1},\label{eq:main-ge}
+\end{eqnarray}
+or in terms of the Godunov junction flux:
+
+\begin{eqnarray}
+	\syseq_{\link}^{\tind}\left(\state,\control\right)= & \discrete{\link}{\tind}-\discrete{\link}{\tind-1} & +\dfrac{\Delta t}{\Delta x}\left(\god_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind},\junccon{\jdown{\link}}{\tind-1}\right)\right)_{\link}\nonumber \\
+	&  & -\dfrac{\Delta t}{\Delta x}\left(\god_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind},\junccon{\jup{\link}}{\tind-1}\right)\right)_{\link}\label{eq:syseq-god}
+\end{eqnarray}
+for all links $\link\in\links$, where $\initdiscrete_{\link}$ is
+the initial condition for link $\link$. Thus, we can construct a
+system of $\nlinks T$ governing equations $H\left(\state,\control\right)=0$,
+where the $h_{\link,k}$ is the equation in $H$ at index $\nlinks k+\link$,
+identical to the ordering of the corresponding discrete state variable. 

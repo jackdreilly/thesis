@@ -1,17 +1,640 @@
 \chapter{Centralized and Decentralized Optimal Freeway Control via the Discrete Adjoint Method}
 \label{chapter:adjoint}
 
+In  this chapter, we propose a discrete adjoint approach to compute optimal ramp-metering stategies on road networks modeled by conservation laws.
+Networks of one-dimensional conservation laws,
+described by systems of nonlinear first-order hyperbolic \textit{partial
+differential equations}~(PDEs), are an efficient framework for modeling
+physical phenomena, such as freeway traffic evolution~\cite{garavello2006traffic,work2010traffic,frazzoli2002real} and supply
+chains~\cite{Brunnermeier1999}. Similarly, PDE systems of balance laws are useful in modeling gas pipeline flow~\cite{Gugat2011Gas,Rothfarb1970Optimal} and water channels~\cite{Gugat2012Contamination,Rabbani2010}. Optimization
+and  control of these networks is an active field of
+research~\cite{Gugat2005,Bayen2006,Kotsialos2004}. More generally, numerous
+techniques exist for the control of conservation laws, such as, for example,
+backstepping~\cite{Coron2013,Glass2007}, Lyapunov-based methods~\cite{Coron2013}, and
+optimal control methods~\cite{Jacquet2006,Blanchard2013,Keller2013}.
+In particular, a common  approach is to compute the gradient of the cost functional via the \textit{adjoint method}~\cite{Giles2000Introduction,Jameson2000Aerodynamic,Raffard2008}.
+Nevertheless, its implementation in the framework of nonlinear conservation laws presents several difficulties linked to the discontinuous  character of the solutions. In particular, the presence of shocks in the solutions requires a careful sensitivity analysis based on the use of shift-differentials and generalized tangent vectors, see~\cite{Bressan1997ShiftDifferentiability,Ulbrich2002Sensitivity,Ulbrich2003AdjointBased}.
+
+Extensive study has also been conducted on the choice of method for effectively computing the gradient via the adjoint. In particular, the continuous adjoint
+method~\cite{Jacquet2005,Gugat2005,Moin1994,Reuther1996} operates directly on
+the PDE and a so-called adjoint PDE system, which when solved can be used to
+obtain an explicit  expression of the gradient of the underlying optimization
+problem. Conversely,  the discrete adjoint
+method~\cite{Giles2000,Gugat2005,Kotsialos2004} first discretizes a
+continuous-time PDE and then requires the solution of a set of linear
+equations  to solve for the gradient. Finally, a third approach exists, which
+uses  automatic differentiation techniques to automatically generate an
+adjoint  solver from the numerical representation of the forward
+system~\cite{Muller2005,Giering1998}.
+
+It is well known that the numerical treatment of the adjoint method imposes a careful choice of the discretization scheme to avoid the introduction of numerical errors  at discontinuities~\cite{Giles2003Discrete}.
+Rigorous convergence results for optimization problems have been provided for Lax-Friedichs type schemes~\cite{Giles2010Convergencea} and relaxation methods~\cite{Banda2012Adjoint}.
+The case of road networks in free flow conditions is addressed in~\cite{Gugat2005}.
+In our more general setting of PDE networks and applications to freeway traffic control, the presence of junction conditions with both forward and backward-moving shockwaves led us the use of a modified Godunov scheme that precisely takes into account the flows at the network nodes. An alternative approach involves using Lax-Friedichs-type discretizations with higher-resolution interpolation schemes~\cite{Nessyahu1990NonOscillatory}. Moreover, general existence and stability results for the corresponding system of equations modeling traffic evolution on the network are still missing at the moment.
+Therefore, establishing rigorous convergence results for the gradient computation in this framework is out of the scope of this thesis. Here we made the choice of the discrete adjoint approach, which derives the gradient directly from the discretized system, thus avoiding dealing with weak boundary conditions in the continuous system~\cite{garavello2006traffic,work2010traffic,strub2006weak}.
+
+% we could use a variant of the lax-friedrichs.
+% goettlich, staggered lax-friedrichs, to have a more precise approximation, lax friedrichs is very diffusive.
+
+
+
+
+
+%While the continuous adjoint formulation results in a compact formulation, 
+%better intuition into the system's sensitivities with respect to the objective, 
+%and well-posedness of the control's solution (when it can be proved), it is 
+%often difficult to derive for systems of hyperbolic nonlinear PDEs controlled 
+%by boundary conditions, when these boundary conditions have to be written in the 
+%weak sense.
+%Additionally, the continuous adjoint must eventually be discretized in order to 
+%produce numerical solutions for the optimization problem. Finally, the 
+%differentiation of the forward PDE is sometimes problematic due to the lack of 
+%regularity of the solution~\cite{garavello2006traffic,work2010traffic} which 
+%makes the formal definition of the adjoint problem more difficult.
+%The discrete adjoint approach derives the gradient directly from the 
+%discretized system, thus avoiding working directly with weak boundary 
+%conditions in the continuous 
+%system~\cite{garavello2006traffic,work2010traffic,strub2006weak}.
+%Automatic differentiation techniques can simplify the repetitive 
+%steps of the discrete adjoint derivation, but sometimes at the cost of 
+%sub-optimal code implementations with respect to memory and CPU 
+%consumption~\cite{Giles}. A more-detailed analysis of the trade-offs associated 
+%with each method is given in~\cite{Giles}.
+
+There exist many applications of the adjoint method for control, optimization 
+and estimation of physical systems in engineering. Shape optimization of 
+aircraft~\cite{Reuther1996,Giles1997,Moin1994} has applied the method 
+effectively to reduce the computational cost in gradient methods associated 
+with the large number of optimization parameters. The technique has also been 
+applied in parameter identification of biological systems~\cite{Raffard2008}. 
+State estimation problems can be phrased as optimal control problems by setting 
+the unknown state variables as control parameters and penalizing errors in 
+resulting state predictions from known values. This approach has been applied 
+to such problems as open water state estimation~\cite{Castaings2006,Strub2009} 
+and freeway traffic state estimation~\cite{Jacqueta}.
+
+Since conservation laws may be nonlinear by nature and lead to non-convex or 
+nonlinear formulations of the corresponding optimization problem, fewer 
+efficient optimization techniques exist for the 
+discretized version of these problems than for convex problems for example. One 
+approach is to approximate the system with a ``relaxed'' version in order to 
+use efficient linear programming techniques. In transportation, by 
+relaxing the Godunov discretization scheme, the linearization approach was used 
+in~\cite{gomes2006optimal} for optimal ramp metering, and 
+in~\cite{ziliaskopoulos2000linear} for optimal route assignment which is exact 
+when the relaxation gap can be shown to be zero. The ramp 
+metering technique in~\cite{Muralidharana} uses an additional control parameter 
+(variable speed limits) to mimic the linearized freeway dynamics. While the 
+upside of these methods is reduced computational complexity and the guarantee 
+of finding a globally optimal solution, the downside is that the model of the 
+linearized physical system may greatly differ from the actual system to which 
+the control policies would be applied.
+
+Another approach avoids discretization of the continuous system by taking advantage of certain simplifying assumptions in the dynamics. In~\cite{Fugenschuh2006Combinatorial}, the problem of finding optimal split ratios on a traffic networks is efficiently solved by deriving non-linear and linear algebraic formulations of a simplified form of the continuous system dynamics which only considers forward-moving shockwaves. In~\cite{Apice2010Modeling}, a mixed-integer linear program (MILP) formulation is posed for the optimal routing of goods on a supply chain, leading to efficient solutions of this particular application. The number of integer constraints needed in the MILP formulation is proportional to the number of non-linear constraints in the underlying system and has a direct impact on the efficiency of MILP solvers. Applications to highly non-linear systems such as freeway traffic may prefer non-linear programming approaches such as the adjoint method using non-linear discretization techniques, which avoid integer constraints and allow the constraints to capture more complex dynamics.
+
+Alternatively, nonlinear optimization techniques can be applied to the 
+discretized system without any modification to the underlying dynamics. This 
+approach leads to more expensive optimization algorithms, such as gradient 
+descent, and no guarantee of finding a global optimum. One difficulty in this 
+approach comes in the computation of the gradient, which, if using finite 
+differences, requires a full forward-simulation for each perturbation of a 
+control parameter. This approach is taken in~\cite{Ramon2013,Frejo2011} to 
+compute several types of decentralized ramp metering strategies. The increased 
+complexity of the finite differences approach for each additional control 
+parameter makes the method unsuitable for real-time application on 
+moderately-sized freeway networks.
+
+Ramp metering is a common freeway control strategy, providing a means of 
+dynamically controlling freeway throughput without directly impeding mainline 
+flow or implementing complex tolling systems. While metering strategies have 
+been developed using microscopic models~\cite{Ben-Akiva2003}, most strategies 
+are based off macroscopic state parameters, such as vehicle density and the 
+density's relation to 
+speed~\cite{richards1956shock,lighthill1955kinematic,daganzo1995cell}. Reactive 
+metering strategies~\cite{Papageorgiou1991Alinea,Papamichail,Kachroo2003} use 
+feedback from freeway loop detectors to target a desired mainline density, 
+while predictive metering 
+strategies~\cite{Frejo2011,Kotsialos2004,gomes2006optimal,Chen1997} use a 
+physical model with predicted boundary flow data to generate policies over a 
+finite time horizon. Predictive methods are often embedded within a model 
+predictive control loop to handle uncertainties in the boundary data and 
+cumulative model errors~\cite{Muralidharana}.
+
+This section develops a framework for efficient control of discretized 
+conservation law PDE networks using the adjoint 
+method~\cite{Giles2000,Pironneau1974} via Godunov 
+discretization~\cite{godunov1959}, while detailing its application to 
+coordinated ramp metering on freeway networks. Note that the method can be 
+extended without significant difficulty to other numerical schemes commonly 
+used to discretize hyperbolic PDEs. We show how the complexity of 
+the gradient computation in nonlinear optimal control problems can be greatly 
+decreased by using the discrete adjoint method and exploiting the decoupling 
+nature of the problem's network structure, leading to efficient gradient 
+computation methods. After giving a general framework for computing the gradient 
+over the class of scalar conservation law networks, we show that the system's 
+partial derivatives have a sparsity structure resulting in gradient computation 
+times linear in the number of state and control variables for networks of small 
+vertex degree. Memory usage is also linear when sparse data structures are utilized. The results are 
+demonstrated by running a coordinated ramp metering strategy on a 19 mile 
+freeway stretch in California faster than real-time, while giving traffic 
+performance superior to that of state of the art practitioners tools.
+
+\todo{this is incorrect, make the overview match}
+% The rest of the article is organized as follows. 
+% Section~\ref{sec:Preliminaries} gives an 
+% overview of scalar conservation law networks and their discretization via the 
+% Godunov method, while introducing the nonlinear, finite-horizon optimal control 
+% problem. Section~\ref{sec:Adjoint-method} details the adjoint method derivation 
+% for this class of problems and shows how it can be used to compute the gradient 
+% in linear time in the number of discrete state and control variables.  
+% Section~\ref{sec:Applications-to-Optimal} shows how the adjoint method can be 
+% applied to the problem of optimal coordinated ramp metering, with numerical 
+% results on a real freeway network in California shown in 
+% Section~\ref{sec:Numerical-results-for}. Finally, some concluding remarks are 
+% given in Section~\ref{sec:Conclusions}.
+
+
 \section{Discrete Adjoint Derivation for Networked Conservation Laws}
 
-\subsection{Discrete Adjoint Overview}
+Section~\ref{sec:preliminaries} developed a method for discretizing networked, scalar conservation laws. Once a Riemann solver is selected for the junction behavior, the matter of discretization via Godunov's method becomes routine. This section uses Godunov's method to construct an efficient and general method for gradient computations of control objectives constrained by networked conservation law systems.
 
-\subsection{Application to Networked Conservation Laws}
+\subsection{State, Control, and Governing Equations\label{sec:State,-control,-and}}
+
+We now focus on controlling systems of the form
+in Equation~\eqref{eq:composed-flux} in which some parts of the state
+can be controlled directly (for example, in the form of boundary control).
+We wish to solve the system in Equation~\eqref{eq:composed-flux} $T$
+time-steps forward, i.e. we wish to determine the discrete state values
+$\discrete{\link}{\tind}$ for all links $\link\in\links$ and all
+time-steps $\tind\in\intrange 0{\ntime-1}$. Furthermore, at each
+time-step $\tind$, we assume a set of ``control'' variables $\tuple{\condiscrete 1{\tind}}{\condiscrete{\ncontrols}{\tind}}\in\mathbb{R}^{\ncontrols}$
+that influence the solution of the Riemann problems at junctions,
+where $\ncontrols$ is the number of controlled values at each time-step,
+and each control may be updated at each time-step. We assume that
+a control may only influence a subset of junctions, which is a reasonable
+assumption if the controls have some spatial locality. Thus, for a
+junction $\jn\in\jns$, we assume without loss of generality that
+a subset of the control parameters $\tuple{\condiscrete{\cind_{\jn}^{1}}{\tind}}{\condiscrete{\cind_{\jn}^{\ncontrols_{\jn}}}{\tind}}\in\mathbb{R}^{\ncontrols_{\jn}}$
+influence the solution of the Riemann solver. Similar to the notation
+developed for state variables, for control variables, we define $\junccon{\jn}{\tind}\defeq\tuple{\condiscrete{\cind_{\jn}^{1}}{\tind}}{\condiscrete{\cind_{\jn}^{\ncontrols_{\jn}}}{\tind}}$
+as the concatenation of the control variables around the junction
+$\jn$. To account for the addition of controls, we modify the Riemann
+problem at a junction $\jn\in\jns$ at time-step $\tind$ to be a
+function of the current state of connecting links $\juncstate{\jn}{\tind}$,
+and the current control parameters $\junccon{\jn}{\tind}$. Then using
+the same notation as before, we express the Riemann solver as:
+
+\begin{eqnarray*}
+	\RS_{\jn}: & \mathbb{R}^{\ninc_{\jn}+\nout_{\jn}}\times\mathbb{R}^{\ncontrols_{\jn}} & \rightarrow\mathbb{R}^{\ninc_{\jn}+\nout_{\jn}}\\
+	& \left(\juncstate{\jn}{\tind},\junccon{\jn}{\tind}\right) & \mapsto\RS_{\jn}\left(\juncstate{\jn}{\tind},\junccon{\jn}{\tind}\right)=\junctrace{\jn}{\tind}.
+\end{eqnarray*}
+
+
+We represent the entire state of the solved system with the vector
+$\state\in\mathbb{R}^{\nlinks\ntime}$, where for $\link\in\links$
+and $k\in\intrange 0{\ntime-1}$, we have $\state_{\nlinks k+\link}=\discrete{\link}{\tind}$.
+Similarly, we represent the entire control vector by $\control\in\mathbb{R}^{\ncontrols\ntime}$,
+where $\control_{\ncontrols\tind+\cind}=\condiscrete{\cind}{\tind}$.
+
+For each state variable $\discrete{\link}{\tind}$, write the corresponding
+update equation $\syseq_{\link}^{\tind}$:
+
+\begin{eqnarray*}
+	\syseq_{\link}^{\tind}: & \mathbb{R}^{\nlinks\ntime}\times\mathbb{R}^{\ncontrols\ntime} & \rightarrow\mathbb{R}\\
+	& \left(\state,\control\right) & \mapsto\syseq_{\link}^{\tind}\left(\state,\control\right)=0.
+\end{eqnarray*}
+This takes the following form:
+
+\begin{eqnarray}
+	h_{\link}^{0}\left(\state,\control\right)=\discrete{\link}0-\initdiscrete_{\link} & =0\label{eq:init-ge}\\
+	\syseq_{\link}^{\tind}\left(\state,\control\right)=\discrete{\link}{\tind}-\discrete{\link}{\tind-1}+\frac{\Delta t}{L_{\link}}f\left(\RS_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)\right)_{\link}\nonumber \\
+	-\frac{\Delta t}{L_{\link}}f\left(\RS_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)\right)_{\link} & =0 & \forall k\in\intrange 2{\ntime-1},\label{eq:main-ge}
+\end{eqnarray}
+or in terms of the Godunov junction flux:
+
+\begin{eqnarray}
+	\syseq_{\link}^{\tind}\left(\state,\control\right)= & \discrete{\link}{\tind}-\discrete{\link}{\tind-1} & +\dfrac{\Delta t}{\Delta x}\left(\god_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind},\junccon{\jdown{\link}}{\tind-1}\right)\right)_{\link}\nonumber \\
+	&  & -\dfrac{\Delta t}{\Delta x}\left(\god_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind},\junccon{\jup{\link}}{\tind-1}\right)\right)_{\link}\label{eq:syseq-god}
+\end{eqnarray}
+for all links $\link\in\links$, where $\initdiscrete_{\link}$ is
+the initial condition for link $\link$. Thus, we can construct a
+system of $\nlinks T$ governing equations $H\left(\state,\control\right)=0$,
+where the $h_{\link,k}$ is the equation in $H$ at index $\nlinks k+\link$,
+identical to the ordering of the corresponding discrete state variable.
+
+\paragraph{Optimal Control Problem Formulation\label{par:Optimization-Problem}}
+
+In addition to our governing equations $\sys\left(\state,\control\right)=0$, where we assume each $h_i^k \in \mathcal{C}^1$,
+we also introduce a cost function $\cost \in \mathcal{C}^1$.
+
+\begin{eqnarray*}
+\cost: & \mathbb{R}^{\nlinks T}\times\mathbb{R}^{\ncontrols T} & \rightarrow\mathbb{R}\\
+& \left(\state,\control\right) & \mapsto\cost\left(\state,\control\right)
+\end{eqnarray*}
+which returns a scalar that serves as a metric of performance of the
+state and control values of the system. We wish to minimize the quantity
+$\cost$ over the set of control parameters $\control$, while constraining
+the state of the system to satisfy the governing equations $\sys\left(\state,\control\right)=0$,
+which is, again, the concatenated version of~\eqref{eq:main-ge} or~\eqref{eq:syseq-god}.
+We summarize this with the following optimization problem:
+
+\begin{eqnarray}
+\underset{\control}{\min} & \cost\left(\state,\control\right)\nonumber \\
+\text{subject to:} & \sys\left(\state,\control\right)=0\label{eq:op-problem}
+\end{eqnarray}
+Both the cost function and governing equations may be non-convex in
+this problem.
+
+% \subsection{Discrete Adjoint Overview}
+
+% \subsection{Application to Networked Conservation Laws}
+\subsection{Discrete Adjoint Method}
+\label{sec:discrete-adjoint-method}
+
+We wish to use gradient information in order to find control values
+$\control^{*}$ that give locally optimal costs $\cost^{*}=\cost\left(\state\left(\control^{*}\right),\control^{*}\right)$.
+Since there may exist many local minima for this optimization problem~\eqref{eq:op-problem}
+(which is non-convex in general), gradient\emph{ }methods do not guarantee
+global optimality of $\control^{*}$\emph{. }Still, nonlinear optimization
+methods such as interior point optimization utilize gradient information
+to improve performance~\cite{Andreas2005}.
+
+In a descent algorithm, the optimization procedure will have to descend
+a cost function, by coupling the gradient, which, at a nominal point
+$\left(\nominal{\state},\nominal{\control}\right)$ is given by:
+
+\begin{equation}
+d_{\control}\cost\left(\nominal{\state},\nominal{\control}\right)=\evaluate{\pfrac{\cost\text{\ensuremath{\left(\state,\control\right)}}}{\state}}{\nominal{\state},\nominal{\control}}\Dfrac{\state}{\control}+\evaluate{\pfrac{\cost\text{\ensuremath{\left(\state,\control\right)}}}{\control}}{\nominal{\state},\nominal{\control}}\label{eq:j-v}.
+\end{equation}
+
+\begin{note}
+For Equation~\eqref{eq:j-v} to be valid, all required partial and full derivatives must be well-defined, including $\Dfrac{\state}{\control}$. In some applications, this assumption does not necessarily hold,
+either because $f$ itself is not smooth or because $\god$ is not
+smooth (and thus $H \notin \mathcal{C}^1$), as is the case for the LWR equation with concave fundamental diagrams. There are several settings in which the
+conditions for differentiability are satisfied, see in particular~\cite{Gugat2005,Flasskamp2012}.
+\end{note}
+
+The main difficulty is to compute the term $\Dfrac{\state}{\control}$.
+We take advantage of the fact that the derivative of $H\left(\state,\control\right)$
+with respect to $\control$ is equal to zero along trajectories of
+the system:
+
+\begin{equation}
+d_{\control}\sys\left(\nominal{\state},\nominal{\control}\right)=\evaluate{\pfrac{\sys\text{\ensuremath{\left(\state,\control\right)}}}{\state}}{\nominal{\state},\nominal{\control}}\Dfrac{\state}{\control}+\evaluate{\pfrac{\sys\text{\ensuremath{\left(\state,\control\right)}}}{\control}}{\nominal{\state},\nominal{\control}}=0\label{eq:h-v}.
+\end{equation}
+
+
+The partial derivative terms, $\Hx\in\mathbb{R}^{\nlinks\ntime\times\nlinks\ntime}$,
+$\Hu\in\mathbb{R}^{\nlinks\ntime\times\ncontrols\ntime}$, $\Jx\in\mathbb{R}^{\nlinks\ntime}$,
+and $\Ju\in\mathbb{R}^{\ncontrols\ntime}$, can all be evaluated (more
+details provided in Section~\ref{sub:Evaluating--and}) and then
+treated as constant matrices. Thus, in order to evaluate $d_{\control}\cost\left(\nominal{\state},\nominal{\control}\right)\in\mathbb{R}^{\ncontrols\ntime}$,
+we must solve a coupled system of matrix equations.
+
+\paragraph{Forward system.\label{par:Forward-system}}
+
+If we solve for $\Dfrac{\state}{\control}\in\mathbb{R}^{\nlinks\ntime\times\ncontrols\ntime}$
+in~\eqref{eq:h-v}, which we call the \emph{forward system}:
+
+\[
+\Hx\Dfrac{\state}{\control}=-\Hu,
+\]
+then we can substitute the solved value for $\Dfrac{\state}{\control}$
+into~\eqref{eq:j-v} to obtain the full expression for the gradient.
+Section~\ref{sub:Evaluating--and} below gives details on the invertibility
+of $\Hx$, guaranteeing a solution for $\Dfrac{\state}{\control}$.
+
+
+\paragraph{Adjoint system.\label{par:Adjoint-system}}
+
+Instead of evaluating $\Dfrac{\state}{\control}$ directly, the adjoint
+method solves the following system, called the adjoint system,
+for a new unknown variable $\lambda\in\mathbb{R}^{\nlinks\ntime}$
+(called the adjoint variable):
+
+\begin{equation}
+\Hx^{T}\lambda=-\Jx^{T}\label{eq:adjoint}
+\end{equation}
+
+Under certain additional conditions on the flux function and discretization scheme, the adjoint system in Equation~\eqref{eq:adjoint} may be shown to converge to the continuous adjoint system as the discretization steps go towards zero, as described in the following works~\cite{Banda2012Adjoint,Gugat2005,ulbrich2003adjoint}. No such convergence results exist in our setting of using a Godunov discretization with general $n\times m$ junctions.
+
+The expression for the gradient becomes:
+
+\begin{equation}
+d_{\control}\cost\left(\nominal{\state},\nominal{\control}\right)=\lambda^{T}\Hu+\Ju\label{eq:adjoint-grad}
+\end{equation}
+
+We note that Equations~\eqref{eq:adjoint} and~\eqref{eq:adjoint-grad} can be alternatively derived using the first-order \emph{Karush-Kuhn-Tucker} (KKT) conditions, coupled with the constraint qualification in Equation~\eqref{eq:op-problem}. Given the assumed non-convexity of the underlying system, first-order KKT conditions are necessary, but not sufficient conditions for optimality of $\mathbf{\control}$ and $\lambda$. For practical applications to non-convex systems and for the purposes of this thesis, we do not necessarily seek global \emph{or local} optimality, but rather the direction of steepest descent given in Equation~\eqref{eq:adjoint-grad} in order to \emph{improve} the performance of the system.
+
+We define $\degree{\state}$ to be the maximum junction degree on
+the network:
+
+\begin{equation}
+\degree{\state}=\max_{\jn\in\jns}\left(\ninc_{\jn}+\nout_{\jn}\right),\label{eq:dx}
+\end{equation}
+and also define $\degree{\control}$ to be the maximum number of constraints
+that a single control variable appears in, which is equivalent to:
+
+\begin{equation}
+\degree{\control}=\max_{\condiscrete{}{}\in\control}\sum_{\jn\in\jns:\condiscrete{}{}\in\junccon{\jn}{\tind}}\left(\ninc_{\jn}+\nout_{\jn}\right)\label{eq:dv}.
+\end{equation}
+
+
+Note that $\left\{ \convar\in\junccon{\jn}{\tind}:\jn\in\jns\right\} $
+is a $\tind$-dependent set. By convention, junctions are either actuated
+or not, so there is no dependency on $\tind$, i.e. if $\exists\tind$
+s.t. $\convar\in\junccon{\jn}{\tind}$, then $\forall\tind$, $\convar\in\junccon{\jn}{\tind}$.
+
+Using these definitions, we show later in Section~\ref{sub:Complexity-of-solving}
+how the complexity of computing the gradient is reduced from $O(\degree{\state}\nlinks\ncontrols\ntime^{2})$
+to $O(\ntime\left(\degree{\state}\nlinks+\degree{\control}\ncontrols\right))$
+by considering the adjoint method over the forward method.
+
+\begin{figure}
+\begin{centering}
+\subfloat[\label{fig:genneta}]{\begin{centering}
+\includegraphics[width=0.33\columnwidth]{previous-articles/adjoint/figs-gen/gen-net}
+\par\end{centering}
+
+}\subfloat[\label{fig:gennetb}]{\begin{centering}
+\includegraphics[width=0.33\columnwidth]{previous-articles/adjoint/figs-gen/gen-net-dx}
+\par\end{centering}
+
+}\subfloat[\label{fig:gennetc}]{\begin{centering}
+\includegraphics[width=0.33\columnwidth]{previous-articles/adjoint/figs-gen/gen-net-dv}
+\par\end{centering}
+
+}
+\par\end{centering}
+
+\caption{Depiction of $D_{\state}$ and $D_{v}$ for an arbitrary graph. Fig.~\ref{fig:genneta}
+shows the underlying graphical structure for an arbitrary PDE network.
+Some control parameter $\convar_{1}$ has influence over junctions
+$A$, $B$, and $F$, while another control parameter $\convar_{2}$
+has influence over only junction $C$. Fig.~\ref{fig:gennetb}
+depicts the center junction having the largest number of connecting
+edges, thus giving $D_{\state}=5$. Fig.~\ref{fig:gennetc} shows
+that control parameter $\convar_{1}$ influences three junctions with
+sum of junctions degrees equal to six, which is maximal over the other
+control parameter $\convar_{2}$. leading to the result $D_{\control}=6$.
+Note that in Fig.~\ref{fig:gennetc}, the link going from junction
+$A$ to junction $B$ is counted twice: once as an outgoing link $\vec{AB}$
+and once as in incoming link $\vec{BA}$.\label{fig:Depicting--and}}
+\end{figure}
+
+A graphical depiction of $D_{\state}$ and $D_{\control}$ are given
+in Fig.~\ref{fig:Depicting--and}. Freeway networks are usually considered to have topologies that are
+nearly planar, leading to junctions degrees which typically do not
+exceed 3 or 4, regardless of the total number of links. Also, from
+the locality argument for control variables in Section~(\ref{sec:State,-control,-and}),
+a single control variable's influence over state variables will not
+grow with the size of the network. Since the $\degree{\state}$ and
+$\degree{\control}$ typically do not grow with $\nlinks\ntime$ or
+$\ncontrols\ntime$ for freeway networks, the complexity of evaluating
+the gradient for such networks can be considered linear for the adjoint
+method.
+
+
+\subsection{Evaluating the Partial Derivatives\label{sub:Evaluating--and}}
+
+While no assumptions are made about the sparsity of the cost function
+$\cost$, the networked-structure of the PDE system and the Godunov
+discretization scheme allows us to say more about the structure and
+sparsity of $\Hx$ and $\Hu$.
+
+
+\paragraph{Partial derivative expressions.}
+
+Given that the governing equations require the evaluation of a Riemann
+solver at each step, we detail some of the necessary computational
+steps in evaluating the $\Hx$ and $\Hu$ matrices. 
+
+If we consider a particular governing equation $\syseq_{\link}^{\tind}\left(\state,\control\right)=0$,
+then we may determine the partial term with respect to $\discrete jl\in\state$
+by applying the chain rule:
+
+\begin{align}
+\pfrac{\syseq_{\link}^{\tind}}{\discrete jl}=\pfrac{\discrete{\link}{\tind}}{\discrete jl}-\pfrac{\discrete{\link}{\tind-1}}{\discrete jl} & +\frac{\Delta t}{L_{i}}f'\left(\RS_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)_{\link}\right)\pfrac{}{\discrete jl}\left(\RS_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)_{\link}\right)\label{eq:dhdufull} \\
+& -\frac{\Delta t}{L_{i}}f'\left(\RS_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)_{\link}\right)\pfrac{}{\discrete jl}\left(\RS_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)_{\link}\right)\nonumber                       
+\end{align}				
+or if we consider the composed Riemann flux solver $\god_{\jn}$ in~\eqref{eq:god-jn}:
+
+\begin{equation}
+\pfrac{\syseq_{\link}^{\tind}}{\discrete jl}=\pfrac{\discrete{\link}{\tind}}{\discrete jl}-\pfrac{\discrete{\link}{\tind-1}}{\discrete jl}+\frac{\Delta t}{L_{i}}\left(\pfrac{}{\discrete jl}\left(\god_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)\right)_{\link}-\pfrac{}{\discrete jl}\left(\god_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)\right)_{\link}\right)\label{eq:dhdugod}
+\end{equation}
+
+
+A diagram of the structure of the $\Hx$ matrix is given in Fig.~(\ref{fig:partial-ordering}).
+\begin{figure}
+\subfloat[\label{fig:partial-ordering}Ordering of the partial derivative terms.
+Constraints and state variables are clustered first by time, and then
+by cell index.]{\includegraphics[width=0.45\columnwidth]{previous-articles/adjoint/figs-gen/dstate}
+
+}\texttt{\hfill{}}\subfloat[\label{fig:sparsity-diagram}Sparsity structure of the $\Hx$ matrix.
+Besides the diagonal blocks, which are identity matrices, blocks where
+$l\neq\tind-1$ are zero.]{\includegraphics[width=0.45\columnwidth]{previous-articles/adjoint/figs-gen/sparsity-two}
+
+\texttt{}
+
+}
+
+\caption{Structure of the $\Hx$ matrix.}
+
+
+\end{figure}
+Similarly for $\Hu$, we take a control parameter $\condiscrete jl\in\control$,
+and derive the expression:
+
+\begin{align}
+\pfrac{\syseq_{\link}^{\tind}}{\condiscrete jl}= & +\frac{\Delta t}{L_{i}}f'\left(\RS_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)_{\link}\right)\pfrac{}{\condiscrete jl}\left(\RS_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)_{\link}\right)\label{eq:dhdvfull} \\
+& -\frac{\Delta t}{L_{i}}f'\left(\RS_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)_{\link}\right)\pfrac{}{\condiscrete jl}\left(\RS_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)_{\link}\right)\nonumber                       
+\end{align}
+or for the composed Godunov junction flux solver $\god_{\jn}$:
+
+\begin{equation}
+\pfrac{\syseq_{\link}^{\tind}}{\condiscrete jl}=\frac{\Delta t}{L_{i}}\left(\pfrac{}{\condiscrete jl}\left(\god_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)\right)_{\link}-\pfrac{}{\condiscrete jl}\left(\god_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)\right)_{\link}\right)\label{eqdhdvgod}.
+\end{equation}
+
+
+Analyzing~\eqref{eq:dhdufull}, the only partial terms that are not
+trivial to compute are $\pfrac{}{\discrete jl}\left(\RS_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)_{\link}\right)$
+and $\pfrac{}{\discrete jl}\left(\RS_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)_{\link}\right)$.
+Similarly for~\eqref{eq:dhdvfull}, the only nontrivial terms are
+$\pfrac{}{\condiscrete jl}\left(\RS_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind-1},\junccon{\jdown{\link}}{\tind-1}\right)_{\link}\right)$
+and $\pfrac{}{\condiscrete jl}\left(\RS_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind-1},\junccon{\jup{\link}}{\tind-1}\right)_{\link}\right)$.
+Once one obtains the solutions to these partial terms, then one can
+construct the full $\Hx$ and $\Hu$ matrices and use~\eqref{eq:adjoint}
+and~\eqref{eq:adjoint-grad} to obtain the gradient value.
+
+As these expressions are written for a general scalar conservation
+law, the only steps in computing the gradient that are specific to
+a particular conservation law and Riemann solver are computing the
+derivative of the flux function $f$ and the partial derivative terms
+just discussed. These expressions are explicitly calculated for the
+problem of optimal ramp metering in Section~(\ref{sec:Applications-to-Optimal}).
+
 
 \subsection{Complexity Analysis of Discrete Adjoint for Sparse Networks}
+\label{sub:Complexity-of-solving}
+
+This section demostrates the following proposition:
+
+\begin{prop}
+\textup{The total complexity for the adjoint method on a scalar hyperbolic
+network of PDEs is }$O(\ntime\left(\degree{\state}\nlinks+\degree{\control}\ncontrols\right))$.\end{prop}
+
+We can show the lower-triangular structure and invertibility of $\Hx$
+by examining~\eqref{eq:init-ge} and~\eqref{eq:main-ge}. For $\tind\in\intrange 1{\ntime-1}$,
+we have that $\syseq_{\link}^{\tind}$ is only a function of $\discrete{\link}{\tind}$
+and of the state variables from the previous time-step $\tind-1$.
+Thus, based on our ordering scheme in Section~\ref{sec:State,-control,-and}
+of ordering variables by increasing time-step and ordering constraints
+by corresponding variable, we know that the diagonal terms of $\Hx$ are
+always $1$ and all upper-triangular terms must be zero (since those
+terms correspond to constraints with a dependence of \emph{future}
+values). These two conditions demonstrate both that $\Hx$ is lower-triangular
+and is invertible due to the ones along the diagonal.
+
+Additionally, if we consider taking partial derivatives with respect
+to the variable $\discrete jl$, then we can deduce from Equation~\eqref{eq:main-ge}
+that all partial terms will be zero except for the diagonal term,
+and those terms involving constraints at time $j+1$ with links connecting
+to the downstream and upstream junctions $\jdown j$ and $\jup j$
+respectively. To summarize, $\Hx$ matrices for systems described
+in Section~\ref{sec:State,-control,-and} will be square, invertible,
+lower-triangular and each column will have a maximum cardinality equal
+to $\degree{\state}$ in~\eqref{eq:dx}. The sparsity structure of
+$\Hx$ is depicted in Fig.~\ref{fig:sparsity-diagram}.
+
+Using the same line of argument for the maximum cardinality of $\Hx$,
+we can bound the maximum cardinality of each column of $\Hu$. Taking
+a single control variable $\condiscrete jl$, the variable can only
+appear in the constraints at time-step $j+1$ that correspond to a link
+that connects to a junction $\jn$ such that $\condiscrete jl\in\junccon{\jn}{l+1}$.
+These conditions give us the expression for $\degree{\control}$ in~\eqref{eq:dv},
+or the maximum cardinality over all columns in $\Hu$.
+
+If we only consider the lower triangular form of $\Hx$, then the
+complexity of solving for the gradient using the forward system is
+$O(\left(\nlinks\ntime\right)^{2}\ncontrols\ntime)$, where the dominating
+term comes from solving~\eqref{eq:j-v}, which requires the solution
+of $\ncontrols\ntime$ separate $\nlinks\ntime\times\nlinks\ntime$
+lower-triangular systems. The lower-triangular system allows for forward
+substitution, which can be solved in $O(\left(\nlinks\ntime\right)^{2})$
+steps, giving the overall complexity $O(\left(\nlinks\ntime\right)^{2}\ncontrols\ntime)$.
+The complexity of computing the gradient via the adjoint method is
+$O(\left(\nlinks\ntime\right)^{2}+\left(\nlinks\ntime\right)\left(\ncontrols\ntime\right))$,
+which is certainly more efficient than the forward-method, as long
+as $\ncontrols\ntime>1$. The efficiency is gained by considering
+that~\eqref{eq:adjoint} only requires the solution of a single $\nlinks\ntime\times\nlinks\ntime$
+\emph{upper}-triangular system (via backward-substitution), followed
+by the multiplication of $\lambda^{T}H_{v}$, an $\nlinks\ntime\times\nlinks\ntime$
+and an $\nlinks\ntime\times\ncontrols\ntime$ matrix in~\eqref{eq:adjoint-grad},
+with a complexity of $O(\left(\nlinks\ntime\right)^{2}+\left(\nlinks\ntime\right)\left(\ncontrols\ntime\right))$.
+
+For the adjoint method, this complexity can be improved upon by considering
+the sparsity of the $\Hx$ and $\Hu$ matrices, as detailed in Section~\ref{sub:Complexity-of-solving}.
+For the backward-substitution step, each entry in the $\lambda$ vector
+is solved by \emph{at most} $\degree{\state}$ multiplications, and
+thus the complexity of solving~\eqref{eq:adjoint} is reduced to
+$O(\degree{\state}\nlinks\ntime)$. Similarly, for the matrix multiplication
+of $\lambda^{T}H_{v}$, while $\lambda$ is not necessarily sparse,
+we know that each entry in the resulting vector requires at most $\degree{\control}$
+multiplications, giving a complexity of $O(\degree{\control}\ncontrols\ntime)$. Furthermore, if a sparse implementation of the $\Hx$ and $\Hu$ matrices are used, then memory usage will also scale linearly with the number of state and control variables.
+
 
 \section{Adjoint-based Model Predictive Control for Coordinated, Predictive Ramp Metering}
 
+\paragraph{Problem Statement}
+
+Including the initial conditions as specified in~\eqref{eq:init-ge}
+with~\eqref{eq:rho-update} and~\eqref{eq:ramp-eqn} gives
+a complete description of the system $\sys\left(\state,\control\right)=0$,
+$\state\in\mathbb{R}^{2\nlinks}$, $\control\in\mathbb{R}$, where:
+
+\begin{eqnarray*}
+\state_{2\nlinks\tind+\link}\defeq & \densitydiscrete{\link}{\tind} & 1\le i\le2\nlinks,0\le k\le T-1\\
+\control_{\nlinks\tind+\link}\defeq & \ramp_{2\link}^{\tind} & 1\le i\le\nlinks,0\le k\le T-1
+\end{eqnarray*}
+
+
+The objective of the control is to minimize the \emph{total travel
+time }on the network, expressed by the cost function $\cost$:
+
+\[
+\cost\left(\state,\control\right)=\Delta t\sum_{k=1}^{T}\sum_{i=1}^{2\nlinks}L_{i}\densitydiscrete{\link}{\tind}.
+\]
+
+
+The optimal coordinated ramp-metering problem can be formulated as
+an optimization problem with PDE-network constraints:
+
+\begin{eqnarray}
+\min_{\control} & \cost\left(\state,\control\right)\label{eq:full}\\
+\text{subject to:} & \sys\left(\state,\control\right) & =0\nonumber \\
+& 0\le\convar\le1 & \forall\convar\in\control  \label{eq:box}
+\end{eqnarray}
+
+Standard methods exist for the handling of geometric constraints on $\mathbf{u}$ in descent methods (such as box constraints in Equation~\eqref{eq:box}), such as projection methods~\cite{d2010modeling} and barrier methods~\cite{Fiacco1990Nonlinear,Boyd2010b,Bayen2006}.
+
 \subsection{Partial Derivative Calculations for Ramp Metering}
+\label{sec:Applications-to-Optimal}
+
+To use the adjoint method as described in Section~\ref{sec:discrete-adjoint-method},
+we need to compute the partial derivative matrices $\Hx$, $\Hu$,
+$\tilde{C}_{\state}$ and $\tilde{C}_{\control}$. Computing the partial
+derivatives with respect to the cost function is straight forward:
+
+\begin{eqnarray*}
+\pfrac{\tilde{\cost}}{\discrete{\link}{\tind}}= & \Delta tL_{i} & 1\le i\le2\nlinks,0\le k\le T-1\\
+\pfrac{\tilde{\cost}}{\ramp_{2\link}^{\tind}}= & \barrierTerm\left(\frac{1}{1-\ramp_{2\link}^{\tind}}-\frac{1}{\ramp_{2\link}^{\tind}}\right) & 1\le i\le\nlinks,0\le k\le T-1
+\end{eqnarray*}
+
+
+To compute the partial derivatives of $\sys$, we follow the procedure
+in Section~\ref{sub:Evaluating--and}. For an upstream junction
+$\jup{2\link}\in\jns$ and time-step $k\in\intrange 1{\ntime-1}$,
+we only need to compute the partial derivatives of the flux solver
+$\god_{\jup{2\link}}\left(\juncstate{\jup{2\link}}{\tind},\ramp_{2\link-1}^{\tind}\right)_{\text{}}$
+with respect to the adjacent state variables $\juncstate{\jn_{\link}}{\tind}$
+and ramp metering control $\ramp_{\link}^{\tind}$. We calculate the
+partial derivatives of the functions in~\eqref{eq:first-ramp}-\eqref{eq:last-ramp}
+with respect to either a state or control variable$s\in\state\cup\control$:
+
+\begin{eqnarray*}
+\pfrac{\demand_{2\left(\link-1\right)}^{\tind}}s & = & \begin{cases}
+\ffspeed_{2\left(i-1\right)} & s=\densitydiscrete{2\left(\link-1\right)}{\tind},\ffspeed_{i}\densitydiscrete{2\left(\link-1\right)}{\tind}\le F_{2\left(i-1\right)}^{\max}\\
+0 & \text{otherwise}
+\end{cases}\\
+\pfrac{\supply_{2\link}^{\tind}}s & = & \begin{cases}
+-\congspeed_{2i} & s=\densitydiscrete{2\link}{\tind},\congspeed_{2i}\left(\density_{2i}^{\max}-\densitydiscrete{2\link}{\tind}\right)\le F_{2i}^{\max}\\
+0 & \text{otherwise}
+\end{cases}\\
+\pfrac ds & = & \begin{cases}
+\ramp_{2\link-1}^{\tind} & s=\densitydiscrete{2\link-1}{\tind},\densitydiscrete{2\link-1}{\tind}\le F_{2\link-1}^{\max}\\
+\min\left(\densitydiscrete{2\link-1}{\tind},F_{2i-1}^{\max}\right) & s=\ramp_{2\link-1}^{\tind}\\
+0 & \text{otherwise}
+\end{cases}\\
+\pfrac{}s\fin{2\link}{\tind} & = & \begin{cases}
+\splitratio_{2\left(\link-1\right)}^{\tind}\pfrac{\demand_{2\left(\link-1\right)}^{\tind}}s+\pfrac{\rampDemand_{2\left(\link-1\right)}^{\tind}}s & \splitratio_{2\left(\link-1\right)}^{\tind}\demand_{2\left(\link-1\right)}^{\tind}+\rampDemand_{2\link-1}^{\tind}\le\supply_{2\link}^{\tind}\\
+\pfrac{\supply_{2\link}^{\tind}}s & \text{otherwise}
+\end{cases}\\
+\pfrac{}s\fout{2\left(\link-1\right)}{} & = & \begin{cases}
+\pfrac{\demand_{2\left(\link-1\right)}^{\tind}}s & \frac{\fin{2\link}{\tind}p_{2(\link-1)}}{1+p_{2(\link-1)}}\ge\frac{\demand_{2\left(\link-1\right)}^{\tind}}{\splitratio_{2\left(\link-1\right)}^{\tind}}\\
+\frac{1}{\splitratio_{2\left(\link-1\right)}^{\tind}}\left(\pfrac{}s\fin{2\link}{\tind}-\pfrac{\rampDemand_{2\link-1}^{\tind}}s\right) & \frac{\fin{2\link}{\tind}}{1+p_{2(\link-1)}}\ge\rampDemand_{2\left(\link-1\right)}^{\tind}\\
+\frac{p_{2(\link-1)}}{\splitratio_{2\left(\link-1\right)}^{\tind}\left(1+p_{2(\link-1)}\right)}\pfrac{}s\fin{2\link}{\tind} & \text{otherwise}
+\end{cases}\\
+\pfrac{}s\fout{2\link-1}{} & = & \pfrac{}s\fin{2\link}{\tind}-\splitratio_{2\left(\link-1\right)}^{\tind}\pfrac{}s\fout{2\left(\link-1\right)}{}
+\end{eqnarray*}
+
+
+These expressions fully quantify the partial derivative values needed
+in~\eqref{eq:dhdugod} and~\eqref{eqdhdvgod}. Thus we can construct
+the $\Hx$ and $\Hu$ matrices. With these matrices and $\Jx$ and
+$\Ju$, we can solve for the adjoint variable $\lambda\in\mathbb{R}^{2\nlinks\ntime}$
+in~\eqref{eq:adjoint} and substitute its value into~\eqref{eq:adjoint-grad}
+to obtain the gradient of the cost function $\cost$ with respect
+to the control parameter $\control$.
 
 \subsection{Model Predictive Control Overview}
 \label{sec:model-predictive-control-overview-adjoint-section}

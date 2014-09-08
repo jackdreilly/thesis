@@ -1,0 +1,103 @@
+%indices
+\global\long\def\itime{k}
+\global\long\def\icell{i}
+\global\long\def\iconst{h}
+
+\global\long\def\ntime{T}
+\global\long\def\ncell{N}
+\global\long\def\nconst{8}
+
+%constants
+\global\long\def\deltat{\Delta t}
+ \global\long\def\deltax{\Delta x}
+
+
+\global\long\def\prioritysymbol{P}
+ \global\long\def\priority#1{\prioritysymbol_{#1}}
+
+
+%ramps
+\global\long\def\rampcontrolsymbol{u}
+ \global\long\def\rampcontrol#1#2{\rampcontrolsymbol_{#1}\left(#2\right)}
+ \global\long\def\rampcontrolMax#1{\rampcontrolsymbol_{#1}^{\max}}
+ \global\long\def\rampqueuesymbol{l}
+ \global\long\def\rampqueue#1#2{\rampqueuesymbol_{#1}\left(#2\right)}
+ \global\long\def\rampqueueinit#1{\rampqueuesymbol_{#1}^{0}}
+ \global\long\def\rampflowsymbol{r}
+ \global\long\def\rampflow#1#2{\rampflowsymbol_{#1}\left(#2\right)}
+
+
+\global\long\def\offrampratiosymbol{\beta}
+ \global\long\def\offrampratio#1#2{\offrampratiosymbol_{#1}\left(#2\right)}
+
+
+%cells
+\global\long\def\flowsymbol{f}
+ \global\long\def\flowout#1#2{\flowsymbol_{#1}^{\text{out}}\left(#2\right)}
+ \global\long\def\flowin#1#2{\flowsymbol_{#1}^{\text{in}}\left(#2\right)}
+ 
+
+\global\long\def\densitysymbol{\rho}
+ \global\long\def\density#1#2{\densitysymbol_{#1}\left(#2\right)}
+ \global\long\def\densityinit#1{\densitysymbol_{#1}^{0}}
+
+
+%input
+\global\long\def\inputfluxsymbol{D}
+ \global\long\def\inputflux#1#2{D_{#1}\left(#2\right)}
+
+
+%supply and demand
+\global\long\def\celldemandsymbol{\delta}
+ \global\long\def\celldemand#1#2{\celldemandsymbol_{#1}\left(#2\right)}
+
+
+\global\long\def\cellsupplysymbol{\sigma}
+ \global\long\def\cellsupply#1#2{\cellsupplysymbol_{#1}\left(#2\right)}
+
+
+\global\long\def\rampdemandsymbol{d}
+ \global\long\def\rampdemand#1#2{\rampdemandsymbol_{#1}\left(#2\right)}
+
+
+%parameters
+\global\long\def\ffspeedsymbol{v}
+ \global\long\def\ffspeed#1{\ffspeedsymbol_{#1}}
+
+
+\global\long\def\congspeedsymbol{w}
+ \global\long\def\congspeed#1{\congspeedsymbol_{#1}}
+
+
+\global\long\def\fmaxsymbol{F}
+ \global\long\def\fmax#1{\fmaxsymbol_{#1}}
+
+
+\global\long\def\jamdensitysymbol{\densitysymbol^{\text{jam}}}
+ \global\long\def\jamdensity#1{\jamdensitysymbol_{#1}}
+
+
+%adjoint
+\global\long\def\state#1#2{x_{#1}\left( #2 \right)}
+\global\long\def\ind#1{1_{\left\{#1\right\}}}
+
+\global\long\def\stdidx#1{#1{\itime}{\icell}}
+\global\long\def\sstdidx#1{\stdidx{#1{\iconst}}}
+
+\global\long\def\H#1#2#3{H^{#1}_{#2, #3}}
+\global\long\def\stdH#1{\stdidx{\H{#1}}}
+\global\long\def\sstdH{\sstdidx{\H}}
+
+\global\long\def\G#1#2#3{G^{#1}_{#2, #3}}
+\global\long\def\stdG#1{\stdidx{\G{#1}}}
+\global\long\def\sstdG{\sstdidx{\G}}
+
+\global\long\def\Lambd#1#2#3{\lambda^{#1}_{#2, #3}}
+\global\long\def\stdLambd#1{\stdidx{\Lambd{#1}}}
+\global\long\def\sstdLambd{\sstdidx{\Lambd}}
+
+\global\long\def\R#1#2#3{R{#1}_{#2, #3}}
+
+% Riemann problem
+\global\long\def\rs{\mathcal{RS}}
+\global\long\def\js{\mathcal{JS}}

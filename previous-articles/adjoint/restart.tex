@@ -1,0 +1,79 @@
+%!TEX root = restart.tex
+\RequirePackage{fix-cm}
+\documentclass[nospthms,smallextended]{svjour3}       % onecolumn (second format)
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{esint}
+\usepackage{amsthm}
+% \usepackage[sorting=none,url=false, firstinits=true, isbn=false,backend=biber]{biblatex}
+% \usepackage[url=false, firstinits=true, isbn=false]{biblatex}
+% \addbibresource{AdjointPaper.bib}
+% \addbibresource{Remote.bib}
+
+
+\makeatletter
+
+\providecommand{\tabularnewline}{\\}
+\floatstyle{ruled}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\input{theorems}
+
+\newfloat{algorithm}{tbp}{loa}
+\providecommand{\algorithmname}{Algorithm}
+\floatname{algorithm}{\protect\algorithmname}
+
+\usepackage{fullpage}
+
+\usepackage{subfig}
+
+\makeatother
+
+\DeclareMathOperator{\sgn}{sgn}
+
+\titlerunning{Adjoint-based optimization on conservation law networks}
+
+\authorrunning{Reilly et al}
+
+\institute{$^*$University of California, Berkeley - California, USA, \email{jackdreilly@berkeley.edu}
+           \and \at
+              $^{\dagger}$Inria Sophia Antipolis - M\'{e}diterran\'{e}e, Sophia Antipolis, France
+}
+
+\date{Submitted: \today}
+
+\begin{document}
+
+\title{Adjoint-based Optimization on a Network of Discretized Scalar Conservation
+Law PDEs with Applications to Coordinated Ramp Metering}
+
+
+\author{Jack Reilly$^*$ \and Walid Krichene$^*$ \and Maria Laura Delle Monache$^{\dagger}$ \and Samitha Samaranayake$^*$ \and Paola Goatin$^{\dagger}$ \and Alexandre M. Bayen$^*$}
+\maketitle
+\input{commands.tex}
+\input{abstract.tex}
+\input{keywords}
+\input{intro.tex}
+\input{prelims.tex}
+\input{system.tex}
+\input{adjoint.tex}
+\input{ramp.tex}
+\input{numerical.tex}
+\input{conclusions.tex}
+\input{ack.tex}
+% \bibliographystyle{plain}
+% \bibliography{AdjointPaper}   % name your BibTeX data base
+% \printbibliography
+\bibliographystyle{spmpsci}
+\bibliography{AdjointPaper,Remote}
+\input{nomenclature.tex}
+
+\end{document}

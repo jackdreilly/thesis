@@ -1,23 +1,649 @@
 \chapter{Freeway Network Model}
 \label{chapter:freeway-network-model}
 
+The problem of freeway oversaturation is well-documented~\cite{schrank2012tti}, with \$ 100 billion in costs and 56 billion lbs in CO\textsubscript{2} attributed to roadway congestion. More intelligent freeway management systems are developed to counter the above costs. Examples of such control systems include the following:
+
+\begin{itemize}
+  	\item \textbf{Ramp metering: } Traffic lights installed on the onramps leading to freeway mainlines serve the purpose of limiting the amount of total flow entering the mainline during peak operation periods, when vehicle demand exceeds the total capacity of the mainline. Feedback-based ramp metering algorithms have been applied successfully in practice~\cite{papageorgiou1997alinea,Papageorgiou1991,Papamichail}, while many predictive algorithms have shown promise in simulation environments~\cite{Reilly2013b,gomes2006optimal,Kotsialos2004}.
+  	\item \textbf{Variable speed limit: } While metering on onramps is one way of reducing demand, the mainline flow can be reduced by limiting the maximum speed of its vehicles~\cite{Muralidharana}.
+  	\item \textbf{Flow rerouting: } In situations where excess demand exists on the neighboring road network or vehicles choose routes selfishly or suboptimally~\cite{6744679,Jebbari,Krichene2012a,Roughgarden2003}, then route-choice intervention can lead to improved traffic conditions~\cite{Samaranayake2014,ziliaskopoulos2000linear}.
+\end{itemize}
+
+In order to implement the above traffic control strategies, one requires an accurate and computationally efficient model of freeway dynamics which is sensitive to time-varying demands and temporal changes in the physical properties of the freeway (e.g. lane closure during reroutes, weather influencing maximum speeds).
+A common approach, which this thesis adopts, is to treat vehicle flow as a continuum of \emph{vehicle density} and develop continuous, distributed parameter system models tracking the evolution of the traffic density. These \emph{macroscopic} traffic models have been shown to accurately capture traffic dynamics~\cite{papageorgiou1989macroscopic} and possess better analytical and computational properties than \emph{microscopic}, particle-based models.
+
+This section first covers the preliminaries of continuous, conservation laws, a type of partial differential equation (PDE) system, and discretization techniques applied to conservation laws for computational and numerical purposes. Building off the preliminaries, we then present novel continuous and discrete freeway traffic models~\cite{delle2014pde} which are specifically developed for freeway traffic management applications.
+
 \section{Preliminaries of Networked Conservation Laws}
+\label{sec:preliminaries}
 
 \subsection{Networked Conservation Laws}
 
+We consider the non-linear conservation equation of the form:
+\begin{equation}
+\partial_t\rho\left(t,x\right)+\partial_x f\left(\rho\left(t,x\right)\right)=0 \quad (t,x) \in \R^+ \times \R\label{eq:cons}
+\end{equation}
+where $\rho=\rho(t,x) \in \; \R^+$ is the scalar conserved quantity and $f:\R^+\rightarrow \R^+$ is a Lipschitz continuous flux function~\cite{MR1816648}. Throughout the article we suppose that $f$ is a concave function. \\
+The Cauchy problem to solve for the evolution of the conservation law is then 
+\begin{equation}
+	\label{eq:CP}
+		\left\{
+		\begin{array}{ll}
+		\partial_t \rho+ \partial_x f(\rho) =0, & (t,x)\in\R^+\times \R,\\
+		\rho(0,x)=\rho^0(x), & x \in \R\\
+		\end{array}
+		\right.
+\end{equation}
+where $\rho^0(x)$ is the initial condition.
+It can be shown that there exists a unique weak entropy solution for the Cauchy problem\eqref{eq:CP},  as described in Definition \ref{def:weak-sol}. 
+\begin{defn}\label{def:weak-sol}
+A function $\rho \in \; \mathcal{C}^0(\R^+; \mathbf{L}^1_{loc}\cap \mathbf{BV})$ is an admissible solution to \eqref{eq:CP} if $\rho$ satisfies the Kru\v{z}hkov entropy condition \cite{Kruzhkov} on $(\R^+\times\R)$, i.e.,for every $k\in \R$ and for all $\varphi \in \mathcal{C}^1_c(\R^2;\R^+),$
+\begin{eqnarray}
+\label{eq:kruzhkov}
+	&\int_{\R^+}\int_{\R}(\modulo{\rho -k}  \partial_t \varphi + \sgn{(\rho-k }) (f(\rho)-f(k))\partial_x\varphi)dxdt& \nonumber\\
+	 &+\int_{\R}\modulo{\rho^0-k}\varphi(0,x)dx\geq 0.&
+\end{eqnarray} 
+\end{defn}
+For further details regarding the theory of hyperbolic conservation laws we refer the reader to~\cite{garavello2006traffic,Evans1998}.
+
+\paragraph*{Networks}
+
+A network of hyperbolic conservation laws such as~(\ref{eq:cons})
+is defined as a set of $\nlinks$ links $\links=\intrange 1{\nlinks}$,
+with junctions $\jns$. Each junction $\jn\in\jns$ is defined
+as the union of  two non-empty sets: the set of $\ninc_{\jn}$ incoming links $\Inc\left(\jn\right)=\tuple{\jlink{\jn}1}{\jlink{\jn}{\ninc_{\jn}}}\subset\links$
+and the set of $\nout_{\jn}$ outgoing links $\Out\left(\jn\right)=\tuple{\jlink{\jn}{\ninc_{\jn}+1}}{\jlink{\jn}{\ninc_{\jn}+\nout_{\jn}}}\subset\links$.
+Each link $\link\in\links$ has an associated upstream junction $\jup{\link}\in\jns$
+and downstream junction $\jdown{\link}\in\jns$, and has an associated
+spatial domain $\left(0,L_{\link}\right)$ over which the evolution
+of the state on link $\link$, $\rho_{\link}\left(t,x\right)$, solves
+the Cauchy problem:
+
+\begin{equation}
+\begin{cases}
+\left(\rho_{\link}\right)_{t}+f\left(\rho_{\link}\right)_{x} & =0\\
+\rho_{\link}\left(0,x\right) & =\rho^0_{\link}\left(x\right)
+\end{cases}\label{eq:cauchy-i}
+\end{equation}
+where $\rho^0_{\link}\in BV\cap L_{\text{loc}}^{1}\left(L_i;\mathbb{R}\right)$
+is the initial condition on link $\link$. For simplicity of notation,
+this section considers a single junction $\jn\in\jns$ with $\Inc\left(\jn\right)=\left(1,\ldots,\ninc\right)$
+and $\Out\left(\jn\right)=\left(\ninc+1,\ldots,\ninc+\nout\right)$.
+\begin{rem}
+There is redundancy in the labeling of the junctions, if link
+$i$ is directly upstream of link $j$, then we have $\jdown{\link}=\jup j$.
+See Fig.~\ref{fig:Space-discretization-for}.
+\end{rem}
+
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.6\columnwidth]{previous-articles/adjoint/figs-gen/dx}
+% \caption{Space discretization for a link $\link\in\links$. Step size is uniform
+% $\Delta x$, with discrete value $\discrete{\xind}{\tind}$ representing
+% the state between $x^{\xind-1}$ and $x^{\xind}$.}
+% \label{fig:Space-discretization-for}
+% \end{figure}
+
 \subsection{Riemann Solvers}
+\label{sec:riemann-solvers}
+
+While the dynamics on each link $\rho_{\link}\left(t,x\right)$ is
+determined by~(\ref{eq:cauchy-i}), the dynamics at junctions
+still needs to be defined. This section describes \emph{Riemann solvers}, which provide the solution of the system at junction points. The solution of \emph{Riemann problems} between $1 \times 1$ junctions serve as building blocks for Riemann solvers, and thus we describe Riemann problems first.
+
+\begin{defn}
+\label{def:Riemann-Problem}Riemann Problem.
+
+A Riemann problem is a Cauchy problem~\eqref{eq:CP} with a piecewise-constant initial datum (called the Riemann datum):
+
+\begin{equation}
+\label{eqn:riemann-problem}
+\initstate(x)=\begin{cases}
+\rho_{-} & x<0\\
+\rho_{+} & x\ge 0
+\end{cases}
+\end{equation}
+%with one point of discontinuity, $x=\bar{x}$. Without loss of generality,
+%we may take $\bar{x}=0$.
+\end{defn}
+%It can be shown that the $\rho$ solution generated from the Riemann
+%data $\left(\rho_{-};\rho_{+}\right)$ has a constant value along
+%lines of constant $\frac{x}{t}$. 
+We denote the corresponding self-similar entropy weak solutions by $\ss{\frac{x}{t}}{\rho_{-}}{\rho_{+}}$.
+
+\begin{defn}
+\label{def:Riemann-Problem-Junction}
+Riemann problem at junctions. 
+
+A Riemann problem at $\jn$ is a Cauchy problem corresponding to an initial datum $\tuple{\initstate_{1}}{\initstate_{\ninc+\nout}}\in\mathbb{R}^{\ninc+\nout}$ which is constant on each link $\link.$
+
+\end{defn}
+
+
+\begin{defn}
+A Riemann solver is a map that assigns a solution to each Riemann initial data. For each junction $\jn$ it is a function
+
+\begin{eqnarray*}
+\RS: & \mathbb{R}^{m+n} & \rightarrow\mathbb{R}^{m+n}\\
+ & \tuple{\initstate_{1}}{\initstate_{\ninc+\nout}} & \mapsto\RS\tuple{\initstate_{1}}{\initstate_{\ninc+\nout}}=\tuple{\trace{\rho}_{1}}{\trace{\rho}_{\ninc+\nout}}
+\end{eqnarray*}
+where $\trace{\rho}_{\link}$ provides the trace for link $\link$
+at the junction for all time $t\ge0$.
+
+\end{defn}
+For a link $i\in\Inc\left(\jn\right)$,
+the solution $\rho_{i}\left(t,x\right)$ over its spatial domain
+$x<0$ is given by the solution to the following Riemann problem:
+
+\begin{equation}
+\begin{cases}
+\left(\rho_{\link}\right)_{t}+f\left(\rho_{\link}\right)_{x} & =0\\
+\rho_{\link}\left(0,x\right) & =\begin{cases}
+\initstate_{\link} & x<0\\
+\trace{\rho}_{\link} & x\ge0,
+\end{cases}
+\end{cases}\label{eq:riemann-problem}
+\end{equation}
+
+The Riemann problem for an outgoing link is defined similarly, with
+the exception that $\rho_{\link}\left(0,x>0\right)=\initstate_{\link}$
+and $\rho_{\link}\left(0,x\le0\right)=\trace{\rho}_{\link}$. 
+
+Fig.~\ref{fig:Solution-of-boundary}
+gives a depiction of Riemann solution at the junction.%
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\columnwidth]{previous-articles/adjoint/presentation/figs-gen/junctions-riemann-rs} 
+\caption{Solution of boundary conditions at junction. The boundary conditions
+$\tuple{\trace{\rho}_{1}}{\trace{\rho}_{5}}$ are produced by applying
+the Riemann solver to the initial conditions, $\tuple{\initstate_{1}}{\initstate_{5}}$.}
+\label{fig:Solution-of-boundary}
+\end{figure}
+
+
+Note that the following properties for the Riemann Solver holds:
+\begin{itemize}
+\item All waves produced from the solution to Riemann problems on all links,
+generated by the boundary conditions at a junction, must emanate out
+from the junction. Moreover, the solution to the Riemann problem
+on an incoming link must produce waves with negative speeds, while
+the solution on an outgoing link must produce waves with positive
+speed. 
+\item The sum of all incoming fluxes must equal the sum of all outgoing
+fluxes: 
+\[
+\sum_{i\in\Inc\left(\jn\right)}f\left(\trace{\rho}_{\link}\right)=\sum_{j\in\Out\left(\jn\right)}f\left(\trace{\rho}_{j}\right).
+\]
+This condition guarantees mass conservation at junctions.
+\item The Riemann solver must produce self-similar solutions, i.e. 
+\[
+\RS\left(\RS\tuple{\initstate_{1}}{\initstate_{\ninc+\nout}}\right)=\RS\tuple{\initstate_{1}}{\initstate_{\ninc+\nout}}=\tuple{\trace{\rho}_{1}}{\trace{\rho}_{\ninc+\nout}}
+\]
+\end{itemize}
+
+The justification for these conditions can be found in~\cite{garavello2006traffic}.
+
+The above conditions are not always sufficient to guarantee a unique Riemann solver. Additional conditions are added for specific applications to achieve uniqueness, chosen to model physical phenomena at junctions. In Section~\ref{sec:continuous-pde-ode-freeway-model}, we detail the additional conditions added to the ramp-metering solver which enforce flux maximization along the freeway mainline sections and specify a merging priority model for vehicles entering from the onramps.
 
 \subsection{Godunov Discretization}
+\label{sec:godunov-discretization}
 
-\section{Continuous and Discrete Traffic Model for Ramp Metering}
+In order to find approximate solutions we use the classical Godunov scheme~\cite{godunov1959}. We use the following notation: $x_{j+\frac{1}{2}}$ are the cell interfaces and   $t^{\tind}=k\Delta t$ the time with $\tind\in\mathbb{N}$ and $\xind\in\mathbb{Z}$. $x_{\xind}$ is the center of the cell, $\Delta x=x_{j+\frac{1}{2}}-x_{j-\frac{1}{2}}$ the cell width, and $\Delta t$ is the time step. 
+\paragraph{Godunov scheme for a single link.}
+
+The Godunov scheme is based on the solutions of exact Riemann problems. The main idea of this method is to approximate the initial datum by a piecewise constant function, then the corresponding Riemann problems are solved exactly and a global solution is found by piecing them together. Finally one takes the mean on the cell and proceed by iteration. Given $\rho(t,x),$ the cell average of $\rho$ at time $t^{\tind}$ in the cell $C_{\xind}=]x_{j-\frac{1}{2}},x_{j+\frac{1}{2}}]$ is given by 
+\begin{equation}
+\discrete{\xind}{\tind}=\dfrac{1}{\Delta x}\int_{\xdis{\xind-\frac{1}{2}}}^{\xdis{\xind+\frac{1}{2}}}\dvar(t^{k},x)dx.\label{eq:godproj}
+\end{equation}
+Then we proceed as follows:
+\begin{enumerate}
+	\item We solve the Riemann problem at each cell interface $x_{j+\frac{1}{2}}$ with initial data $(\dvar^{\tind}_{\xind},\dvar^{\tind}_{\xind+1}).$
+	\item Compute the cell average at time $t^{\tind +1}$ in each computational cell and obtain $\dvar^{\tind +1}_{\xind}.$ 
+\end{enumerate}
+
+We remark that waves in two neighbouring cells do not intersect before $\Delta t$ if the following Courant\textendash{}Friedrichs\textendash{}Lewy (CFL) condition holds, $\lambda^{\max}\le\frac{\Delta x}{\Delta t}$, where $\lambda^{\max}=\underset{a}{\max}|f'\left(a\right)|$ is the maximum wave speed of the Riemann solution at the interfaces.\\
+Godunov scheme can be expressed as follows:
+\begin{equation}
+\discrete{\xind}{\tind+1}=\discrete{\xind}{\tind}-\frac{\Delta t}{\Delta x}(\god(\discrete{\xind}{\tind},\discrete{\xind+1}{\tind})-\god(\discrete{\xind-1}{\tind},\discrete{\xind}{\tind})),\label{eq:godscheme}
+\end{equation}
+where $g^{G}$ is the Godunov numerical flux given by
+
+\begin{eqnarray*}
+\god: & \mathbb{R}\times\mathbb{R} & \rightarrow\mathbb{R}\\
+ & \left(\discrete{\xind}{},\discrete{\xind+1}{}\right) & \mapsto\god\left(\discrete{\xind}{},\discrete{\xind+1}{}\right)=f(W_{R}(0;\discrete{\xind}{},\discrete{\xind+1}{})).
+\end{eqnarray*}
+
+where $W_{R}$ is as defined in Definition~\ref{def:Riemann-Problem}.
+
+
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=0.6\columnwidth]{previous-articles/adjoint/figs-gen/dx}
+\par\end{centering}
+
+\caption{Space discretization for a link $\link\in\links$. Step size is uniform
+$\Delta x$, with discrete value $\discrete{\xind}{\tind}$ representing
+the state between $x^{\xind-1}$ and $x^{\xind}$.\label{fig:Space-discretization-for}}
+
+
+\end{figure}
+
+
+\begin{figure}
+\begin{centering}
+\includegraphics[width=0.5\columnwidth]{previous-articles/adjoint/figs-gen/dx-to-riemann}
+\par\end{centering}
+
+\caption{Self-similar solution for Riemann problem with initial data $\left(\discrete{\xind}{\tind},\discrete{\xind+1}{\tind}\right)$.
+The self-similar solution at $\frac{x}{t}=0$ for the top diagram
+(i.e. $\ss 0{\discrete{\xind}{\tind}}{\discrete{\xind+1}{\tind}}$),
+gives the flux solution to the discretized problem in the bottom diagram.\label{fig:Self-similar-solution-for}}
+\end{figure}
+
+
+
+\paragraph{Godunov scheme at junctions.\label{par:Godunov-scheme-at}}
+
+The scheme just discussed applies to the case in which a single cell
+is adjacent to another single cell. Yet, at junctions, a cell may
+share a boundary with more than one cell. A more general Godunov flux
+can be derived for such cases. For incoming links near the junction,
+we have: 
+\begin{align*}
+\discrete{\length_{\link}^{\Delta}}{\tind+1}=\discrete{\length_{\link}^{\Delta}}{\tind}-\dfrac{\Delta t}{\Delta x}(f(\trace{\dvar}_{\length_{\link}^{\Delta}}^{\tind})-\god(\discrete{L_{i}^{\Delta}-1}{\tind},\discrete{L_{i}^{\Delta}}{\tind})), &  & \link\in\left\{ 1,\ldots,\ninc\right\} 
+\end{align*}
+where $L_i^{\Delta}$ are the number of cells for link $i$ (see Fig.~\ref{fig:Space-discretization-for}) and $\hat{\dvar}_{i}^{\tind}$ is the solution of the Riemann solver
+$\RS\tuple{\discrete 1{\tind}}{\discrete{\ninc+\nout}{\tind}}$ for
+link $\link$ at the junction. The same can be done for the outgoing
+links: 
+\begin{align*}
+\discrete 1{\tind+1}=\discrete 1{\tind}-\dfrac{\Delta t}{\Delta x}(\god(\discrete 1{\tind},\discrete 2{\tind})-f(\trace{\dvar}_{1}^{\tind})), &  & \link\in\left\{ \ninc+1,\ldots,\ninc+\nout\right\} 
+\end{align*}
+
+\begin{rem}
+Using the Godunov scheme, each mesh grid at a given $t^{\tind}$ can
+be seen as a node for a 1-to-1 junction with one incoming and one
+outgoing link. It is therefore more convenient to consider that every
+discretized cell is, rather, a link with both an upstream and downstream
+junction. Thus, we consider networks in which the state of each link
+$\link\in\links$ at a time-step $k\in\intrange 0{\ntime-1}$ is represented
+by the single discrete value $\discrete{\link}{\tind}$.
+\end{rem}
+The previous remark allows us to develop a generalized update step
+for all discrete state variables. We first introduce a definition
+in order to reduce the cumbersome nature of the preceding notation.
+Let the state variables adjacent to a junction $\jn\in\jns$ at a
+time-step $\tind\in\intrange 0{\ntime-1}$ be represented as $\juncstate{\jn}{\tind}\defeq\tuple{\discrete{\link_{\jn}^{1}}{\tind}}{\discrete{\link_{\jn}^{\ninc_{\jn}+\nout_{\jn}}}{\tind}}$.
+Similarly, we let the solution of a Riemann solver be represented
+as $\junctrace{\jn}{}\defeq\RS\left(\juncstate{\jn}{}\right)$. Then,
+for a link $\link\in\links$ with upstream and downstream junctions,
+$\jup{\link}$ and $\jdown{\link}$, and time-step $\tind\in\left\{ 0,\ldots,\ntime-1\right\} $,
+the update step becomes:
+
+\begin{align}
+\discrete{\link}{\tind+1} & =\discrete{\link}{\tind}-\dfrac{\Delta t}{\Delta x}\left(f\left(\left(\RS\left(\juncstate{\jdown{\link}}{\tind}\right)\right)_{\link}\right)-f\left(\left(\RS\left(\juncstate{\jup{\link}}{\tind}\right)\right)_{\link}\right)\right)\nonumber \\
+ & =\discrete{\link}{\tind}-\dfrac{\Delta t}{\Delta x}\left(f\left(\left(\junctrace{\jdown{\link}}{}\right)_{\link}\right)-f\left(\left(\junctrace{\jup{\link}}{}\right)_{\link}\right)\right)\label{eq:reg-update}
+\end{align}
+where $\left(s\right)_{i}$ is the $i$th element of the tuple $s$.
+This equation is thus a general way of writing the Godunov scheme
+in a way which applies everywhere, including at junctions.
+
+
+\paragraph{Working directly with flux solutions at junctions.\label{par:Composing-the-Riemann}}
+
+The equations can be simplified if we do not explicitly represent
+the solution of the Riemann solver, $\junctrace{\jn}{}$, and, instead,
+directly calculate the flux solution from the Riemann data. We denote
+this direct computation by $\god_{\jn}$, the Godunov flux solution
+at a junction:
+
+\begin{eqnarray}
+\god_{\jn}: & \mathbb{R}^{\ninc_{\jn}+\nout_{\jn}} & \rightarrow\mathbb{R}^{\ninc_{\jn}+\nout_{\jn}}\nonumber \\
+ & \juncstate{\jn}{} & \mapsto f\left(RS\left(\juncstate{\jn}{}\right)\right)=\left(f\left(\trace{\dvar}_{1}\right),\ldots,f\left(\trace{\dvar}_{\ninc+\nout}\right)\right)\label{eq:god-jn}.
+\end{eqnarray}
+This gives a simplified expressions for the update step:
+
+\begin{equation}
+\discrete{\link}{\tind+1}=\discrete{\link}{\tind}-\dfrac{\Delta t}{\Delta x}\left(\left(\god_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind}\right)\right)_{\link}-\left(\god_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind}\right)\right)_{\link}\right)\label{eq:composed-flux}.
+\end{equation}
+
+
+
+\paragraph{Full discrete solution method.\label{par:Full-solution-method}}
+
+We assume a discrete scalar hyperbolic network of PDEs with links
+$\links$ and junctions $\jns$, and a known discrete state at time-step
+$\tind$, $\left(\initdiscrete_{\link}^{\tind}:\link\in\links\right)$.
+The solution method for advancing the discrete system forward one
+time-step is given in Algorithm~(\ref{algo:rs-alg}), or alternatively
+Algorithm~(\ref{algo:god-alg}).
+
+\begin{algorithm}[h]
+\caption{\texttt{Riemann solver update procedure}}
+
+
+\lstinputlisting[basicstyle={\ttfamily\footnotesize},breaklines=true,label={algo:rs-alg},mathescape=true]{previous-articles/adjoint/rs-alg}
+\end{algorithm}
+
+
+Algorithm~\ref{algo:rs-alg} takes as input the state at a time-step
+$\tind$ for all links $\left(\discrete{\link}{\tind}:\link\in\links\right)$
+and returns the state advanced by one time-step $\left(\discrete{\link}{\tind+1}:\link\in\links\right)$.
+The algorithm first iterates over all junctions $\jn$, calculating
+all the boundary conditions, $\junctrace{\jn}{\tind}$. Then, the
+algorithm iterates over all links $\link\in\links$ to compute the
+updated state $\discrete{\link}{\tind+1}$ using the previously computed
+boundary conditions, as in~\ref{eq:reg-update}.
+
+\begin{algorithm}[h]
+\caption{\texttt{Godunov junction flux update procedure}}
+
+
+\lstinputlisting[basicstyle={\ttfamily\footnotesize},breaklines=true,label={algo:god-alg},mathescape=true]{previous-articles/adjoint/god-alg}
+\end{algorithm}
+
+
+Algorithm~\ref{algo:god-alg} is similar to Algorithm~\ref{algo:rs-alg},
+except that the boundary conditions $\junctrace{\jn}{\tind}$ are
+not explicitly computed, but rather the Godunov flux solution is used
+to update the state, as in~\ref{eq:composed-flux}. Algorithm~\ref{algo:god-alg}
+is more suitable if a Godunov flux solution is derived for solving
+junctions, while Algorithm~\ref{algo:rs-alg} is more suitable if
+one uses a Riemann solver at junctions.
+
+
+\section{Continuous and Discrete Traffic Model for Freeway Control}
 \label{sec:continous-and-discrete-traffic-model-for-ramp-metering}
 
-\subsection{Overview on Traffic Models and Ramp Metering}
+In this section, we derive and motivate the continuous freeway network traffic model and discuss its improvements over existing models. We also present the discretized version of the continuous model, which is used extensively in applications in the remainder of the thesis. 
 
 \subsection{LWR Equation}
 
-\subsection{Flow Conservation at Network Boundaries}
+The Lighthill-Whitham-Richard (LWR) equation~\cite{lighthill1955kinematic,richards1956shock} is a scalar conservation law used to represent the evolution of vehicle density on a section of linear roadway. The distinguishing assumptions in the LWR model deal with the flux function, $f\left(\rho\right)$, referred to as the \emph{fundamental diagram of traffic}. Namely, we assume the following rules on $f$:
+
+\begin{enumerate}
+	\item $f\left(\rho \right) = \rho v\left(\rho \right)$, where $v$ is the velocity of the vehicle density.
+	\item $v\left(\rho \right)$ is a decreasing function of $\rho$.
+	\item $f$ is defined over the values $\left[0,\rho^{\max}\right]$, where $\rho^{\max}$ is considered the \emph{jam} density.
+	\item $f\left(0\right) = f\left(\rho^{\max}\right) = 0$.
+\end{enumerate}
+
+The four rules above fit well with our intuition of road traffic. Rules 1 and 2 state that the flux varies as the velocity varies, and that as the roadway gets more congested, the speed of the vehicles will only decrease. Rule 3 fits with the physical interpration of vehicle as being non-negative, and that there must be an upper limit of vehicle density (due to minimum car lengths). Rule 4 states that no vehicles will have no flow, and that flow completely breaks down at the maximum density.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{diagrams/fd}
+	\caption{The Greenshields (quadratic) flux function is one example of a fundamental diagram.}
+	\label{fig:greenshields-fd}
+\end{figure}
+
+An example of a quadratic fundamental diagram, known as the \emph{Greenshields} flux function, is given in Figure~\ref{fig:greenshields-fd}. The term \emph{critical density}, $\rho^{\text{cr}}$, is reserved for the density value where the maximum vehicle flux, $f^{\max}$, is obtained. The maximum flux can also be viewed as the \emph{capacity} of the road under consideration, where demand in excess of the maximum flux will lead to congestion and traffic jams.
 
 \subsection{Continuous PDE-ODE Freeway Model}
+\label{sec:continuous-pde-ode-freeway-model}
+
+We concern ourselves with a \emph{linear} freeway section, meaning that we are only interested in one freeway mainline, with any number of onramps and offramps coming together at junctions. While the approach can be readily extended to mainline-to-mainline junctions, we exclude the analysis for the sake of presentation.
+
+Thus, a freeway network can be viewed as a sequence of junctions, where each junction contains four links: an upstream mainline, a downstream mainline, an onramp and an offramp, as visualized in Figure~\ref{fig:simple-junction}. Note that a single mainline link (i.e. a stretch of mainline in between two junction points) will serve as the upstream mainline of one junction and the downstream mainline of the subsequent junction.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{diagrams/simple-junction}
+	\caption{A freeway junction consisting of an upstream mainline $I_1$, downstream mainline $I_2$, onramp $R_1$ and offramp $R_2$.}
+	\label{fig:simple-junction}
+\end{figure}
+
+\subsubsection{Weak Boundary Conditions and Vehicle Conservation}
+
+In reality, one cannot consider the evolution of a stretch of freeway in complete isolation with respect to its surrounding traffic network, as the dynamics are coupled at every junction point via Riemann solvers (Section~\ref{sec:riemann-solvers}). Thus, to account for the behavior at the extremities of the network, one must consider boundary conditions.
+
+The standard approach to boundary conditions is to prescribe a time-varying density $\rho^0\left(t\right)$ at each extremity point of the network. Due to the concave shape of the fundamental diagram of traffic, density waves may propogate from within the system outwards to the network extremeties, in both the upstream and downstream directions.
+
+As an example, one could consider the behavior upstream of onramp $R_1$ as being the solution of a Riemann problem of the form in Equation~\eqref{eqn:riemann-problem}, where $\rho_-$ is the upstream boundary condition, and $\rho_+$ is the state within an onramp. Whenever $f\left(\rho_+\right)<f\left(\rho_-\right)$ and $\rho_+ > \rho^{\text{cr}}$, then it can be shown~\cite{lebacque1996godunov,garavello2006traffic} that the vehicle flux across the boundary is $f\left(\rho_+\right)$ and is thus insensitive to the value of $f\left(\rho_-\right)$. One can view this event as a \emph{loss of information} at the left boundary of the network, as the backward-moving congestion wave prevented information about the boundary condition from entering the network. Systems which possess this property are said to have \emph{weak boundary conditions}~\cite{strub2006weak}.
+
+This property of traffic network modeling is undesirable in traffic management applications, as the flux of vehicles at network boundaries is dependent upon the state of the system, which in turn is dependent upon the control scheme being applied. Summarizing, different control schemes can lead to different vehicle demands, which is not a realistic assumption, can actually be exploited by control schemes. As the goal of the current traffic model is to be used in control applications, we develop an alternative approach which effectively turns the weak boundary conditions into \emph{strong} boundary conditions which guarantee vehicle flux conservation.
+
+\subsubsection{Onramps as ODE Buffers}
+
+Instead of modeling boundary conditions as vehicle densities, we consider a time-varying boundary \emph{flux}, $\demandsym\left(t\right)$ entering onramp $R_1$ and make the simplifying assumption that the offramp $R_2$ has infinite capacity and thus does not influence the evolution of the system\footnote{Motivation behind the offramp model is the focus on ramp-metering applications in this thesis, and the general lack of available sensor data on freeway offramps, making accurate modeling of offramp state difficult.}.
+
+The onramp $R_1$ stores the boundary flux in a vehicle \emph{buffer} modeled by the following ordinary differential equation (ODE):
+
+\begin{equation}
+\label{eqn:ode-buffer}
+\Dfrac{l\left(t\right)}{t} = \demandsym\left(t\right) - r\left(t\right),\quad t\in \R^+,
+\end{equation}
+
+where $r$ is the flux of vehicles exiting the onramp onto the downstream mainline $I_2$.
+
+The onramp ODE models the conservation of boundary flux in a \emph{vertical} buffer of infinite capacity, as opposed to a spatially distributed \emph{horizontal} queue with finite capacity, until there is enough capacity on the downstream mainline to empty the queue.
+
+As the offramp $R_2$ possesses no state, it does not require an ODE buffer. The behavior of vehicles at the offramp is captured via a \emph{split ratio} parameter $\splitratio \left(t\right) \in \left[0,1\right]$ which specifies the fraction of vehicles which move from $I_1$ to $I_2$, where $1 - \splitratio\left(t\right)$ is the fraction of vehicles leaving the freeway from $I_1$ to $R_2$. It is assumed that no vehicles from $R_1$ immediately exit to $R_2$.
+
+Thus, the Cauchy problem we wish to solve across the four-link system is as follows:
+
+\begin{align}
+\partial_t \rho_i + \partial_x f\left(\rho_i\right) = 0, & \quad \left(t,x\right) \in \R^+ \times I_i, \, i = 1,2 \\
+\Dfrac{l\left(t\right)}{t} = \demandsym\left(t\right) - r\left(t\right), & \quad t\in \R^+ \\
+\rho_i \left(0,x\right) = \rho_{i,0} \left(x\right), & \quad \text{On } I_i\, i = 1,2 \\
+l\left(0\right) = l_0, &
+\end{align}
+
+where $\rho_{i,0}$ is the initial condition on the mainline links $I_i$ and $l_0$ is the initial number of vehicles in $R_1$.
+
+\subsubsection{Riemann Solver for PDE-ODE Model}
+
+We assume for our applications that the fundamental diagram has a trapezoidal form as depicted
+in Fig.~\ref{fig:Fundamental-diagram-with}, where $v$ is the \emph{free-flow} speed of traffic and $w$ is referred to as the \emph{congestion wave} speed.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.4\columnwidth]{previous-articles/adjoint/figs-gen/fd}
+\caption{Fundamental diagram (the name of the flux function in transportation
+literature) with free-flow speed $v$, congestion wave speed $w$,
+max flux $F^{\max}$, critical density $\density^{c}$, and max density
+$\density^{\max}$.\label{fig:Fundamental-diagram-with}}
+\end{figure}
+
+There are many potential Riemann solvers that satisfy the properties required in Section~\ref{sec:riemann-solvers}.
+To guarantee a unique solution for each Riemann datum, we add two modeling decisions to solve the junction. Let $\rho_1^+$ and $\rho_2^-$ be the densities on $I_1$ and $I_2$ (respective) adjacent to the junction. Let $l$ be the queue length on $R_1$. Then let $\hat{\rho}_1^+$, $\hat{\rho}_2^-$ be the resulting Riemann solutions for $I_1$  and $I_2$, while $\hat{r}$ is the resulting Riemann flux from $R_1$. The additional modeling decisions are then:
+\begin{enumerate}
+\item The flux solution maximizes the outgoing mainline flux $f\left(\hat{\rho}_1^+\right)$
+\item When (1) does not give a unique solution, the Riemann solver attempts to satisfy $f\left(\hat{\rho}_2^-\right)=p f\left(\hat{\rho}_1^+\right)$,
+where $p\in\mathbb{R}_{+}$ is a merging parameter. The $p$ parameter sets the priority of flow from $I_1$ over the flow from $R_1$ when there is limited capacity. Since (1) permits multiple flux solutions at the junction, (2) is necessary to obtain a unique solution.
+\end{enumerate}
+
+With the necessary restrictions on the Riemann solver in place, we outline the solution method for the PDE-ODE junction problem. The well-posedness and self-similarity proofs are given in~\cite{delle2014pde}. The method closely follows that of general LWR network solutions presented in~\cite{garavello2006traffic}.
+
+For a Riemann datum of $\left(\rho_1^+, \rho_2^-, l\right)$, we introduce the following intermediate variables:
+
+\begin{itemize}
+	\item $\delta = \min\left(F^{\max}, v \rho_1^+\right)$, the maximum allowable flux out of $I_1$.
+	\item $d =
+	\begin{cases}
+	F^{\max} & \text{if } l > 0 \\
+	\min\left(F^{\max}, D\left(t\right)\right) & \text{if } l = 0
+	\end{cases}$, the maximum allowable flux out of $R_1$
+	\item $\sigma = \min\left(F^{\max}, w \left(\rho^{\max} - \rho_2^-\right)\right)$, the maximum allowable flux into $I_2$.
+\end{itemize}
+
+The maximal flux into $I_2$ is computed as $f_2 = \min\left(\beta\delta + d, \sigma\right)$, the minimum between the upstream \emph{demand}, and the downstream \emph{supply}.
+
+\begin{figure}
+\subfloat[Case 1: Priority violated due to limited upstream mainline demand
+entering downstream mainline.]{\includegraphics[width=0.3\columnwidth]{previous-articles/adjoint/figures/flux-sln-1}
+}\hfill%
+\subfloat[Case 2: Priority violated due to limited on ramp demand entering downstream
+mainline.]{\includegraphics[width=0.3\columnwidth]{previous-articles/adjoint/figures/flux-sln-2-thesis}
+}\hfill%
+\subfloat[Case 3: Priority rule satisfied due to sufficient demand from both
+mainline and on ramp.]{\includegraphics[width=0.3\columnwidth]{previous-articles/adjoint/figures/flux-sln-3-thesis}
+}
+
+\caption{Godunov junction flux solution for freeway model. The rectangular region represents the feasible flux
+values for $I_1$ ($\beta \delta$) and $R_1$ ($d$) as determined by the upstream demand, while
+the line with slope $\frac{1}{\beta}$
+represents feasible flux values as determined by mass balance. The
+$\beta f_1$
+term accounts for only the flux out of $I_1$
+that stays on the mainline. The flux solution, represented by the
+red circle, is the point on the feasible region that minimizes the
+distance from the priority line $f_1 = p r$.}
+\label{fig:Godunov-junction-flux}
+\end{figure}
+
+To compute the flux leaving $I_1$, we refer to Figure~\ref{fig:Godunov-junction-flux}. The balance between the fluxes $\beta f_1$ (resp. $r$) entering $I_2$  from $I_1$ (resp. $R_1$) must minimize the deviation from the equation $\beta f_1 = p r$. Since flow must be conserved across the junction, we also have the constraint that the $\left(\beta f_1, r\right)$ flows must sum to $f_2$, and thus the resultant flow pair $\left(f_1, r\right)$ must lie on the line $f_2 = \beta f_1 + r$, depicted in Figure~\ref{fig:Godunov-junction-flux}. This results in three distinct cases for the $f_1$ solution.
+
+\begin{itemize}
+	\item In Case 1, strict satisfaction of the priority line would lead to an $f_1$ value greater than $\delta$ when at the intersection with the supply line $f_2 = \beta f_1 + r$. Since $\delta$ is the maximum allowable flux from $I_1$, we can feasibly exactly satisfy the priority. Thus to minimize the deviation from the priority line, we select $f_1 = \delta$.
+	\item In Case 2, the priority dictates a flux from $R_1$ in excess of $d$. To minimize deviation from prioirity, we select $r = d$, and $\beta f_1 = f_2 - r$.
+	\item In Case 3, strict satisfaction of the priority line gives a feasible $f_1$ and $r$ solution, and thus we have $f_1 = \frac{f_2}{\beta \left(1 + p^{-1}\right)}$.
+\end{itemize}
+
+
+Once we have determined $f_1$ and $f_2$, then flux balance across the junction dictates that $r = f_2 - \beta f_1$.
+
+To satisfy the Riemann solver condition that only waves that travel outward from the junction may be created, we devise a mapping from the resultant mainline fluxes $\left(f_1, f_2\right)$ to the Riemann solver densities $\left(\hat{\rho}_1^+, \hat{\rho}_2^-\right)$. The following conditions uniquely determine $\left(\hat{\rho}_1^+, \hat{\rho}_2^-\right)$:
+
+\begin{align}
+\hat{\rho}_1^+ \in
+\begin{cases}
+\left\{\rho_1^+\right\}\cup ]\tau(\rho_1^+),\rho^{\max}] & \text{if } 0 \le \rho_1^+ \le \rho^\text{cr}, \\
+\left[\rho^{\text{cr}}, \rho^{\max}\right] & \text{if }  \rho^\text{cr} \le  \rho_1^+ \le \rho^{\max};
+\end{cases} &\quad  & f\left(\hat{\rho}_1^+\right) = f_1 \\
+\hat{\rho}_2^- \in
+\begin{cases}
+\left[0,\rho^{\text{cr}}\right] & \text{if } 0 \le \rho_2^- \le \rho^\text{cr}, \\
+ \left\{\rho_2^-\right\}\cup [0,\tau(\rho_2^-)]
+ & \text{if }  \rho^\text{cr} \le  \rho_2^- \le \rho^{\max};
+\end{cases} &\quad  & f\left(\hat{\rho}_2^-\right) = f_2,
+\end{align}
+
+where $\tau$ satisfies the following:
+
+\begin{enumerate}
+	\item $f(\tau(\rho)) = f(\rho)$
+	\item $\tau(\rho) \neq \rho$
+\end{enumerate}
 
 \subsection{Discrete Freeway Model}
+
+The previous section derives a continuous traffic model based on the principle of mass conservation and matching the empirical flux-density relationship. Furthermore, the model possesses strong boundary conditions, allowing for the total flux through the network to be independent of any varying control parameters.
+
+In order to develop computationally efficient optimization and control techniques, we work in the discrete time and space domain. As detailed in Section~\ref{sec:godunov-discretization}, we use the Godunov discretization technique.
+
+We now consider a freeway network with multiple junctions, as opposed to the presentation of the continuous model, which only considered a single junction.
+
+Consider a freeway section with links $\links=\intrange 1{2\nlinks}$
+with a linear sequence of mainline links $=\intrange{2,4}{2\nlinks}$
+and connecting on ramp links $=\intrange{1,3}{2\nlinks-1}$. At discrete
+time $t=\tind\Delta t,0\le\tind\le\ntime-1$, mainline link $2\link\in\links,i\in\intrange 1{\nlinks}$
+has a downstream junction $\jdown{2\link}=\jup{2\left(\link+1\right)}$
+and an upstream junction $\jup{2\link}=\jdown{2\left(\link-1\right)}$,
+while on ramp $2\link-1\in\links,i\in\intrange 1{\nlinks}$ has a downstream
+junction $\jdown{2\link-1}=\jup{2\link}=\jdown{2\left(\link-1\right)}$
+and an upstream junction $\jup{2\link-1}$.
+
+The off-ramp directly downstream of link $2\link,i\in\intrange 1{\nlinks}$
+has, at time-step $\tind$, a split ratio $\splitratio_{2\link}^{\tind}$
+Each link $\link\in\links$ has a discretized state value $\densitydiscrete{\link}{\tind}\in\mathbb{R}$
+at each time-step $\tind\in\intrange 0{\ntime-1}$, that represents
+the density of vehicles on the link. These values are depicted in
+Fig~\ref{fig:Freeway-network-junction}. Junctions that have no
+on ramps can be effectively represented by adding an on ramp with no
+demand while junctions with no off-ramps can be represented by setting
+the split ratio to 1.
+\begin{figure}
+\centering
+\includegraphics[width=1\columnwidth]{previous-articles/adjoint/figs-gen/rm-junction-2}
+\caption{Freeway network model. For a junction $\jdown{2\link-1}=\jdown{2\left(\link-1\right)}=\jup{2\link}$
+at time-step $\tind\in\intrange 0{\ntime-1}$, the upstream mainline
+density are represented by $\densitydiscrete{2\left(\link-1\right)}{\tind}$,
+the downstream mainline density by $\densitydiscrete{2\link}{\tind}$,
+the on ramp density by $\densitydiscrete{2\link-1}{\tind}$, and the
+off-ramp split ratio by $\splitratio_{2\left(\link-1\right)}^{\tind}$.}
+\label{fig:Freeway-network-junction}
+\end{figure}
+
+As control input which is used extensively in applications in proceeding sections, an on ramp $2\link-1\in\links,\link\in\intrange 1{\nlinks}$
+at time-step $k\in\intrange 0{\ntime-1}$ has a metering rate $\ramp_{2\link-1}^{\tind}\in\left[0,1\right]$
+which limits the flux of vehicles leaving the on ramp. Intuitively,
+the metering rate acts as a fractional decrease in the flow leaving
+the on ramp and entering the mainline freeway. The domain of the metering
+control is to force the control to neither impose negative flows nor
+send more vehicles than present in a queue. Its mathematical model
+is expressed in~\eqref{eq:ramp-eqn}.
+
+For notational simplicity we define the set of densities of links
+incident to $\jup{2\link}=\jdown{2\left(\link-1\right)}$ at time-step
+$\tind$ as $\juncstate{\jup{2\link}}{\tind}=\left\{ \discrete{2\left(\link-1\right)}{\tind},\discrete{2i-1}{\tind},\discrete{2\link}{\tind}\right\} $. For $k\in\intrange 1{\ntime-1}$,
+the mainline density $\discrete{2\link}{\tind}$ using the Godunov
+scheme from~\eqref{eq:godscheme} is given by:
+
+\begin{eqnarray}
+\syseq_{2\link}^{\tind}(\state,\control)= & \discrete{2\link}{\tind}-\discrete{2\link}{\tind-1} & +\dfrac{\Delta t}{\length_{2\link}}\left(\god_{\jdown{2\link}}\left(\juncstate{\jdown{2\link}}{\tind-1},\ramp_{2\link+1}^{\tind-1}\right)\right)_{2\link}\label{eq:rho-update}\\
+&  & -\dfrac{\Delta t}{\length_{2\link}}\left(\god_{\jup{2\link}}\left(\juncstate{\jup{2\link}}{\tind-1},\ramp_{2\link-1}^{\tind-1}\right)\right)_{2\link}\nonumber \\
+= & \discrete{2\link}{\tind}-\discrete{2\link}{\tind-1} & +\frac{\Delta t}{\length_{2\link}}\left(\fout{2\link}{\tind-1}-\fin{2\link}{\tind-1}\right)=0
+\end{eqnarray}
+where we have introduced some substitutions to reduce the notational
+burden of this section: $\fout{\link}{\tind}$ is the Godunov flux
+at time-step $\tind$ exiting a link $\link$ at the downstream boundary
+of the link, and $\fin{\link}{\tind}$ is the Godunov flux entering
+the link at the upstream boundary.
+
+We also make the assumption that on ramps have infinite capacity and
+a free-flow velocity $\ffspeed_{2\link-1}=\frac{\length_{2\link-1}}{\Delta t}$
+to prevent the ramp congestion from blocking demand from ever entering
+the network. Since the on ramp has no physical length, the length
+is chosen arbitrarily and the ``virtual'' velocity chosen above
+is chosen to replicate the dynamics in~\cite{delle2014pde}. We can
+then simplify the on ramp update equation to be:
+
+\begin{eqnarray}
+\syseq_{2\link-1}^{\tind}(\state,\control) & = & \discrete{2\link-1}{\tind}-\discrete{2\link-1}{\tind-1}-\frac{\Delta t}{\length_{2\link-1}}\left(\left(\god_{\jup{2\link}}\left(\juncstate{\jup{2\link}}{\tind-1},\ramp_{2\link-1}^{\tind-1}\right)\right)_{2\link-1}-\boundaryDemand{2\link-1}{\tind-1}\right)\label{eq:on ramp-update}\\
+& = & \discrete{2\link-1}{\tind}-\discrete{2\link-1}{\tind-1}-\frac{\Delta t}{\length_{2\link-1}}\left(\fout{2\link-1}{\tind-1}-\boundaryDemand{2\link-1}{\tind-1}\right)=0
+\end{eqnarray}
+where $\boundaryDemand{2\link-1}{\tind-1}$ is the on ramp \emph{flux
+}demand, and the same notational simplification has been used for
+the downstream flux. This formulation results in ``strong'' boundary
+conditions at the on ramps which guarantees all demand enters the network.
+
+The on ramp model in~\eqref{eq:on ramp-update} differs from~\cite{delle2014pde}
+in that we model the on ramp as a discretized PDE with an infinite
+critical density, while~\cite{delle2014pde} models the on ramp
+as an ODE ``buffer''. While both models implement strong boundary
+conditions, the discretized PDE model makes the freeway network more
+aligned with the PDE network framework presented in this section.
+
+\paragraph{Discrete Model Equations}
+
+
+
+The following systems of equations give the flux
+solution of the Riemann solver at time-step $k\in\intrange 1{\ntime-1}$
+and junction $\jup{2\link}$ for $\link\in\intrange 1{\nlinks}$:
+
+\begin{eqnarray}
+\demand_{2\left(\link-1\right)}^{\tind} & = & \min\left(\ffspeed_{2\left(i-1\right)}\densitydiscrete{2\left(\link-1\right)}{\tind},F_{2\left(\link-1\right)}^{\max}\right)\label{eq:first-ramp}\\
+\supply_{2\link}^{\tind} & = & \min\left(\congspeed_{2i}\left(\density_{2i}^{\max}-\densitydiscrete{2\link}{\tind}\right),F_{2i}^{\max}\right)\label{eq:supply}\\
+\rampDemand_{2\link-1}^{\tind} & = & \ramp_{2\link-1}^{\tind}\min\left(\frac{\length_{2\link-1}}{\Delta t}\densitydiscrete{2\link-1}{\tind},F_{2i-1}^{\max}\right)\label{eq:ramp-eqn}\\
+\fin{2\link}{\tind} & = & \min\left(\splitratio_{2\left(\link-1\right)}^{\tind}\demand_{2\left(\link-1\right)}^{\tind}+\rampDemand_{2\link-1}^{\tind},\supply_{2\link}^{\tind}\right)\label{eq:fin}\\
+\fout{2\left(\link-1\right)}{\tind} & = & \begin{cases}
+\demand_{2\left(\link-1\right)}^{\tind} & \frac{p_{2(\link-1)}\fin{2\link}{\tind}}{\splitratio_{2\left(\link-1\right)}^{\tind}\left(1+p_{2(\link-1)}\right)}\ge\demand_{2\left(\link-1\right)}^{\tind}\hfill\text{[Case 1]}\\
+\frac{\fin{2\link}{\tind}-\rampDemand_{2\link-1}^{\tind}}{\splitratio_{2\left(\link-1\right)}^{\tind}} & \frac{\fin{2\link}{\tind}}{1+p_{2(\link-1)}}\ge\rampDemand_{2\link-1}^{\tind}\hfill\text{[Case 2}]\\
+\frac{p_{2(\link-1)}\fin{2\link}{\tind}}{\left(1+p_{2(\link-1)}\right)\splitratio_{2\left(\link-1\right)}^{\tind}} & \text{otherwise}\hfill[\text{Case 3]}
+\end{cases}\label{eq:merge}\\
+\fout{2\link-1}{\tind} & = & \fin{2\link}{\tind}-\splitratio_{2\left(\link-1\right)}^{\tind}\fout{2\left(\link-1\right)}{\tind}\label{eq:last-ramp}
+\end{eqnarray}
+where, for notational simplicity, at the edges of of the range for
+$\link$, any undefined state values (e.g. $\densitydiscrete 0{\tind}$)
+are assumed to be zero by convention. 
+
+Note that the equations can be solved sequentially via forward substitution. Also, we do not include
+the flux result for off-ramps explicitly here since its value has no
+bearing on further calculations, and we will henceforth ignore its
+calculation. To demonstrate that indeed the flux solution satisfies
+the flux conservation property, the off-ramp flux is trivially determined
+to be $\splitratio_{2\left(\link-1\right)}^{\tind}\fout{2\left(\link-1\right)}{\tind}$.

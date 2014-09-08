@@ -1,0 +1,191 @@
+\documentclass[10pt]{article}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{latexsym}
+%\usepackage{showkeys}
+\usepackage[dvips]{color}
+\usepackage{epsfig}
+\usepackage{amsfonts,amsmath}
+\usepackage{latexsym}
+\usepackage{graphics,color,graphicx,shortvrb}
+\usepackage{textcomp}
+\usepackage{floatflt}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{layout}
+%\usepackage{psfig}
+\usepackage{epsf}
+\usepackage{epsfig,color}
+%\usepackage{pst-all}
+%\usepackage{psfig}
+%\usepackage[dvips]{graphics}
+%\usepackage[dvips]{graphicx}
+\usepackage{amsthm}
+\usepackage{color}
+\usepackage{etoolbox}
+\newtoggle{flattery}
+\togglefalse{flattery}
+% \toggletrue{flattery}
+
+
+\newcommand{\JOTA}{Journal on Optimization Theroy and Applications}
+
+%\parskip = 10pt
+\topmargin = -50 pt
+%\leftmargin = -0.5 in
+%\rightmargin= 1 in
+\oddsidemargin =  -0.10 in \textheight = 9.5 in \textwidth = 6.5in
+\setlength{\parindent}{0mm} \evensidemargin =  -0.10 in
+
+\newcommand{\Example}[1]{
+\noindent {\bigskip
+
+\noindent \bf \textsf{Example ---}} {\normalsize{#1}} \hfill
+$\square$
+
+\bigskip\normalsize}
+
+\newcommand{\minititle}[1]{\textsf{\textbf{{#1}.}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\hatX}{\hat{X}}
+
+\newcommand{\sskip}{\vspace{0.05in}}
+
+\newenvironment{denselist}{\begin{list}{$\bullet$}%
+{\setlength{\itemsep}{0ex} \setlength{\topsep}{0ex}
+\setlength{\parsep}{0pt} \setlength{\itemindent}{0pt}
+\setlength{\leftmargin}{1em}
+\setlength{\partopsep}{0pt}}}%
+{\end{list}}
+
+\newenvironment{denselistSecond}{\begin{list}{$\diamond$}%
+{\setlength{\itemsep}{0ex} \setlength{\topsep}{0ex}
+\setlength{\parsep}{0pt} \setlength{\itemindent}{0pt}
+\setlength{\leftmargin}{1em}
+\setlength{\partopsep}{0pt}}}%
+{\end{list}}
+
+\definecolor{ProcessBlue}{cmyk}{1,0,0,0.25}
+\definecolor{Black}{cmyk}{0,0,0,1}
+\definecolor{Red}{cmyk}{0,1,1,0}
+\definecolor{Green}{cmyk}{0.9,0,1,0}
+\definecolor{Orange}{cmyk}{0,0.61,0.87,0.1}
+\definecolor{Fuchsia}{cmyk}{0.47,0.91,0,0.06}
+\definecolor{PineGreen}{cmyk}{0.92,0,0.59,0.25}
+
+\newtheorem{assumption}{Assumption}
+\newtheorem{fact}{Fact}
+
+\newcommand{\set}[1]{\mathcal{#1}}
+
+% Chapter introduction
+\newcommand{\pa}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\pad}[3]{\frac{\partial^2{#1}}{\partial{#2}\partial{#3}}}
+
+%Chapter self-similar
+\newcommand{\pd}[2]{\frac{\partial{#1}}{\partial{#2}}}
+
+% Chapter Reachability / Control
+\newcommand{\subspace}[1]{\mathbb{#1}}
+\newcommand{\func}[1]{\mathfrak{#1}}
+\newcommand{\aug}[1]{\tilde{#1}}
+\newcommand{\freeze}[1]{\underline{#1}}
+\newcommand{\close}[1]{\overline{#1}}
+\newcommand{\traj}{\xi}
+\newcommand{\trajDI}{\zeta}
+\newcommand{\lsf}{v}
+\newcommand{\lsfForward}{V}
+\newcommand{\ttr}{\mathsf{t}}
+\newcommand{\mttr}{\mathsf{T}}
+\newcommand{\dmttr}{\mathsf{TD}}
+\newcommand{\sig}{(\cdot)}
+\newcommand{\defined}{\triangleq}
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand{\cross}{\times}
+\newcommand{\grad}{\nabla}
+\newcommand{\equivalent}{\Longleftrightarrow}
+\newcommand{\capt}[1]{\mathsf{Capt}_F\left(\set G_0, #1\right)}
+\newcommand{\coal}{{\scriptsize{COALDALE }}}
+\newcommand{\mode}{{\text{mode}}\,}
+\newcommand{\hybrid}{{\text{hybrid}}}
+\newcommand{\tclimb}{T_{\text{climb}}}
+\newcommand{\reset}{{\text{reset}}}
+
+\newcommand{\Ccapt}[1]{\mathsf{Capt}_F\left(\set G_0, #1\right)}
+\newcommand{\viab}[2]{\mathsf{Viab}_{#1}\left(#2\right)}
+\newcommand{\epi}{\mathsf{Epi}}
+\newcommand{\cvxHull}[1]{\mathsf{ch}\left(#1\right)}
+\newcommand{\bma}{\begin{bmatrix}}
+\newcommand{\ema}{\end{bmatrix}}
+\newcommand{\paperTitle}{\text{}}
+
+
+
+% Chapter Alert level in ETMS data
+\newcommand{\Go}{{\set G}_0}
+\newcommand{\Gtau}{{\set G}(\tau)}
+
+
+\makeindex
+\usepackage{hyperref}
+%\hypersetup{pdfpagemode=FullScreen}
+
+\hypersetup{backref, hyperindex=true, citecolor=true}
+
+\begin{document}
+%
+\begin{figure}
+\includegraphics[width=1\columnwidth]{berkeley-letterhead.jpg}
+\end{figure}
+
+
+
+\hfill{}Civil and Environmental Engineering \\
+Jack D. Reilly \hfill{}652 Sutardja Dai Hall \\
+Ph.D. Student\hfill{}\hfill{}Berkeley, California 94720-1710\\
+Tel. 916-768-1755 \\
+Email: jackdreilly@berkeley.edu\hfill{}\today
+
+\bigskip{}
+
+
+\bigskip{}
+\textbf{Object:} Revised version of the article \textit{Adjoint-based optimization on a network of discretized scalar conservation law PDEs with applications to coordinated ramp metering}
+ by Reilly, Krichene, Delle Monache, Samaranayake, Goatin and Bayen, submitted on November 24, 2013 for publication in Journal of Optimization Theory and Applications.
+
+\bigskip{}
+
+
+\bigskip{}
+
+
+The authors are very grateful to the Editor-In-Chief for the expeditious response to the authors of a number of errors with respect to the guidelines and formatting for JOTA submissions. The revised version takes into account all of the guidelines specified in the submission specifications provided by the Editor-In-Chief.\\
+
+\section{Revisions}
+
+\begin{itemize}
+	\item All section and main titles are now in upper-case.
+	\item The bibliography is now in the preferred format of ``spmpsci'', sorted in order of appearance with no doi, url, or issn information.
+	\item Definition and Remark labels are now formatted as [section number].[order of appearance in section].
+	\item All figures have now been uploaded as attachments.
+	\item We acknowledge that acronyms are not encouraged in the title, but given the ubiquity of the term \emph{PDE} and its usage in other articles with \emph{JOTA}, we have left the acronym in the title in order to reduce the character-length. We will be happy to modify this upon request.
+\end{itemize}
+
+
+\bigskip{}
+
+
+Once again we would like to thank the Editor-In-Chief for the quick response and the opportunity to resubmit a version in line with the JOTA requirements.
+
+Sincerely,
+\bigskip{}
+
+\hfill Jack D. Reilly, \emph{corresponding author}\\
+
+
+\vfill{}
+
+\end{document}
