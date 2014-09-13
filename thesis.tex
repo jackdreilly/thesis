@@ -5,6 +5,17 @@
 % \usepackage[font=normal,justification=raggedright,singlelinecheck=false]{caption}
 \usepackage[caption=false,font=normal,justification=raggedright,singlelinecheck=false]{subfig}
 \usepackage{fixltx2e}
+
+\makeatletter
+\@ifundefined{showcaptionsetup}{}{%
+ \PassOptionsToPackage{caption=false}{subfig}}
+\makeatother
+
+
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{calc}
+
 %\usepackage{titlesec}
 %\titlespacing*{\chapter}{0pt}{-50pt}{20pt}
 %\titleformat{\chapter}[display]{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
@@ -15,7 +26,8 @@
 \usepackage{todonotes}
 \usepackage{amsthm}
 \usepackage{listings}
-\usepackage{wrapfig}
+% \usepackage{wrapfig}
+% \usepackage{subfigure}				
 \input{commands}
 %\nofiles %% Uncomment for final edit of thesis.lof and thesis.lot
 
@@ -38,13 +50,20 @@
 %\renewcommand{\thecondition}{\thechapter.\arabic{condition}}
 \newtheorem{theorem}{Theorem}[chapter]
 %\renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
-\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{lem}{Lemma}[chapter]
+\newtheorem{cor}{Corollary}[chapter]
 \newtheorem{assumption}{Assumption}[chapter]
 %\renewcommand{\thelemma}{\thechapter.\arabic{lemma}}
 
+\let\originalleft\left
+\let\originalright\right
+\renewcommand{\left}{\mathopen{}\mathclose\bgroup\originalleft}
+\renewcommand{\right}{\aftergroup\egroup\originalright}
+
 %% if want to only compile parts
 %\includeonly{frontmatter}
-%\includeonly{intro/intro}
+% \includeonly{le}
+% \includeonly{security}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{document}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,6 +72,6 @@
 \input{body}
 
 % \addcontentsline{toc}{chapter}{Bibliography}
-\bibliography{library}
+\bibliography{library,custom,library-admm,Remote-adjoint,Remote-admm}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \end{document}

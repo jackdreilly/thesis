@@ -370,7 +370,7 @@ The Lighthill-Whitham-Richard (LWR) equation~\cite{lighthill1955kinematic,richar
 	\item $f\left(0\right) = f\left(\rho^{\max}\right) = 0$.
 \end{enumerate}
 
-The four rules above fit well with our intuition of road traffic. Rules 1 and 2 state that the flux varies as the velocity varies, and that as the roadway gets more congested, the speed of the vehicles will only decrease. Rule 3 fits with the physical interpration of vehicle as being non-negative, and that there must be an upper limit of vehicle density (due to minimum car lengths). Rule 4 states that no vehicles will have no flow, and that flow completely breaks down at the maximum density.
+The four rules above fit well with our intuition of road traffic. Rules 1 and 2 state that the flux varies as the velocity varies, and that as the roadway gets more congested, the speed of the vehicles will only decrease. Rule 3 fits with the physical interpretation of vehicle as being non-negative, and that there must be an upper limit of vehicle density (due to minimum car lengths). Rule 4 states that no vehicles will have no flow, and that flow completely breaks down at the maximum density.
 
 \begin{figure}[htbp]
 	\centering
@@ -399,7 +399,7 @@ Thus, a freeway network can be viewed as a sequence of junctions, where each jun
 
 In reality, one cannot consider the evolution of a stretch of freeway in complete isolation with respect to its surrounding traffic network, as the dynamics are coupled at every junction point via Riemann solvers (Section~\ref{sec:riemann-solvers}). Thus, to account for the behavior at the extremities of the network, one must consider boundary conditions.
 
-The standard approach to boundary conditions is to prescribe a time-varying density $\rho^0\left(t\right)$ at each extremity point of the network. Due to the concave shape of the fundamental diagram of traffic, density waves may propogate from within the system outwards to the network extremeties, in both the upstream and downstream directions.
+The standard approach to boundary conditions is to prescribe a time-varying density $\rho^0\left(t\right)$ at each extremity point of the network. Due to the concave shape of the fundamental diagram of traffic, density waves may propagate from within the system outwards to the network extremities, in both the upstream and downstream directions.
 
 As an example, one could consider the behavior upstream of onramp $R_1$ as being the solution of a Riemann problem of the form in Equation~\eqref{eqn:riemann-problem}, where $\rho_-$ is the upstream boundary condition, and $\rho_+$ is the state within an onramp. Whenever $f\left(\rho_+\right)<f\left(\rho_-\right)$ and $\rho_+ > \rho^{\text{cr}}$, then it can be shown~\cite{lebacque1996godunov,garavello2006traffic} that the vehicle flux across the boundary is $f\left(\rho_+\right)$ and is thus insensitive to the value of $f\left(\rho_-\right)$. One can view this event as a \emph{loss of information} at the left boundary of the network, as the backward-moving congestion wave prevented information about the boundary condition from entering the network. Systems which possess this property are said to have \emph{weak boundary conditions}~\cite{strub2006weak}.
 
@@ -498,7 +498,7 @@ To compute the flux leaving $I_1$, we refer to Figure~\ref{fig:Godunov-junction-
 
 \begin{itemize}
 	\item In Case 1, strict satisfaction of the priority line would lead to an $f_1$ value greater than $\delta$ when at the intersection with the supply line $f_2 = \beta f_1 + r$. Since $\delta$ is the maximum allowable flux from $I_1$, we can feasibly exactly satisfy the priority. Thus to minimize the deviation from the priority line, we select $f_1 = \delta$.
-	\item In Case 2, the priority dictates a flux from $R_1$ in excess of $d$. To minimize deviation from prioirity, we select $r = d$, and $\beta f_1 = f_2 - r$.
+	\item In Case 2, the priority dictates a flux from $R_1$ in excess of $d$. To minimize deviation from priority, we select $r = d$, and $\beta f_1 = f_2 - r$.
 	\item In Case 3, strict satisfaction of the priority line gives a feasible $f_1$ and $r$ solution, and thus we have $f_1 = \frac{f_2}{\beta \left(1 + p^{-1}\right)}$.
 \end{itemize}
 

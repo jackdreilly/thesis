@@ -1,9 +1,366 @@
 \section{Decentralized Control of Flow Networks}
+\label{sec:admm-intro}
 
-\subsection{Distributed Optimization and ADMM}
+Finite-horizon optimal control is a popular method for computing predictive control strategies for dynamical systems~\cite{Reilly2013AdjointBased,Bayen2006AdjointBased,Raffard2008AdjointBased}, its applicabilibity growing with the increase of computational power and pervasiveness of physical sensing. In general, a finite-horizon optimal control problem will take the following form:
 
-\subsection{Asynchronous ADMM and Subnetwork Splitting}
+\begin{align}
+	\label{eq:fhop}
+	\min_{x\in X} & \quad f\left(s, x\right) \\
+	\text{subject to:} & \quad s = g\left(x\right)
+\end{align}
+
+where $x$ represents the vector of control variables belonging to the set of feasible controls $X$ (which we may assume to be $\Re^n$ for simplicity), $s$ represents the vector of ``state'' variables, constrained to be a deterministic function $g\left(x\right)$ of the control, and $f$ is some objective function of the control and state we wish to minimize.
+
+\paragraph*{Related Work in Distributed Optimization}
+Much attention has recently been given to distributed methods for finite-horizon optimal control problems, where $g$ is assumed to be linear and $f$ is assumed to be quadratic or convex. Distributed optimization has been found useful for at least two reasons. Firstly, the parallelizability of the individual sub-problems allows for faster computation time and better overall convergence properties~\cite{Donoghue2013Splitting,Frejo2011Feasible,Pu2014Fast,Giselsson2013Accelerated}. Secondly, physical systems often have their controls physically distributed in space, creating a need for distributed control algorithms which limit the amount of shared information and communication between subsystems~\cite{Venkat2008Distributed,mota2012distributed,camponogara2009distributed}.
+
+Different assumptions on the structure, smoothness, and convexity of $f$, $X$ and $g$ leads to different convergence bounds and communication bounds in distributed optimization. A method for decoupling the quadratic terms from the nonquadratic terms in optimal control, presented in~\cite{Donoghue2013Splitting} leads to efficient caching techniques shown to be effective in FPGA applications. A distributed gradient descent-based approach is given in~\cite{camponogara2009distributed}, which has $O\left(\frac{1}{\sqrt{k}}\right)$ convergence to the global optimum in the general case, where $k$ is the number of iterations of the algorithm.  A common dual-decomposition technique employed for distributed optimal control is the \emph{alternating directions method of multipliers}~\cite{Boyd2010Distributed,Donoghue2013Splitting,gabay1976dual} (ADMM), which has been shown to have $O\left(\frac{1}{k}\right)$ convergence under certain assumptions of the smoothness and decomposability of the objectives~\cite{Wei2013On}. Additionally, an accelerated version of ADMM, based on Nesterov's algorithm~\cite{Nesterov1983Method} can give $O\left(\frac{1}{k^2}\right)$ convergence when the decomposed objectives are smooth~\cite{Pu2014Fast}.
+
+When the coupling between systems takes on some sparse form, then one can devise algorithms with limited communication, which can be beneficial from a latency and  architectural standpoint. Optimal control problems where subsystems have disjoint state variables but coupled control variables have been shown to be amenable to decomposition techniques for distributed optimization~\cite{Giselsson2013Accelerated,camponogara2009distributed}, where~\cite{mota2012distributed} shows how ADMM decomposition leads to less communication without a decrease in solution accuracy.
+
+In~\cite{Giselsson2013Accelerated,mota2012distributed,camponogara2009distributed}, the subsystems with disjoint state are modeled as agents tasked with optimizing over their own subsystem, where agents which share some control variables are connected by some edge in a communication graph. Thus, the more sparse the coupling of systems, the lesser the communication requirements. Such a model is referred to as \emph{multi-agent optimization}~\cite{Wei2013On}. In systems with coupling due to physical proximity, this consequence has the added benefit of requiring only physically local communication, and removes the need for any centralized controller or hub for communication. In~\cite{Wei2013On}, an asynchronous form of ADMM (subsequenetly referred to as A-ADMM) is presented for multi-agent optimization, which permits agents to update themselves in arbitrary order, with communication only required between neighboring agents. The method in~\cite{Wei2013On} does not present an accelerated version and is shown to have $O\left(\frac{1}{k}\right)$ convergence.
+
+\paragraph*{Subsystems with Coupled State}
+One recurring assumption in the distributed optimization literature above is that subsystems have disjoint state variables. For network flow problems, where subsystems correspond to partitions of a network into subnetworks, such an assumption does not hold. To see this, one can imagine a traffic light timing plan causing a traffic jam which spreads across the entire freeway network~\cite{Reilly2013AdjointBased,Muralidharan2012Optimal} or a bottleneck of planes in an airspace affecting flight times throughout the air network~\cite{Bayen2006AdjointBased}. As a result, it is not possible to decompose the subsystems by only sharing control parameters without coupling each subsystem to all control variables and modeling the evolution of the entire network within each subsystem.
+
+Yet, freeway traffic and air traffic subsystems have a very sparse coupling in their state variables. For instance, discrete traffic models~\cite{Monache2014PdeOde,daganzo1995cell} often assume that the speed of traffic on a particular section of road is only a function of the speed of traffic on neighboring links. Thus, each subnetwork subsystem would only share a small number of control variables and state variables with other subsystems, precisely those which physically share a border with the subsystem.
+
+To exploit the sparsity of such systems, we develop a multi-agent optimization algorithm based on A-ADMM~\cite{Wei2013On} which permits each agent (subsystem) to share both control and state variables with neighboring agents, while still converging to the globally optimal control, given the standard assumption of convex objectives and linear constraints. At a high level, the algorithm ``relaxes'' the state variables \emph{external} to an agent while constraining \emph{internal} state variables to adhere to the subsystem's dynamics. Since A-ADMM eventually brings all shared variables between agents into \emph{consensus} (i.e. the difference between shared variables converges to zero), the relaxed external state variables will converge to satisfying the original constraints.
+
+The rest of the section is structured as follows.
+% Section~\ref{sec:admm-overview} gives an overview of ADMM and its application to consensus-type problems.
+Section~\ref{sec:problem_statement} presents the general problem of posing a multi-agent optimal control problem, with the additional assumption that an agent may share both state and control variables with other agents. The problem is then posed in a form amenable to using the A-ADMM algorithm in Section~\ref{sec:algorithm}. A systematic approach to modeling an optimal control problem over a dynamical network as a multi-agent distributed optimization over subnetworks is given in Section~\ref{sec:distributed_optimization_of_coupled_dynamical_systems}, as well as a discussion on the suitability of the method for scaling model predictive control on dynamical networks. In Section~\ref{sec:minimizing_sub_objectives_using_the_adjoint_method}, we give an adjoint-based approach to solving the agent's subnetwork optimal control problem, suitable for applications with complex, non-convex dynamics. We then present the application of distributed, predictive ramp-metering control on freeway networks in Section~\ref{sec:ramp-metering-admm} followed by numerical results in Section~\ref{sec:numerical_results-admm} with comparisons to existing distributed approaches.
+% We conclude with some final remarks in Section~\ref{sec:conclusion}.
+
+\paragraph*{\textbf{Notation}}
+
+For a vector $x$, let $x\left[i\right]$ be the $i$'th element of $x$, and similarly let $y\left[i,j\right]$ be the element of the two-dimensional vector in the $i$'th row and $j$'th column. If we have a vector $x$ with $card\left(x\right)=N$ and let $w$ be a subset of $ \{1,\ldots,N\}$, then let $x_w$ denote the vector selecting only those elements $x\left[i\right]$ where $i\in w$. If a vector $d$ is the concatenation $d = \left(a,b,c\right)$, then let $\left[d\right]_a$ be the sub-vector of $d$ corresponding to the original element $a$.
+
+% \subsection{Distributed Optimization and ADMM}
+% \label{sec:admm-overview}
+
+% \todo{overview of admm and distributed optimization.}
+
+\subsection{Optimization over Systems with Shared State}
+\label{sec:problem_statement}
+
+We wish to solve an optimization problem with a ``free'' global variable $x \in \Re^n$ and a ``dependent'' variable $s \in \Re^m$ which is a deterministic function of $x$.
+We assume there is a partition of $s$ into $D$ disjoint subsets,
+\[
+s=\left(s_{u\left(1\right)},\ldots,s_{u\left(D\right)}\right),
+\] where $u\left(i\right)$ are subsets of $ \{1,\ldots,m\} $.
+The objective function is assumed to be the sum of $D$ sub-objectives, where sub-objective $f_i, i\in \{1,\ldots,D\} $ is a convex function of only variable $s_{u\left(i\right)}$~\footnote{We omit the dependency of the objective on the control variable in this presentation for simplicity. It is still easy in this form to add control variables into the objective by duplicating a control variable into the state.}.
+Furthermore, $s_{u\left(i\right)}$ is assumed to be a function of some subset of $x$ and $s$.
+Explicitly, for each $i\in {1,\ldots, D} $, there is well-defined, linear function $g_i$ and subsets $v\left(i\right)$ and $w\left(i\right)$ ($w\left(i\right) \cap u\left(i\right) = \emptyset$) where 
+\[
+s_{u\left(i\right)} = g_i\left(\left(x_{v\left(i\right)}, s_{w\left(i\right)}\right)\right).
+\]
+The tuple $\left(x_{v\left(i\right)}, s_{w\left(i\right)}\right)$ is the concatenation vector of $x_{v\left(i\right)}$ and $s_{w\left(i\right)}$.
+We omit the double parenthesis in the rest, for simplicity. One can view $u\left(i\right), v\left(i\right), w\left(i\right), $ as the \emph{internal} state, the control, and the \emph{external} state, respectively, of group $i$. 
+We can now express the optimization problem we wish to solve as:
+
+\begin{align}
+	\label{eq:problem-statement}
+	\min_{x,s} & \quad \sum_{i = 1}^D f_i\left(s_{u\left(i\right)}\right) \\
+	\text{subject to:} & \quad s_{u\left(i\right)} = g_i\left(x_{v\left(i\right)}, s_{w\left(i\right)}\right) \quad \forall i
+\end{align}
+
+Figure~\ref{sub:dep-graph-diagram} shows an example of how different sub-objectives may be coupled and Table~\ref{tab:dep-graph-subsets} summarizes how one constructs the $u\left(i\right), v\left(i\right), w\left(i\right)$ subsets from the state and control coupling.
+
+\begin{figure}[t]
+\centering
+	\subfloat[Free and dependent variable coupling diagram.]{%
+	\label{sub:dep-graph-diagram}%
+	\includegraphics[width=.45\columnwidth]{previous-articles/admm/figures/dep-graph}
+	}\\
+	\subfloat[Summary of resultant state, control, and external state subsets.]{%
+    \begin{tabular}{|l|c|c|c|}
+    \hline
+    Group $i$ & $u\left(i\right)$ & $v\left(i\right)$ & $w\left(i\right)$\\ \hline
+    $i=1$ & \{1,2\}       & \{1\}        & \{\}        \\ \hline
+    $i=2$ & \{3\}        & \{1,2\}       & \{4,5\}       \\ \hline
+    $i=3$ & \{4,5\}        & \{3\}       & \{3\}       \\ \hline
+    \end{tabular}\label{tab:dep-graph-subsets}}\hfill%
+    \subfloat[Summary of shared control and state between groups]{
+    \begin{tabular}{|l|c|c|c|}
+    \hline
+    Edge $\left(i,j\right)$ & $v\left(i\right) \cap v\left(j\right)$ & $u\left(i\right) \cap w\left(j\right)$ & w$\left(i\right) \cap u\left(j\right)$  \\ \hline
+    $i,j=1,2$ & \{1\}       & \{\}        & \{\}        \\ \hline
+    $i,j=2,3$ & \{\}        & \{3\}       & \{4,5\}       \\ \hline
+    $i,j=1,3$ & \{\}        & \{\}       & \{\}       \\ \hline
+    \end{tabular}
+\label{tab:dep-graph-edges}
+}
+    \caption{Example of optimization problem partitioned into $D=3$ disjoint state variable groups with shared control and external state variables. Figure~\ref{sub:dep-graph-diagram} shows the partitioned problem, where an arrow depicts a dependency of a partition group on an external state variable or control variable. The arrows allow us to compute the $u\left(i\right), v\left(i\right), w\left(i\right)$ subsets for each group $i$, which is summarized in Table~\ref{tab:dep-graph-subsets}. The dependency graph $(V,E)$ is computed using the subsets in Table~\ref{tab:dep-graph-subsets}, which is summarized in Table~\ref{tab:dep-graph-edges} and reveals that edges exist for groups $\left(1,2\right)$ and $\left(2,3\right)$, but not for $\left(1,3\right)$.}%
+    \label{fig:dep-graph}
+  \end{figure}
+
+
+\paragraph*{Dependency Graph}
+
+There are no assumptions on the subsets $v\left(i\right)$ and $w\left(i\right)$, which implies that the value of each sub-objective $f_i$ is coupled to not just the sub-vector $s_{u\left(i\right)}$, but also the global variable $x$, and other sub-vectors $s_{u\left(j\right)}$. We can express this coupling as a dependency graph $\left(V,E\right)$, where vertices $V$ are each sub-problem $i\in \{1,\ldots, D\} $ and an edge $\left(i,j\right)\in E$ exists whenever
+
+\begin{enumerate}
+	\item  $w\left(i\right) \cap u\left(j\right) \neq \emptyset$ ($g_i$ is a function of some variable in $s_{u\left(j\right)}$), \textbf{or}
+	\item $v\left(i\right) \cap v\left(j\right) \neq \emptyset$ (there is some $x\left[k\right]$ which both $g_i$ and $g_j$ depend upon).
+\end{enumerate}
+ 
+Let the neighboring edges of node $i\in V$ be denoted by $E\left(i\right)$. A dependency graph construction for the example in Figure~\ref{sub:dep-graph-diagram} is summarized in Table~\ref{tab:dep-graph-edges}.
+
+In Section~\ref{sec:algorithm}, we devise a distributed algorithm solve Problem~\eqref{eq:problem-statement} with the following requirements:
+
+\begin{enumerate}
+	\item Each processing node corresponds to a sub-objective node in the dependency graph.
+	\item Each node can be updated in parallel.
+	\item Each node $i$ only exchanges information with its neighbors $E\left(i\right)$ in the dependency graph $\left(V,E\right)$.
+	\item The algorithm is asynchronous and decentralized, i.e. no central process is required and nodes can be updated arbitrarily.
+\end{enumerate}
+
+% \subsection{Asynchronous ADMM and Subnetwork Splitting}
+% \label{sec:algorithm}
+
+% section problem_statement (end)
+
+\subsection{Asynchronous-ADMM Algorithm} % (fold)
+\label{sec:algorithm}
+
+We now reformulate Problem~\eqref{eq:problem-statement} to permit a distributed solution method via A-ADMM.  For each node $i\in V$, we replicate the ``shared variables'' $x_{v\left(i\right)}$ and $s_{w\left(i\right)}$ as $\bar{x}_i$ and $\bar{s}_i$ respectively, and reformulate Problem~\eqref{eq:problem-statement} as:
+
+\begin{align}
+	\label{eq:replicate-problem-statement}
+	\min_{x} & \quad \sum_{i = 1}^D f_i\left(s_{u\left(i\right)}\right) \\
+	\text{subject to:} & \quad s_{u\left(i\right)} = g_i\left(\bar{x}_i, \bar{s}_i\right) \quad \forall i  \label{eqn:state-constraint-decoupled} \\
+	 & \quad \bar{s}_i = s_{w\left(i\right)} \quad \forall i \label{eqn:state-consensus} \\
+	 & \quad \bar{x}_i = x_{v\left(i\right)} \quad \forall i \label{eqn:control-consensus} 
+\end{align}
+
+The variable replication allows Constraint~\eqref{eqn:state-constraint-decoupled} in Problem~\eqref{eq:replicate-problem-statement} to be decoupled across nodes. To decouple Constraints~\eqref{eqn:state-consensus} and~\eqref{eqn:control-consensus}, we follow a modified process from~\cite{Wei2013On}.
+
+First, we replicate each subset $s_{u\left(i\right)}$ with a vector $s_i$ local to node $i \in V$, and then concatenate all local variables into a single variable $y_i = \left(s_i, \bar{x}_i, \bar{s}_i\right)$, such that $y_i$ is restricted to the space:
+\[
+Y_i = \{\left(s_i,\bar{x}_i, \bar{s}_i\right) : s_i = g_i\left(\bar{x}_i, \bar{s}_i\right)\}.
+\]
+Finally, we can repose Constraints 2 and 3 in an \emph{edge-wise} fashion as follows. For each edge $e = \left(i,j\right) \in E$, let $y_{i,e}$ and $y_{j,e}$ be the sub-vectors of $y_i$ and $y_j$ that are coupled through $g_j$ and $g_i$, respectively. Then Problem~\eqref{eq:problem-statement} becomes:
+
+\begin{align}
+	\label{eq:edge-problem-statement}
+	\min_{(y_i \in Y_i)_{i \in V}} & \sum_{i = 1}^D f_i\left(\left[y_i\right]_{s}\right) \\
+	\text{subject to:} & \quad y_{i,e} = y_{j,e} \quad \forall e\in E
+\end{align}
+
+By moving the edge constraints into the objective through a standard Lagrange multiplier approach, and adding a regularization term which is equal to zero for feasible solutions~\cite{Boyd2010Distributed}, we can construct the augmented Lagrangian $\mathcal{L}$ formulation (with tunable augmenting coefficient $\augterm$), and express the optimization problem as:
+
+\begin{align}
+	\label{eq:lagrangian}
+	\min_{y = (y_i)_{i \in V}} \max_{\lambda = \left(\lambda_e\right)_{e \in E}} & \mathcal{L} \left(y,\lambda\right) :=  \\
+	& \sum_{i = 1}^D f_i\left(\left[y_i\right]_{s}\right) + \\
+	& \sum_{e\in E} \lambda_e^T \left(y_{i,e} - y_{j,e}\right) + \augterm \|y_{i,e} - y_{j,e}\|_2^2, \nonumber
+\end{align}
+	
+The above form permits us to apply the A-ADMM algorithm as proposed and analyzed in~\cite{Wei2013On}, and shown in Algorithm~\ref{alg:a-admm}. At a high-level, the algorithm iterates by first randomly selecting an edge $e = \left(i,j\right)$ from $E$. Then, nodes $i$ and $j$ update $y_i$ and $y_j$ respectively by minimizing the Lagrangian in Equation~\eqref{eq:lagrangian} in parallel, while holding all other variables $\{\lambda_e'\}_{e' \neq e}, \{y_k\}_{i\notin \{i,j\}}$ constant. The new $y_i$ and $y_j$ values are used to update the dual $\lambda_e$ variables by applying a dual-ascent method~\cite{Boyd2010Distributed}. Finally, the process is repeated \emph{ad-infinitum} by updating a new edge selected from $E$, until some convergence or termination criteria are reached.
+
+Section~\ref{sec:minimizing_sub_objectives_using_the_adjoint_method} presents an efficient solution method, based on discrete adjoint computations, to solving the subproblem on Line 4 of Algorithm~\ref{alg:a-admm}.
+
+\begin{remark} The equation in Line~\ref{lst:local-state-update} differs slightly from the augmented Lagrangian in Equation~\eqref{eq:lagrangian} and is the result of a number of algebraic manipulations, which are explicitly derived in~\cite{Boyd2010Distributed,Wei2013On}.
+\end{remark}
+\begin{remark}
+We introduce the asymmetric coefficient $\Lambda_{q,e}$ to account for the fact that the terms for edge $e\in E\left(q\right)$ in Line~\ref{lst:local-state-update} depend upon whether the updating problem $q$ was the first or second term ($i$ or $j$) in the edge pair.
+\end{remark}
+
+\begin{algorithm}[t]  % enter the algorithm environment
+\caption{Asynchronous Edge Based ADMM} % give the algorithm a caption
+\label{alg:a-admm}       % and a label for \ref{} commands later in the document
+\begin{algorithmic}[1]% enter the algorithmic environment
+    \WHILE{Not Converged}
+    \STATE Select edge $\left(i,j\right) \in E$
+        \FOR{$q \in \left(i,j\right)$}
+        \STATE $ y^{k+1}_q \gets \arg \min_{y \in Y_q} f_q\left(\left[y\right]_{s}\right) - \sum_{e \in E\left(q\right)}
+        \Lambda_{q,e} \lambda^{k,T}_{e} \left(y_{q,e} - \bar{y}^{k}_{e} \right) +
+        \frac{\augterm}{2} \|y_{q,e} - \bar{y}^{k}_{e}\|_2^2 $ \label{lst:local-state-update}
+        \ENDFOR
+        \STATE $\lambda^{k+1}_{e} \gets \lambda^{k+1}_{e} - \frac{\augterm}{2} \left(y^{k+1}_{i,e} - y^{k+1}_{j,e}\right)$
+        \FOR{$q \notin \left(i,j\right)$}
+        \STATE $a^{k+1} \gets a^{k}$
+        \ENDFOR
+    \ENDWHILE
+    \STATE Note: $\tilde{y}^{k}_{e} = \frac{1}{2} \left(y^k_{i,e} + y^k_{j,e}\right)$
+    \STATE Note: $\Lambda_{q,e} = \begin{cases} 1 & \quad q = i \\ -1 & \quad q = j \end{cases} \quad e = (i,j)$
+\end{algorithmic}
+\end{algorithm}
+
+% section minimizing_sub_objectives_using_the_adjoint_method (end)
+
+\subsection{Distributed Optimization on Coupled Dynamical Systems} % (fold)
+\label{sec:distributed_optimization_of_coupled_dynamical_systems}
+
+Physical transport systems, such as freeway traffic networks~\cite{Reilly2013AdjointBased,daganzo1995cell} or gas pipelines~\cite{Gugat2011Gas} are often naturally expressed as a network of individual dynamical systems which influence one another at contact points, or \emph{junction points}. Given the coupling in dynamics across the entire network, optimizating over partitioned sub-systems, with no communication between systems, will lead to \emph{greedy} solutions over the individual systems and sub-optimal global results~\cite{Ramon2013}. Thus, any distributed, globally optimal control scheme applied to such systems must account for the \emph{shared state} between the systems. We now show how this can be done using the multi-agent A-ADMM approach. Furthermore, we show how the algorithm naturally leads to a communication scheme which mirrors the physical structure of the underlying physical network.
+
+Assume have some discrete-time, discrete-space dynamical system which possesses some network-like dynamical coupling in space. Specifically, consider a graph $\left(V^d, E^d\right)$ (not to be confused with the dependency graph $\left(V,D\right)$ in Section~\ref{sec:problem_statement}, where the $d$ superscript is added to denote the \emph{dynamical} network) where $E^d$ represent the discrete-space \emph{cells} and $V^d$ are the \emph{junction points} where cells connect to one another, i.e. each cell in $E^d$ has a corresponding upstream and downstream junction both in $V^d$.  Each discrete space ``cell'' $c \in \{1,\ldots,N_d\} $ has for each discrete time step $k \in \{1,\ldots,T_d\} $ both a control variable $x\left[c,k\right] \in \Re$ and a state variable $s\left[c,k\right] \in \Re$. The variable $s\left[c,k\right]$ is assumed to be a function of all state and control variables that satisfy two conditions:
+
+\begin{itemize}
+	\item the time-step is $k-1$, and
+	\item the cell must share a junction with cell $c$.
+\end{itemize}
+
+Next, we wish to express a distributed optimization problem subject to the above dynamics in the form of Problem~\eqref{eq:problem-statement}. To do so, we assume a partition of $\left(V^d,E^d\right)$ into $D$ \emph{sub-networks}, which implies a partition of $E^d$ into $D$ subsets $\left(E^d_1,\ldots, E^d_D\right)$ and assume an objective $f$ which is splittable across the state variables internal to each sub-network. This leads to a state partitioning $s=\left(s_{u\left(1\right)}, \ldots, s_{u\left(D\right)}\right)$, where $ \left(c,k\right) \in u\left(i\right)$ iff $c \in E^d_i$.
+
+Based on the two conditions for state dependencies above, we can deduce that the state of a sub-network depends on the control and state both internal to the sub-network and directly \emph{neighboring} the sub-network. Explicitly, for sub-network $i$, we can express the dependent control variables as $x_{v\left(i\right)}$ where $\left(c,k\right)\in v\left(i\right)$ iff $c \in E^d_i$ or $c$ neighbors a cell in $E^d_i$. Similarly, the shared state for sub-network $i$ is $s_{w\left(i\right)}$, where $\left(c,k\right)\in w\left(i\right)$ iff $c \notin E^d_i$ and $c$ neighbors a cell in $E^d_i$. Finally, we conclude that there exists some update equation $g_i$, specific to the particular dynamical system, where the constraint on $s_{u\left(i\right)}$ can be expressed familiarly as $s_{u\left(i\right)} = g_i\left(x_{v\left(i\right)}, s_{w\left(i\right)}\right)$.
+
+\begin{figure}
+	\subfloat[Complete network]{
+	\includegraphics[width=.4\columnwidth]{previous-articles/admm/figures/net-1}
+	\label{subfig:net-1}
+	} \hfill
+	\subfloat[Solid subnetwork with two shared links]{
+	\includegraphics[width=.4\columnwidth]{previous-articles/admm/figures/net-2}
+	\label{subfig:net-2}
+	}\\
+	\subfloat[Dotted subnetwork with three shared links]{
+	\includegraphics[width=.4\columnwidth]{previous-articles/admm/figures/net-3}
+	\label{subfig:net-3}	
+	} \hfill
+	\subfloat[Dash-dotted subnetwork with three shared links]{
+	\includegraphics[width=.4\columnwidth]{previous-articles/admm/figures/net-4}
+	\label{subfig:net-4}	
+	}
+	\label{fig:net-example}
+	\caption{A network is partitioned into three subnetworks: solid, dashed, and dash-dotted. Each subnetwork will share state with neighboring subnetworks. For a subnetwork $i$, the cells neighboring $i$, denoted by $E^d_i$, are shown in black, while those excluded from $E^d_i$ are shown in gray.}
+\end{figure}
+
+As an example, we can consider the network in Figure~\ref{subfig:net-1}, which is partitioned into three subnetworks based on line-style. We see that four of the edges share a single junction between the three subnetworks. Thus, the dynamics assumed above implies that each subnetwork will share state with each other subnetwork. Specifically, the solid-lined network in Figure~\ref{subfig:net-2} shares one cell each from the other two subnetworks, while the dashed and dash-dotted subnetworks in Figures~\ref{subfig:net-3} and~\ref{subfig:net-4} share two cells with the solid subnetwork and one cell with the opposite subnetwork. It's worth reiterating that while each optimizing agent may have different values of the state on a particular cell in the network during intermediate stages of the A-ADMM algorithm, each copy of the state will eventually come into consensus as the shared-state A-ADMM algorithm converges.
+
+\paragraph*{Local Communication Requirements}
+
+At this point, all relevant parameters to Problem~\eqref{eq:problem-statement} have been specified. The assumption on the dynamical network coupling leads to a desirable dependency graph $\left(V,E\right)$ for the system above. Since each sub-network only requires shared state from neighboring sub-networks in the sense of the \emph{physical} network $\left(V^d,E^d\right)$, then the dependency graph $\left(V,E\right)$ is constructed by assigning a sub-network to each node $V$ and adding an edge $\left(i,j\right)$ to $E$ only for those sub-networks $i$ and $j$ which physically neighbor each other. 
+
+Thus, the A-ADMM algorithm guarantees that communication only take place between physically neighboring systems. This is useful for situations where there are limitations in the networking capabilities due to physical distance, such as freeway traffic control systems, where collaborations may only exist for those districts near each other.
+
+Furthermore, the formulation allows for a completely decentralized and asynchronous implementation of the global optimization problem. If, for instance, all nodes are managed by independent agencies with varying computational limits, then there are several practical benefits to the approach. For a single sub-network, since only information that is directly adjacent to other sub-networks needs to be shared with other sub-networks, much of the internal formulation of the sub-network can be made completely hidden from the larger network. The asynchronicity of the algorithm also permits for neighboring agencies to exchange information in an ad-hoc manner, and not be bottlenecked by slower updates between separate sub-networks.
+
+\paragraph*{Scalability of Subnetwork Splitting for Model Predictive Control}
+
+A common application of finite-horizon optimal control is in the context of model predictive control (MPC)~\cite{Reilly2013AdjointBased,Frejo2011Feasible}, where optimal control policies are recomputed in a \emph{rolling-horizon} fashion. Given the optimal control problem beginning at a time-step $t$,
+ 
+\begin{align}
+	\label{eq:fhop-mpc}
+	\min_{x = \{x_t,\ldots, x_{t + T}\}} & \quad f_t^{t + T}\left(s, x\right) \\
+	\text{subject to:} & \quad s = g_t^{t + T}\left(x\right) \nonumber,
+\end{align}
+
+MPC chooses the control policy $x_t$ to apply at time-step $t$ by solving for $x = \{x_t,\ldots, x_{t + T}\}$ in Equation~\eqref{eq:fhop-mpc} using a prediction horizon of $T$ and updating the objective $f_t^{t+T}$ and constraints $g_{t}^{t + T}$ based on the latest estimates of the initial conditions and boundary conditions.
+
+In applications such as freeway onramp metering, a limiting factor in choosing an optimization time-horizon is the accuracy of the predictions of the boundary conditions, or specifically, anticipating future vehicle demands on freeway onramps. At some point, increasing the time-horizon will only decrease the effectiveness of the control due to the deviation in predicted model state versus reality. Thus, it is often practical to consider the time-horizon fixed in MPC applications, at which point the scalability with respect to network size becomes of importance.
+
+For freeway networks with very small branching factors, it is reasonable to assume the following:
+
+\begin{itemize}
+	\item For each subnetwork, the number of bordering links is \emph{constant}.
+	\item The number of shared state and control variables grows \emph{linearly} with the time-horizon for each subnetwork.
+	\item The number of subnetworks scales linearly with network size (for fixed-size subsystems).
+\end{itemize}
+
+ One concludes that the amount of communication required for the A-ADMM subnetwork splitting method would scale linearly with the network size and quadratically with time-horizon length. If we were to instead decompose our system, for instance, across time-slices, the communication requirement would scale quadratically with network size and linearly with time-horizon length. Given our assumption of a fixed time-horizon, the subnetwork splitting approach for network-flow MPC has the added benefit of better scaling in the communication requirements.
+
+\subsection{Solving Sub-problems via the Adjoint Method} % (fold)
+\label{sec:minimizing_sub_objectives_using_the_adjoint_method}
+
+What is not explicitly expressed in Algorithm~\ref{alg:a-admm} is a solution method for Step~\ref{lst:local-state-update}:
+
+\begin{align}
+	\label{eq:sub-op-problem}
+	y^{k+1}_i & = \arg \min_{y \in Y_i}
+        f_i\left(\left[y\right]_{s}\right) - \\
+        & \sum_{e \in E\left(i\right)}
+        \Lambda_{i,e} \lambda^{k,T}_{e} \left(y_{i,e} - \bar{y}^{k}_{e} \right) +
+        \frac{\augterm}{2} \|y_{i,e} - \bar{y}^{k}_{e}\|_2^2 \nonumber
+\end{align}
+In the more general case of non-convex update equations $g_i$ and objectives $f_i$, it is difficult to find even local optima for $y_i$ over the space $Y_i$ using gradient-descent methods: a result of the difficulty of projecting and expensiveness of computing gradients in $Y_i$.
+
+Since $\left[y_i\right]_{s}$ is a deterministic function of the unconstrained variables $\left[y_i\right]_{\bar{x}}$ and $\left[y_i\right]_{\bar{s}}$, it becomes more efficient to eliminate $\left[y_i\right]_{s}$ from the search space and concatenate $\left[y_i\right]_{\bar{x}}$ and $\left[y_i\right]_{\bar{s}}$ into a single ``free'' variable $\bar{r}_i := \left(\left[y_i\right]_{\bar{x}},\left[y_i\right]_{\bar{s}} \right)$. Similar to the convention for $y_{i,e}$ and $y_{j,e}$, we denote $\left(\bar{r}_{i,e}, \bar{r}_{j,e}\right)$ and $\left(\bar{s}_{i,e}, \bar{s}_{j,e}\right)$ as the free variables and constrained state variables, respectively, shared between nodes $i$ and $j$. Then we can repose the sub-optimization Problem~\eqref{eq:sub-op-problem} in the following way. We let
+
+\begin{align*}
+\bar{f_i}\left(s_i,\bar{r}_i\right) := & f_i\left(\left[y\right]_{s}\right) - \\
+        & \sum_{e \in E\left(i\right)}
+        \Lambda_{i,e} \lambda^{k,T}_{e} \left(r_{i,e} - \bar{r}^{k}_{e} \right) +
+        \frac{\augterm}{2} \|r_{i,e} - \bar{r}^{k}_{e}\|_2^2 + \\
+        & \sum_{e \in E\left(i\right)}
+        \Lambda_{i,e} \lambda^{k,T}_{e} \left(s_{i,e} - \bar{s}^{k}_{e} \right) +
+        \frac{\augterm}{2} \|s_{i,e} - \bar{s}^{k}_{e}\|_2^2        
+\end{align*}
+be the ``augmented'' sub-objective accounting for the additional ADMM terms for subproblem $i$, where $\bar{r}_e,\bar{s}_e$ denotes the vector mean of $r_{i,e},r_{j,e}$ and $s_{i,e},s_{j,e}$ respectively. Also, if we let the concatenated subsystem equations be:
+
+\[
+H_i\left(s,r\right) :=s - g_i\left(\left[r\right]_{\bar{x}}, \left[r\right]_{\bar{s}} \right),
+\]
+
+then we have
+
+\begin{align}
+	\label{eq:sub-op-simple}
+	\left(s^{k+1}_i, \bar{r}^{k+1}_i\right) & = \arg \min_{s,r} \bar{f}_i\left(s, r\right) \\ 
+	\text{subject to:} & \quad H_i\left(s,r\right) = 0
+\end{align}
+
+The form of Problem~\eqref{eq:sub-op-simple} permits us to apply the \emph{discrete adjoint method} (Section~\ref{sec:discrete-adjoint-method}) to compute gradients of $\bar{f}_i$ at some search point $\bar{r}^0_i$. If we let $s^0_i$ be defined so that $H_i\left(s^0_i,\bar{r}_i^0\right) = 0$, then we arrive at the following expression for the gradient:
+
+\begin{align}
+	\label{eq:adjoint-grad-admm} \nabla_{r} \bar{f}_i\left(s^0_i,\bar{r}_i^0\right)  =  \gamma^T \frac{\partial H_i\left(s^0_i,\bar{r}_i^0\right)}{\partial r} & + \frac{\partial \bar{f}_i\left(s^0_i,\bar{r}_i^0\right)}{\partial r} \\ \text{subject to: } \quad \frac{\partial H_i\left(s^0_i,\bar{r}_i^0\right)}{\partial s}^T \gamma & = -\frac{\partial \bar{f}_i\left(s^0_i,\bar{r}_i^0\right)}{\partial s}^T, \label{eq:adjoint-system}
+\end{align}
+
+where $\gamma$ is the \emph{discrete adjoint} variable and Equation~\eqref{eq:adjoint-system} is the \emph{discrete adjoint} system.
 
 \subsection{Applications to Asynchronous, Decentralized Ramp Metering}
+\label{sec:ramp-metering-admm}
+
+We apply distributed optimization via subnetwork splitting to the problem of coordinated, predictive freeway onramp metering~\cite{Papageorgiou1991Alinea,Frejo2011Feasible,Reilly2013AdjointBased}, where traffic lights on freeway onramps are used to regulate the flow entering freeway mainlines in order to prevent congestion and improve such metrics as driver travel time and speed variability. The term \emph{coordinated} indicates that many traffic lights along a freeway stretch will act cooperatively, given that conditions near one onramp may eventually affect conditions at a neighboring onramp. The term \emph{predictive} indicates that the metering strategy should anticipate future conditions on the roadway using traffic demand predictions and an underlying model of the evolution of the freeway system.
+
+Following the discretized freeway model in~\cite{Monache2014PdeOde,Reilly2013AdjointBased}, the network is given as a linear sequence of mainline link, onramp and offramp triples\footnote{Freeway models with more general network topologies exist~\cite{garavello2006traffic} and allow direct application of the subnetwork splitting method presented herewithin. We limit our discussion to linear freeway networks to simplify the presentation.}, as depicted in Figure~\ref{fig:freeway}. Some notational changes from Section~\ref{sec:continous-and-discrete-traffic-model-for-ramp-metering} are made for readability reasons. The resulting discrete model has $T$ time-steps, $N$ spatial cells, and $N$ onramps and offramps.
+
+We establish the state variables of the system as $s=\{\rho\left[i,k\right],l\left[i,k\right] : i\in\left[1,N\right], k\in\left[1,T\right]\}$, where $\rho\left[i,k\right]$ is the density of vehicles on the mainline link $i$ and $l\left[i,k\right]$ is the number of vehicles queued on onramp $i$, both at time-step $k$. Additionally, the control variables are $u=\{u\left[i,k\right] : i\in\left[1,N\right], k\in\left[1,T\right]\}$, where $u\left[i,k\right]$ takes values between 0 and 1, which serves to scale back the total flow which may exit from onramp $i$ to the mainline at time-step $k$. The following system of equations relate the state of the freeway at time-step $k$ to $k+1$:
+
+\begin{align}
+	\delta\left[i,k\right] & = \min\left(v \rho\left[i,k\right], f^{\max} \right) \label{eq:first-discrete}\\
+	\sigma\left[i,k\right] & = \min\left(w\left(\rho^{\max} - \rho\left[i,k\right]\right), f^{\max}\right) \\
+	d\left[i,k\right] & = u\left[i,k\right]\min \left(l\left[i,k\right] / \triangle t, r^{\max}\right) \label{eq:onramp-demand} \\
+	f^{\text{in}}\left[i,k\right] & = \min\left(\sigma\left[i,k\right], d\left[i-1,k\right] + \beta\left[i,k\right] \delta\left[i,k\right]\right) \\
+	f^{\text{out}}\left[i,k\right] & = 
+	\begin{cases}
+	\delta\left[i,k\right] & \quad \mbox{if } \frac{p f^{\text{in}}\left[i+1,k\right] }{\beta\left[i,k\right] \left(1 + p\right)} \ge \delta\left[i,k\right] \\
+	\frac{f^{\text{in}}\left[i+1,k\right] - d\left[i+1,k\right]}{\beta\left[i,k\right]} & \quad \mbox{if } \frac{f^{\text{in}}[i+1,k]}{1 + p} \ge d\left[i+1,k\right] \\
+	\frac{p f^{\text{in}}\left[i+1,k\right]}{\left(1 + p\right) \beta\left[i,k\right]} & \quad \mbox{otherwise}
+	\end{cases} \\
+	r\left[i,k\right] & = f^{\text{in}}\left[i,k\right] - \beta\left[i,k\right] f^{\text{out}}\left[i,k\right] \label{eq:last-intermediate}\\
+	\rho\left[i,k+1\right] & = \rho\left[i,k\right] + \frac{\triangle t}{\triangle x} \left(f^{\text{in}}\left[i,k\right] - f^{\text{out}}\left[i,k\right]\right) \label{eq:first-explicit}\\
+	l\left[i,k+1\right] & = l\left[i,k\right] + \triangle t \left(D\left[i,k\right] - r\left[i,k\right]\right) \label{eq:last-discrete}
+\end{align}
+
+The recursive definitions above require an initial condition,
+
+\[
+s^0=\{\rho^0\left[i\right], l^0\left[i\right]: i\in \left[1,N\right] \},
+\]
+and boundary conditions at the left and right extremes of the network,
+\[
+\left(s^L, s^R\right)=\{\left(s^L\left[k\right],s^R\left[k\right]\right):k\in \left[0,T\right]\},
+\]
+both of which are assumed given. Equations~\eqref{eq:first-discrete}-\eqref{eq:last-intermediate} can be seen as intermediate computations required to update the state variables given in Equations~\eqref{eq:first-explicit}-\eqref{eq:last-discrete}, and not explicitly part of the state vector. We note that the offramps are modeled as stateless, infinite-capacity sinks, and thus are only captured through $\beta\left[i,k\right]$, the fraction of vehicles which desire to enter mainline link $i+1$ rather than exit onto offramp $i$ at time-step $k$. A diagram of the state and control variables for a single junction is given in Figure~\ref{fig:freeway-labels}. The dynamics are non-convex and nonlinear, and thus we employ the adjoint method presented in Section~\ref{sec:minimizing_sub_objectives_using_the_adjoint_method} in order to improve sub-objectives during each iteration of the A-ADMM algorithm.
+
+\begin{figure}
+\subfloat[A single freeway junction near link $i$.]{
+	\includegraphics[width=0.3\columnwidth]{previous-articles/admm/figures/freeway-labels}
+	\label{fig:freeway-labels}
+} \hfill
+\subfloat[Diagram of freeway network with A-ADMM subnetwork splitting.]{
+	\includegraphics[width=0.6\columnwidth]{previous-articles/admm/figures/freeway-split-network}
+	\label{fig:overlapping-freeway}
+}
+\caption{Overview of the freeway ramp metering network and state evolution. Figure~\ref{fig:freeway-labels} shows the dynamical state and control variables of a particular junction $i$ on the freeway. The relation between mainline density $\rho{[i,k]}$, onramp queues $l{[i,k]}$, metering control rate $u{[i,k]}$, and boundary condition split ratios $\beta{[i,k]}$ for a given time-step $k$ are depicted, and mathematically expressed in Equations~\eqref{eq:first-discrete}-\eqref{eq:last-discrete}.  Figure~\ref{fig:overlapping-freeway} shows how one may partition the linear network into subnetworks.   While subnetworks may have internal links and onramps, they will also include links and onramps immediately upstream and downstream as part of their shared state (denoted by the dashed-line boxes), giving the appearance of overlapping subnetworks.}
+\label{fig:freeway}
+\end{figure}
+
+It is clear from the definitions of $s$ and $x$ above that each state variable is a direct function of only the state and control variables of neighboring links at the previous time-step, and as such, can be decomposed using the subnetwork splitting method in Section~\ref{sec:distributed_optimization_of_coupled_dynamical_systems}. Figure~\ref{fig:overlapping-freeway} depicts such a splitting, where each subnetwork also includes the neighboring upstream and downstream links as boundary conditions.
+
+The dependency graph $\left(V,E\right)$ for such a network has a natural structure, where an edge $(i,j)$ is in $E$ if and only if $j=i+1$, and thus a subnetwork need only communicate with the linear subnetworks immediately upstream and downstream of itself. Furthermore, only information pertaining to the bordering links and onramps of a subnetwork needs to be shared with its neighbors, allowing a subnetwork to conceal the particular implementation of its internal freeway model from the rest of the system.
 
 \subsection{Numerical Results}
+\label{sec:numerical_results-admm}

@@ -4,7 +4,7 @@
 \subsection{Motivation}
 \label{sec:motivation}
 
-\todo[inline]{lots of ``systems'' written here}
+% \todo[inline]{lots of ``systems'' written here}
 
 Modern physical systems, particularly those associated with public use such as freeway networks and water supplies, exist within a world with decreasing physical space and resources. For instance, freeways often cannot add additional lanes to accommodate increased demands. Thus, one must rely upon better managament systems and control algorithms in order to maximize performance within the limitations of the existing system. These ``smart'' systems make use of sensing instrumentation to estimate real-time conditions and modeling of the underlying physical dynamics to predict and plan for future states.
 
@@ -45,6 +45,8 @@ The requirements of an online MPC controller for a traffic system are depicted i
 
 The focus of this thesis is the efficient and flexible design of MPC optimization techniques and their applications to freeway control systems. At the heart of the developed approach is the \emph{discrete adjoint} method for gradient computations within first-order gradient descent methods (Section~\ref{chapter:adjoint}). The efficiency of the developed method enables \emph{online} application of MPC to the control of large freeway networks (on the order of tens of miles) with frequent recomputations (on the order of one minute) to ``close the loop'' with real-time measurements.
 
+Included in this thesis is an investigation of rerouting strategies for a subset of flow on networks. Inspired by the increasing penetration navigation devices in vehicles (e.g. dedicated units, smartphone applications), a single navigation provider may advise a signification portion of the total flow on some networks, thus potentially affecting traffic conditions based on their advice. This potential can be harnessed to reduce the inefficiencies of \emph{selfish routing}~\cite{Krichene2012c,Roughgarden2002How} and drive network behavior towards \emph{socially optimal} conditions.
+
 \subsection{Contributions}
 \label{sec:contributions}
 
@@ -74,6 +76,12 @@ This thesis contains the following contributions to the problem of optimal contr
 		\item A classification of traffic system vulnerability locations is constructed across such categories as cost of attack, effectivenes, and directness of control.
 		\item A novel analysis of the potential damage and impact of coordinated ramp metering attacks is conducted using adjoint-based optimal control and multi-objective optimization tools.
 		\item Illustrative attack scenarios are constructed and numerically investigated on realistic freeway networks. A web-based coordinated ramp metering attack tool was created to implement the interactive optimization approaches presented in the work~\cite{smartroadswebsite}.
+	\end{itemize}
+	\item \textbf{A framework for rerouting a subset of vehicles on freeway networks}.
+	\begin{itemize}
+		\item As opposed to standard system-optimal routing problems~\cite{ziliaskopoulos2000linear,Kelly} where all flow is controllable, we construct a network-flow optimization problem which allows one to specify a \emph{compliance rate} of cooperative vehicles. The proposed model captures the delays induced by the noncompliant vehicles.
+		\item To account for the possibility of noncompliant drivers adapting to the new flow conditions, we propose a behavioral model, referred to as \emph{bounded tolerance}, which assumes that noncompliant drivers have bounded rationality and will only switch routes under significant increases in delay.
+		\item Numerical examples for communication networks and freeway systems demonstrate the effectiveness of the method.  
 	\end{itemize}
 \end{itemize}
 
