@@ -1,0 +1,15 @@
+\begin{align}
+	\delta\left[i,k\right] & = \min\left(v \rho\left[i,k\right], f^{\max} \right) \label{eq:first-discrete}\\
+	\sigma\left[i,k\right] & = \min\left(w\left(\rho^{\max} - \rho\left[i,k\right]\right), f^{\max}\right) \\
+	d\left[i,k\right] & = u\left[i,k\right]\min \left(l\left[i,k\right] / \triangle t, r^{\max}\right) \label{eq:onramp-demand} \\
+	f^{\text{in}}\left[i,k\right] & = \min\left(\sigma\left[i,k\right], d\left[i-1,k\right] + \beta\left[i,k\right] \delta\left[i,k\right]\right) \\
+	f^{\text{out}}\left[i,k\right] & = 
+	\begin{cases}
+	\delta\left[i,k\right] & \quad \mbox{if } \frac{p f^{\text{in}}\left[i+1,k\right] }{\beta\left[i,k\right] \left(1 + p\right)} \ge \delta\left[i,k\right] \\
+	\frac{f^{\text{in}}\left[i+1,k\right] - d\left[i+1,k\right]}{\beta\left[i,k\right]} & \quad \mbox{if } \frac{f^{\text{in}}[i+1,k]}{1 + p} \ge d\left[i+1,k\right] \\
+	\frac{p f^{\text{in}}\left[i+1,k\right]}{\left(1 + p\right) \beta\left[i,k\right]} & \quad \mbox{otherwise}
+	\end{cases} \\
+	r\left[i,k\right] & = f^{\text{in}}\left[i,k\right] - \beta\left[i,k\right] f^{\text{out}}\left[i,k\right] \label{eq:last-intermediate}\\
+	\rho\left[i,k+1\right] & = \rho\left[i,k\right] + \frac{\triangle t}{\triangle x} \left(f^{\text{in}}\left[i,k\right] - f^{\text{out}}\left[i,k\right]\right) \label{eq:first-explicit}\\
+	l\left[i,k+1\right] & = l\left[i,k\right] + \triangle t \left(D\left[i,k\right] - r\left[i,k\right]\right) \label{eq:last-discrete}
+\end{align}
