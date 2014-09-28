@@ -3,15 +3,15 @@
 
 Public traffic infrastructure is arriving in the cyber age with increasing connectivity between the different segments of roadways. For example, freeways are commonly instrumented with loop detectors that allow for real-time monitoring of roadway speeds~\cite{jia2001pems}. Estimates of road traffic conditions are then fed directly into onramp traffic light metering algorithms which regulate traffic flow to improve congestion~\cite{Papageorgiou1991}. Finally, these metering algorithms can be coordinated and controlled by a remote command and monitoring center, leading to a regional network of interconnected sensors and controllers~\cite{Reilly2013b}.
 
-Increased efforts to build systems which understand and utilize the interconnectivity are evidenced by \emph{integrated-corridor-managament} (ICM) projects such as \emph{Connected Corridors}~\cite{miller2010san} and mobile applications which use GPS probe data to improve navigation~\cite{work2010traffic}.
+Increased efforts to build systems which understand and utilize the interconnectivity are evidenced by \emph{integrated-corridor-management} (ICM) projects such as \emph{Connected Corridors}~\cite{miller2010san} and mobile applications which use GPS probe data to improve navigation~\cite{work2010traffic}.
 
 This connectivity offers great potential to better analyze, control and manage traffic but also poses a significant security risk. A compromise at any level of the traffic control infrastructure can lead to both direct access of an attacker to alter traffic lights and changeable message signs, and indirect access via spoofing of sensor readings, which may \emph{trick} the control algorithms to respond to false conditions.
 
 A number of traffic-related attacks of infrastructure systems have already been demonstrated in the past few years. A man-in-the-middle attack on GPS coordinate transmissions from mobile navigation applications showed it is possible to trick navigation services into inferring non-existent jams~\cite{jeske2013floating}, while a similar attack used a fleet of mobile phone emulators to mimic the presence of many virtual vehicles on a roadway~\cite{TUFNELL2014}. A popular vehicle-detection sensor was revealed to use a type of wireless protocol vulnerable to data injection attacks, and a demonstration showed that the access point could be tricked into receiving arbitrary readings~\cite{Zetter2014Custom}. Cyber attacks on a centralized command center remain a serious threat given the frequent discovery of networking vulnerabilities, such as the Heartbleed bug~\cite{Codenomicon2014}. Even insider attacks on command centers have precedent as two Los Angeles traffic engineers in 2009 were found guilty of intentionally creating massive delays by adjusting signal times at key intersections~\cite{Grad2009Custom}.
 
-Given the existence of such vulnerabilities and the scale at which they can be exploited, understanding the nature and costs of such attacks becomes paramount to public safety. In this chapter, we present a systematic approach to analyzing the topic of traffic control system vulnerabities and their potential impact.
+Given the existence of such vulnerabilities and the scale at which they can be exploited, understanding the nature and costs of such attacks becomes paramount to public safety. In this chapter, we present a systematic approach to analyzing the topic of traffic control system vulnerabilities and their potential impact.
 
-To do so, we begin by constructing a taxonomy of different vulnerabily locations in traffic control systems, defining three distinct layers: physical, close-proximity, and virtual. Difficulty, impact, and cost values are also associated with each potential attack.  We motivate our classifications by presenting two scenarios that combine a number of attacks to accomplish a high-level goal.
+To do so, we begin by constructing a taxonomy of different vulnerability locations in traffic control systems, defining three distinct layers: physical, close-proximity, and virtual. Difficulty, impact, and cost values are also associated with each potential attack.  We motivate our classifications by presenting two scenarios that combine a number of attacks to accomplish a high-level goal.
 
 We then focus our analysis on an in-depth exploration of freeway attacks using coordinated, ramp metering. To achieve this, we develop a method based on adjoint computations and finite-horizon optimal control for finding optimal metering rates to create a desired disruption on the freeway. We additionally give an overview of multi-objective optimization and discuss how such an approach is useful for solving high-level attack objectives which contain many conflicting sub-goals, such as permitting a fleeing vehicle to escape pursuants on a particular freeway stretch without overly congesting freeway regions irrelevant to the pursuit.
 
@@ -40,7 +40,7 @@ In the later part of the article we propose attacks to create congestion based o
 	}
 	\caption{The physical roadway, sensors, connected vehicles and controllers near a freeway/onramp junction in Figure~\ref{fig:freewayEntry} form a cyber-physical network we refer to as a local freeway control system. The mask icons (white/black masks for indirect/direct vulnerabilities) denote vulnerability points in the local control network.  In Figure~\ref{fig:globalFreeway}, the local controllers are wired together, then connected to a command center via a relay box to form the global control system. This article analyzes vulnerability locations associated with each component.}
 	\end{figure}
-    		Modern freeways encompass control and monitoring mechanisms which enable traffic management to mitigate congestion and improve traffic flow in real-time. While the exact combination of sensors, controllers and transmitters differ from location to location, this article chooses one particular instatiation of a freeway control system, which we find to be representative. Figure~\ref{fig:freewayEntry} shows a control system installed near a junction of a freeway and an onramp. We consider three elements of the control system:
+    		Modern freeways encompass control and monitoring mechanisms which enable traffic management to mitigate congestion and improve traffic flow in real-time. While the exact combination of sensors, controllers and transmitters differ from location to location, this article chooses one particular instantiation of a freeway control system, which we find to be representative. Figure~\ref{fig:freewayEntry} shows a control system installed near a junction of a freeway and an onramp. We consider three elements of the control system:
     		\begin{itemize}
     			\item Sensors, used to gather information about the freeway state. For example, loop detectors are used to acquire the flow of vehicles along the freeway and onramps/offramps, while the trajectory of vehicles equipped with GPS (or containing GPS-powered smartphone applications) can be used for estimating real-time traffic conditions~\cite{work2010traffic}.
     			\item Actuators, used to influence the evolution and efficiency of the freeway. The most common actuation strategy is \emph{ramp metering}, where traffic lights installed on freeway onramps control the influx of vehicles to the mainline. Other actuators include variable speed limit control~\cite{MuralidharanaCustom} and variable message signs. For the purposes of this article, the ramp meters are the only actuators we will consider.
@@ -64,7 +64,7 @@ In the later part of the article we propose attacks to create congestion based o
     The physical layer is the lowest attackable layer and involves direct access to
     individual wires, opening and accessing the control box, or tampering with
     individual sensors. Physical attacks involve clipping, tampering, removing, or
-    replacing of wires or hardware. For instance, copper wire theft near freeways is a common occurence~\cite{Sutton2014Custom,Rosenberg2014Custom}. Such attacks need low sophistication, are
+    replacing of wires or hardware. For instance, copper wire theft near freeways is a common occurrence~\cite{Sutton2014Custom,Rosenberg2014Custom}. Such attacks need low sophistication, are
     easy to carry out, and are hard to protect against as each device must be physically
     protected given that software-based protection is not effective against physical
     attacks. On the other hand, the attack is costly as (i) direct physical access
@@ -179,56 +179,6 @@ An attacker can negatively influence the performance of the freeway network or a
 
 \subsection{Optimal Control Model}
 \label{sub:fhoc-adjoint}
-
-% \subsubsection{Discrete Freeway Model}
-% \label{sub:freeway-model}
-
-
-% We use the from Section~\ref{sec:continous-and-discrete-traffic-model-for-ramp-metering}
-% Some notational changes from Section~\ref{sec:continous-and-discrete-traffic-model-for-ramp-metering} are made for readability reasons. The resulting discrete model has $T$ time-steps, $N$ spatial cells, and $N$ onramps and offramps.
-
-% The state of cell $i\in \left[1,N\right]$ at time $k\in\left[1,T\right]$ is given by $\rho\left[i,k\right]$, while the number of vehicles on the adjacent onramp is given by $l\left[i,k\right]$. We require the following additional variables (specific to time-step $k$):
-
-		% \begin{itemize}
-		% 	\item $\delta\left[i,k\right]$: Maximum flow of vehicles exiting link $i$.
-		% 	\item $\sigma\left[i,k\right]$: Maximum flow of vehicles etnering link $i$.
-		% 	\item $d\left[i,k\right]$: Maximum flow of vehicles exiting onramp $i$.
-		% 	\item $r^{\max}$: Physical capacity of onramp $i$.
-		% 	\item $f^{\text{in}}\left[i,k\right]$: Actual flow entering link $i$.
-		% 	\item $f^{\text{out}}\left[i,k\right]$: Actual flow exiting  link $i$.
-		% 	\item $r\left[i,k\right]$: Actual flow exiting onramp $i$.
-		% 	\item $\beta\left[i,k\right]$: Fraction of total flow from link $i$ entering link $i+1$ as opposed to offramp $i$.
-		% 	\item $p$: Fraction of mainline flow given priority over onramp flow when merging in congestion.
-		% 	\item $D\left[i,k\right]$: Flow entering onramp $i$.
-		% \end{itemize}
-
-		% The states of cell and onramp $i$ are advanced from time $k$ to $k+1$ according to the following equations:
-		% \begin{align}
-		% \delta\left[i,k\right] & = \min\left(v \rho\left[i,k\right], f^{\max} \right) \label{eq:first-discrete}\\
-		% \sigma\left[i,k\right] & = \min\left(w\left(\rho^{\max} - \rho\left[i,k\right]\right), f^{\max}\right) \\
-		% d\left[i,k\right] & = \min\left(l\left[i,k\right] / \triangle t, r^{\max}\right) \label{eq:onramp-demand} \\
-		% f^{\text{in}}\left[i,k\right] & = \min\left(\sigma\left[i,k\right], d\left[i-1,k\right] + \beta\left[i,k\right] \delta\left[i,k\right]\right) \\
-		% f^{\text{out}}\left[i,k\right] & = 
-		% \begin{cases}
-		% \delta\left[i,k\right] & \quad \mbox{if } \frac{p f^{\text{in}}\left[i+1,k\right] }{\beta\left[i,k\right] \left(1 + p\right)} \ge \delta\left[i,k\right] \\
-		% \frac{f^{\text{in}}\left[i+1,k\right] - d\left[i+1,k\right]}{\beta\left[i,k\right]} & \quad \mbox{if } \frac{f^{\text{in}}[i+1,k]}{1 + p} \ge d\left[i+1,k\right] \\
-		% \frac{p f^{\text{in}}\left[i+1,k\right]}{\left(1 + p\right) \beta\left[i,k\right]} & \quad \mbox{otherwise}
-		% \end{cases} \\
-		% r\left[i,k\right] & = f^{\text{in}}\left[i,k\right] - \beta\left[i,k\right] f^{\text{out}}\left[i,k\right] \\
-		% \rho\left[i,k+1\right] & = \rho\left[i,k\right] + \frac{\triangle t}{\triangle x} \left(f^{\text{in}}\left[i,k\right] - f^{\text{out}}\left[i,k\right]\right) \\
-		% l\left[i,k+1\right] & = l\left[i,k\right] + \triangle t \left(D\left[i,k\right] - r\left[i,k\right]\right) \label{eq:last-discrete}
-		% \end{align}
-
-		% \begin{figure}[htbp]
-		% 	\centering
-		% 	\includegraphics[width=0.35\textwidth]{previous-articles/smart-america/diagrams/fw-junction}
-		% 	\caption{}
-		% 	\label{fig:fw-junction}
-		% \end{figure}
-
-		
-
-		% Figure~\ref{fig:fw-junction} depicts a freeway junction labeled with the freeway state and control variables introduced above.
 
 \subsubsection{Optimal Control Formulation}
 
@@ -478,7 +428,7 @@ We translate the attack into a multi-objective problem (see Section~\ref{sub:moo
 \item The followers (everyone behind the driver) should travel along the freeway section as slowly as possible --- Minimizing $f_1$ will maximize the traffic density of all freeway sections behind the driver's trajectory.
 
 \item In particular, those vehicles directly behind the driver should be impeded with increased priority --- Minimizing $f_2$ will maximize the traffic density difference between the cells of the driver's trajectory and those cells immediately behind.
-\item As to not arrouse suspicion from monitoring traffic managers, most other travel times should be reduced --- Minimizing $f_3$ will reduce the total travel time of all the vehicles on the freeway to avoid unneccessary congestion.
+\item As to not arouse suspicion from monitoring traffic managers, most other travel times should be reduced --- Minimizing $f_3$ will reduce the total travel time of all the vehicles on the freeway to avoid unnecessary congestion.
 \item The driver should quickly exit the freeway --- Minimizing $f_4$ will reduce the driver's travel time, to allow him to travel along the freeway as quickly as possible and escape his followers.
 \end{enumerate}
 
@@ -560,7 +510,7 @@ The a~posteriori method provides the DM with a global overview of the Pareto fro
 \begin{figure}[t]
 	\centering
 	  \includegraphics[width=1\textwidth]{previous-articles/smart-america/diagrams/catchmetable1}
-	\caption{Summary of \emph{catch-me-if-you-can} simulations generated via the interactive method. Column 1 shows optimizations over individual objectives. Column 2 shows a transititon from favoring $f_3$ to favoring $f_2$. Column 3 shows a progression across all three objectives.}
+	\caption{Summary of \emph{catch-me-if-you-can} simulations generated via the interactive method. Column 1 shows optimizations over individual objectives. Column 2 shows a transition from favoring $f_3$ to favoring $f_2$. Column 3 shows a progression across all three objectives.}
 	\label{fig:catchme_table_1}
 \end{figure}
 Figure~\ref{fig:catchme_table_1} shows an overview of the results obtained while using the interactive interface. The first column shows simulations for the corners of the ternary graph, i.e. only one objective is active at a time. The results are intuitive in that optimizing $f_1$ (Figure~\ref{fig:catchme_table_1}.1) produces congestion everywhere behind the driver, optimizing $f_2$ (Figure~\ref{fig:catchme_table_1}.2) creates a distinct increase in congestion behind the driver, and optimizing $f_3$ (Figure~\ref{fig:catchme_table_1}.3) maintains critical density everywhere, equivalent to maximizing throughput at maximum freeway speeds.

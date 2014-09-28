@@ -6,38 +6,1397 @@
 \section{Introduction}
 \label{sec:le:introduction}
 
-\input{previous-articles/le/introduction}
+
+\subsection{Traffic assignment: selfish routing vs. social routing\label{sub:Traffic-assignment:-selfish}}
+
+The problem of traffic assignment handles users' route and departure
+time decisions and how individual behaviors impact the performance
+of the underlying traffic network. If all user decide in a self-optimizing
+manner, then the resulting network state is a \emph{user equilibrium~(e.g.
+\cite{wardrop1952some})}. If every user acts in a manner that
+is beneficial to societal goals, it is said to be a \emph{system}
+or \emph{social optimum}. Socially optimal schemes are studied under
+the assumption that a central agency controls \emph{all }the users,
+while on the other extreme, user equilibrium is is a good model to
+describe selfish behavior \emph{in the absence} of a central agency.
+A complete characterization user equilibrium model requires complete
+information of the origin-destination demands on the network. This
+information is often too expensive to obtain. Specifically, origin-destination
+information may only be available for a fraction of users because
+collecting such information requires participation/consent of the
+travelers and technological capability of the central agency. \cite{lo2002cell}
+give a variational inequality approach to solving user equilibrium,
+while \cite{papageogiou1990} presents an optimal control framework,
+and both methods require full information of origin-destination demands
+on the network.
+
+These technologies can be broadly categorized into two categories.
+First, there are recommendation systems, such as variable message
+signs that suggest particular routes based on estimated travel times
+or general dissemination of information to better inform users of
+network conditions. Second, there are direct control systems that
+restrict behavior of users via ramp metering or detours. \cite{gomes2008behavior}
+discusses the effectiveness of ramp metering as a means of achieving
+a social optimum. These direct control mechanisms are generally applied
+at a specific point and time and do not distinguish between users
+who have different routes or destinations. The effectiveness of such
+active control schemes usually depends on complete origin-destination
+demands. An exception is that boundary flow demands may be sufficient
+for evacuation-type problems~(e.g. \cite{ziliaskopoulos2000linear}).
+
+
+\subsection{Using mobile phones to control routes of individual users\label{sub:Using-cell-phones}}
+
+With the emergence of GPS-enabled cell phones and their widespread
+adoption in populated city areas, a third category of control has
+become possible: one that communicates directly with users and permits
+a central agency or a private entity to engage individual users to
+shift their travel choices. Such a high granularity of control would
+allow specific origin-destinations or routes to be targeted by the
+control scheme and could even be customized to the route preferences
+of the individual users.
+
+Vehicle navigation services that collect, aggregate, and process information
+from a large number of GPS-equipped mobile devices have become increasingly
+popular. Such services include Waze, Google Maps, and other such mobile
+applications. While these services are popular for their utility to
+individual drivers, the service providers are also able to collect
+information on behavior of the fraction of users that are equipped
+with these devices. Once the data has been anonymized to protect the
+privacy of individual users, the origin-destination information could
+be interpreted as a subset of the total demand on a network. Additionally,
+route guidance decisions could be made to benefit their user-base
+as a whole, rather than on an individual level. \cite{Papadimitriou2001}
+discusses the inherent inefficiencies of selfish routing versus the
+social optimum.
+
+Individually-applied control schemes have many advantages, but a limitation
+is that the user-base of a particular vehicle navigation service would
+only constitute a subset of the total users of the network. A significant
+number of users of the network may not have access to or prefer not
+to use a GPS-enabled device. Also, a complete understanding of the
+origin-destination demands on a network by a single entity would still
+be difficult or very expensive to obtain.
+
+
+\subsection{Combining route-based demands with link-level flow information\label{sub:Scenario:-combining-route-based}}
+
+\begin{figure}
+\begin{centering}
+\subfloat[\label{fig:Information-collection-methods}]{%
+\fbox{\begin{minipage}[t]{0.4\columnwidth}%
+\includegraphics[height=2in]{previous-articles/le/le-figures/SystemArchitecture}%
+\end{minipage}}}\enskip{}\subfloat[\label{fig:Communication-between-informatio}]{%
+\fbox{\begin{minipage}[t]{0.43\columnwidth}%
+\includegraphics[height=2in]{previous-articles/le/le-figures/CommunicationDiagram}%
+\end{minipage}}}
+\par\end{centering}
+
+\protect\caption{Route guidance system architecture for using both route-based and
+link-level flow information. \textbf{(a)} An illustration of Lagrangian
+and Eulerian traffic information collection systems. \textbf{(1)}
+Path-based information is collected via GPS-equipped vehicles, from
+either onboard route-guidance systems or cell phones. \textbf{(2)}
+Route-based information is sent back to a vehicle navigation service
+that aggregates traffic information from many GPS-equipped users.
+\textbf{(3)} Eulerian-based loop detectors collect flow counts and
+send the information to a traffic management agency. \textbf{(b)}
+An illustration of proposed interaction the traffic management agency,
+vehicle navigation services, and network users. \textbf{(I)} Contracting
+of the vehicle navigation services by the traffic management agency.
+This may involve monetary compensation or tolling. \textbf{(II)} Anonymized
+Lagrangian information (owned by the vehicle navigation agency) is
+transferred to the traffic management agency. \textbf{(III)} The traffic
+management service provides route guidance to the vehicle navigation
+service to improve overall traffic conditions. \textbf{(IV)} The vehicle
+navigation service provides individual network users with alternate
+route suggestions, with potential incentivization. Users may be guided
+to switch from their previously preferred (nominal) route.\label{fig:Lagrangian-Eulerian-route-guidan}}
+\end{figure}
+
+
+While collecting route information on individual users suffers from
+limited penetration, existing traffic monitoring systems, such as
+loop detectors or cameras, are able to capture all vehicle flows for
+particular locations on networks. These stationary systems are often
+monitored by public, traffic management agencies, that are interested
+in the welfare of all users on the network. It is apparent that the
+two methods for capturing traffic information are complementary: GPS-based
+methods have limited penetration but more detailed origin-destination
+information, while stationary sensors have full penetration of flow,
+but cannot give route-level information on the demands. Figure \ref{fig:Information-collection-methods}
+depicts the vehicle navigation service collecting aggregate GPS data
+from their ``dark'' users on the network \textbf{(1)}, while the
+traffic management agency collects flow count data, accounting for
+\emph{all} users (``dark'' and ``light'') \textbf{(2)}, from the
+loop detectors embedded in the road. Collectively, the route-based
+flow data could be used as a source of \emph{re-routable }traffic
+flow, while the link-based flow data could be used to better estimate
+the expected travel times that all users will experience before and
+after re-routing a subset of users. This chapter proposes a method
+for using both information types to improve traffic conditions across
+the network. For now, we motivate our work with a scenario in which
+such a technique could be employed.
+
+Figure \ref{fig:Communication-between-informatio} depicts the scenario
+in which a traffic management agency partners with a vehicle navigation
+service to take advantage of their different information sources.
+Initially, a contractual phase may take place \textbf{(I)}, where
+the public agency compensates the vehicle navigation service for access
+to their data \textbf{(II)}. The information from the vehicle navigation
+service would be aggregated and anonymized, in order to protect the
+privacy of the individual users of the service. Then, the traffic
+management agency would input the route-based demand data and the
+stationary, link-based loop detector data into the algorithm we have
+developed (Sections \ref{sec:le:Modeling-Partial-Participance} and \ref{sec:le:Accounting-for-Response}).
+The algorithm outputs a new set of aggregated routing suggestions,
+which are then sent to the vehicle navigation service \textbf{(III)}.
+Finally, the service relays the routing suggestions to their users
+\textbf{(IV)}. 
+
+For this last point of communication between the agency and the user,
+there are two notes. First, it is likely that a fraction of users
+will be suggested routes with larger travel times than to which they
+have become accustomed. In order to incentivize the user to accept
+the route suggestion, the traffic management agency may require the
+vehicle navigation service to compensate these users, enforceable
+by the initial contractual agreement between the two organizations.
+\cite{Merugu2009} describes an experiment which utilized incentives
+to move commuters' departure times to less congested times. Alternatively,
+one can consider that socially optimized routing policies may decrease
+the travel time for all users \emph{on average}. Then, if all users
+get assigned desirable routes some days and less desirable routes
+other days (in order to reduce congestion on desirable routes), then
+every user could expect to have an improved average travel time. Such
+an argument could potentially remove the need for monetary compensation
+or other types of incentivizes. The second note is that we have assumed,
+given enough incentive from the vehicle navigation service, a user
+will \emph{always} comply with the suggested route. We do not discuss
+the method of incentives in this chapter, but note that the assumption
+can be relaxed by limiting the amount of re-routable flow.
+\begin{figure}[h]
+\centering
+\includegraphics[width=.5\columnwidth]{previous-articles/le/le-figures/MultiService}%
+\caption{Scenario with multiple vehicle navigation services. Individual service's
+data is aggregated by the central agency and not shared with other
+agencies. The routing strategies are calculated by the traffic management
+agency, and the suggested routes are partitioned between the different
+user groups.}
+\label{fig:Scenario-with-multiple}
+\end{figure}
+
+
+Due to the decoupled nature of the system described in Figure \ref{fig:Lagrangian-Eulerian-route-guidan},
+we can generalize the scenario to include multiple vehicle navigation
+services (Figure~\ref{fig:Scenario-with-multiple}). Without sharing
+information between services, more route-based flow information can
+be used as input into the algorithm, thus providing more complete
+information on the origin-destination preferences of the users and
+collecting a larger pool of re-routable users, while maintaining the
+privacy of the services which wish to provide socially optimal routes
+to users.
+
+
+\subsection{Accounting for untracked users' response\label{sub:Accounting-for-untracked}}
+
+There are a number of reasons why a user would participate in the
+socially optimized routing guidance program described above. As already
+stated, they could be incentivized through monetary compensation.
+They could also simply be altruistic, and willing to sacrifice personal
+optimality for the greater good. What is unknown is the behavioral
+aspects of those users of the network whose route cannot be tracked.
+How can one predict the response of these untracked (which we refer
+to as noncooperative later) network users to the routing schemes being
+implemented for the tracked users?
+
+A standard approach, described as a Stackelberg game~(e.g.~\cite{roughgarden2001stackelberg,Krichene2012,aswani2011game}),
+assumes that the users outside the control of the central agency will
+respond with a user equilibrium assignment. Since the origin-destination
+demands of the untracked users is unknown, solving for a user equilibrium
+is not possible.
+
+In order to address this lack of information on preferences of untracked
+users, we develop an alternative model of behavior. Related to the
+concept of bounded rationality in \cite{Guo2011,Hu199751}, we assume
+that the untracked users lack the full information of the state of
+the network, and cannot make fully rational decisions on their optimal
+route. Alternatively, the untracked users could possess some \emph{inertia}
+towards switching routes, and will be content with their previously
+chosen (nominal) routes, as long as the experienced travel time on
+the route does not change ``too much''. This concept of inertia
+can be practically motivated by considering that some users may appreciate
+the scenic beauty of a particular suboptimal route, or others have
+a favorite café along another route. Thus, in order to reasonably
+assume that the untracked users will not switch their routes, the
+routing suggestions provided by the algorithm are guaranteed to not
+significantly deteriorate the quality of existing routes, beyond an
+a priori specified bound.
+
+A bounded rationality argument in the context of drivers' route selections
+was made in \cite{Hu199751}, where drivers only seek utility gains
+outside of a certain threshold. \cite{Guo2011} give some empirical
+evidence of bounded rationality on road networks. Our model differs
+from these because our model lacks origin-destination information
+on the noncooperative users, and to make this distinction, we refer
+to our model as \emph{bounded tolerance} model.
+
+
+\subsection{Contributions and overview\label{sub:Contributions-and-overview}}
+
+There is relatively little work done on how partial control schemes
+can be practically implemented on flow networks. Additionally, inconsistent
+estimations of traffic between GPS-based data and link-level data
+can complicate the analysis of the problem. In this chapter, we present
+a single methodology for accommodating both origin-destination based
+and link-level flow information for a general, multi-origin, multi-destination,
+static network (parameters are unchanging with time), while guaranteeing
+that the two sources of data are consistent with mass balance across
+junctions (Section~\ref{sec:le:Modeling-Partial-Participance}). Furthermore,
+we present a behavioral model on the untracked users based on the
+concept of bounded rationality (Section~\ref{sec:le:Accounting-for-Response}).
+This bounded rationality model permits one to cope without origin-destination
+demands for all users on the network, while still addressing the behavioral
+aspects of self-routing users. 
+
+As our main contribution, we demonstrate how the models presented
+in this chapter lead to an elegant, optimization-based solution to
+the socially optimal routing strategy problem (Section~\ref{sec:le:Convex-Optimization-Program}).
+The optimization problem is proven to be convex for a specific instance
+of horizontal queues that model highway traffic and extended to a
+general class of vertical queues . As a corollary, we show that for
+the discretized LWR network model, the social optimum can be solved
+exactly for both the purely Eulerian flow and the purely Lagrangian
+flow cases. 
+
+The generality of our method is given by applying the framework to
+a multiple-destination network with horizontal queues and investigating
+how changes in the tolerance model impact the routing advice~(Section~\ref{sec:le:Numerical-Results}).
+The chapter finishes with a conclusion and discussion of the practical
+importance of the framework and models developed here-within (Section~\ref{sec:le:Conclusion}).
+
 
 \section*{Nomenclature}
 \label{sec:le:Nomenclature}
 
-\input{previous-articles/le/nomenclature}
+\begin{longtable}{ll}
+\label{tab:le:nomenclature}
+$\links$ & Set of links.\tabularnewline
+$\origins\subset\links$ & Set of origins (sources).\tabularnewline
+$\destinations\subset\links$ & Set of destinations (sinks).\tabularnewline
+$\junctions$ & Set of junctions.\tabularnewline
+$\routes$ & Set of routes.\tabularnewline
+$\route\in\routes$ & Sequence of contiguous links $\left(\route_{1},\ldots,\route_{\left|\route\right|}\right):\route_{i}\in\links$\tabularnewline
+$\inlinks{\junction}\subset\links$ & Set of incoming links for junction $\junction\in\junctions$.\tabularnewline
+$\outlinks{\junction}\subset\links$ & Set of outgoing links for junction $\junction\in\junctions$.\tabularnewline
+$\junctionroutes{\junction}\subset\routes$ & Set of routes passing through junction $\junction\in\junctions$.\tabularnewline
+$\linkflow{\link},\prevlinkflow{\link}$ & Flow (resp. nominal flow) on link $\link\in\links$.\tabularnewline
+$\routeflow{\route}$ & Total flow on route $\route\in\routes$\tabularnewline
+$\comprouteflow{\route}$ & Cooperative flow on route $\route\in\routes$.\tabularnewline
+$\density_{\link},\bar{\density}_{\link}$ & Density (resp. nominal density) on link $\link\in\links$\tabularnewline
+$\veccomprouteflow$ & Assignment of cooperative flows across all routes $\in\routes$.\tabularnewline
+$\prevnclinkflow{\link}$ & Nominal noncooperative flow on link $\link\in\links$.\tabularnewline
+$\odflow{\origin}{\destination}$ & OD flow demand of cooperative (Lagrangian) users from origin $\origin\in\origins$
+to destination $\destination\in\destinations$.\tabularnewline
+$\latency_{\link},\origlatency_{\link}$ & Latency (resp. nominal latency) on link $\link\in\links$.\tabularnewline
+$\alpha$ & Tolerance scale factor.\tabularnewline
+ & \tabularnewline
+\end{longtable}
+
 
 
 \section{Modeling partial cooperation with Lagrangian-Eulerian demands}
 \label{sec:le:Modeling-Partial-Participance}
 
-\input{previous-articles/le/l-e-model}
+\begin{wrapfigure}{r}{0.4\columnwidth}%
+\begin{centering}
+\includegraphics[width=0.4\columnwidth]{previous-articles/le/le-figures/data_flow_diagram}
+\par\end{centering}
+
+\protect\caption{Data-flow diagram\label{fig:data-diagram}}
+\end{wrapfigure}%
+We present the general setting of the routing problem considered,
+as summarized in Figure~\ref{fig:data-diagram}. Consider a setting
+in which a subset of users are equipped with GPS-enabled devices and
+are connected to a central coordinator through a \emph{Routing interface}
+(e.g. a mobile phone application). We refer to this subset as \emph{cooperative
+}users. First, the cooperative users provide their desired routes
+to the coordinator through the routing interface. This allows the
+coordinator to have individual route information, i.e. \emph{Lagrangian
+information} for the cooperative users. Second, the loop-detectors
+(or other sensors capable of measuring aggregate link-level flows)
+provide Eulerian information. We refer to the historical estimates
+of Lagrangian and Eulerian information as the \emph{nominal} state
+of the network.
+
+Given the nominal Eulerian flow measurements for the entire network
+and the nominal Lagrangian information for the equipped vehicles,
+the central coordinator determines the optimal route assignment for
+the equipped vehicles (Section~\ref{sub:Minimizing-Total-Travel}).
+This optimization problem is represented by the \emph{optimal router}
+block. Since only the cooperative users follow the optimal route assignments
+provided by the central coordinator, we will refer to this problem
+as a \emph{partial cooperation} problem.
+
+The next step is an \emph{incentivization} step: given the target
+optimal routes, and possibly additional constraints (such as a total
+available budget) a second problem (not discussed in this chapter)
+determines an incentive for each equipped vehicle and the corresponding
+target route. The incentivization problem is outside of the scope
+of the present chapter. More information on how to solve incentivization
+and traffic demand management can be found in \cite{romain2012}.The
+assigned routes and the corresponding incentives are then offered
+to the equipped drivers, who can either accept or refuse the offer.
+The subset of vehicles that do accept the offer (thus taking the route
+assigned by the central coordinator) are called \emph{cooperating
+vehicles}. In the present chapter, we focus our attention on the optimal
+route assignment with information on mixed Lagrangian-Eulerian demands.
+
+Considering the route optimization goals stated above, we give a declaration
+of the problem statement to direct the model development of the proceeding
+sections.
+\begin{verse}
+\textbf{Problem statement: }Find a mathematical framework for flow
+networks which can encompass:
+\begin{itemize}
+\item Two different types of demand information: Lagrangian information,
+which is specified by the route traversed by the flow, and Eulerian
+information, which is specified by the flow-count across a link.
+\item Socially optimal routing strategies which can encompass both information
+types, given their limitations:
+
+\begin{itemize}
+\item Lagrangian information is only known for the cooperative flow, which
+can be rerouted from its nominal route to improve network conditions.
+\item Only Eulerian information is known for the noncooperative flow, which
+is assumed to maintain its nominal state.
+\end{itemize}
+\end{itemize}
+\end{verse}
+
+\subsection{Network model\label{sub:Network-Model}}
+
+Using standard network notation, the network model is defined by the
+tuple, $\left(\links,\junctions\right)$, where $\links$ is the set
+of links, and $\junctions$ is the set of junctions. A junction $\junction\in\junctions$
+has a set of incoming links $\inlinks{\junction}\subseteq\links$
+and outgoing links $\outlinks{\junction}\subseteq\links$. An origin
+$\origin\in\origins\subseteq\links$ is a link with no upstream junction.
+A destination $\destination\in\destinations\subseteq\links$ is a
+link with no downstream junction. A route $\route=\left(\route_{1},\ldots,\route_{\left|\route\right|}\right)\in\routes$
+is a set of adjacent links where $\route_{1}\in\origins$, $\route_{\left|\route\right|}\in\destinations$,
+and $\forall i\in\left(1,\ldots,\left|\route\right|-1\right)$, $\exists\junction_{i}^{\route}:\route_{i}\in\inlinks{\junction_{i}^{\route}},\route_{i+1}\in\outlinks{\junction_{i}^{\route}}$.
+
+
+\subsection{Cooperative demand vs. total demand}
+
+Let the network in Section \ref{sub:Network-Model} contain flows
+$\linkflow{\link}$ on every link $\link\in\links$. Furthermore,
+we assume that the network is in steady state, i.e. all state on the
+network is stationary with respect to time (e.g. flows). We further
+differentiate two types of demands: Lagrangian and Eulerian.
+\begin{itemize}
+\item We assume that the cooperative users have provided their desired origin
+and destination. Therefore, for every origin-destination pair $\left(\origin,\destination\right)\in\origins\times\destinations$,
+there is a nominal flow demand $\odflow{\origin}{\destination}$ from
+the cooperative users, where the bar notation refers to nominal state
+values. Since this type of demand concerns the routes taken by the
+flow, we describe this type of demand as \emph{Lagrangian }demand\emph{.}
+\item For the noncooperative users, i.e., the users who do not (or choose
+not to) interact with the routing interface, we do not assume knowledge
+of Lagrangian demand. Thus, we assume that the only the aggregate
+link-level flows are available via loop detectors. This aggregate
+level information does not include OD and route information, and is
+therefore defined as \emph{Eulerian} demand.
+\end{itemize}
+To recover the nominal Eulerian demand of the noncooperative vehicles,
+we further assume that the nominally used routes of the cooperative
+vehicles are known. For each link $\link\in\links$, we specify a
+nominal total link flow $\prevlinkflow{\link}$, and for each route
+$\route\in\routes$, we can specify a nominal route flow for cooperative
+vehicles, $\prevcomprouteflow{\route}$. Then, the nominal noncooperative
+Eulerian demand, $\prevnclinkflow{\link}$, is obtained for each link
+$\link\in\links$ by subtracting cooperative flow from the total link
+flow: 
+
+\begin{equation}
+\prevnclinkflow{\link}=\prevlinkflow{\link}-\sum_{\routesthroughlink}\prevcomprouteflow{\route}\label{eq:prevnclinkflow}
+\end{equation}
+
+
+For the remainder of the chapter we use the noncooperative link flows
+($\prevnclinkflow{\link},\link\in\links$) as the input data for nominal
+flow, but it is understood that this data is derived from the more
+practically measurable \emph{total }nominal flow values ($\prevlinkflow{\link},\link\in\links$)
+and the cooperative nominal route flows ($\prevcomprouteflow{\route},\route\in\routes$)
+via Equation (\ref{eq:prevnclinkflow}). 
+
+Since we have subtracted off the flow of nominal cooperative flow
+to obtain the noncooperative flow, we study properties of the network
+flow when the rerouted cooperative flow is added back into the network.
+We introduce the decision variable: $\comprouteflow{\route}$, the
+amount of cooperative flow assigned to route $\route\in\routes$.
+To enforce that the entire flow across a link is accounted for and
+same origin-destination demands of the cooperative users are satisfied,
+we have the following constraints:
+
+\begin{eqnarray}
+\sum_{\routesthroughod}\comprouteflow{\route} & =\odflow{\origin}{\destination} & \forall\origin\in\origins,\destination\in\destinations\label{eq:od-flow}\\
+\linkflow{\link} & =\sum\limits _{\routesthroughlink}\comprouteflow{\route}+\prevnclinkflow{\link} & \forall\link\in\links\label{eq:link-flow}
+\end{eqnarray}
+
+
+where $\odflow{\origin}{\destination}=\sum_{\routesthroughod}\prevcomprouteflow{\route}$
+is cooperative flow between origin $\origin$ and destination $\destination$.
+
+A requirement of the Eulerian flow is that noncooperative flow must
+be conserved across junctions. If the flow across a link $\link\in\links$
+is $\linkflow{\link}$, then the following must hold:
+
+\begin{eqnarray}
+\sum_{\link\in\inlinks{\junction}}\linkflow{\link} & =\sum\limits _{\link\in\outlinks{\junction}}\linkflow{\link} & \forall\junction\in\junctions\label{eq:mass-balance}
+\end{eqnarray}
+
+
+Since we partitioned flow on each link into two classes (cooperative
+and noncooperative), flow conservation must hold across both classes
+independently. We will see shortly that flow conservation across the
+cooperative class will be guaranteed by the condition that all cooperative
+flow must be assigned to a route. Then, for the noncooperative class
+of nominal flow, we must always have the condition that flow conservation
+holds across junctions. Since this is a condition on the input to
+the problem we only state it here once and assume the condition for
+the rest of the chapter.
+
+\textbf{Model Consistency Condition: }For every junction $\junction\in\junctions$,
+we assume: $\sum_{\link\in\inlinks{\junction}}\prevnclinkflow{\link}=\sum_{\link\in\outlinks{\junction}}\prevnclinkflow{\link}$.
+
+Equations~(\ref{eq:od-flow})-(\ref{eq:mass-balance}) define a route-allocation
+policy $\veccomprouteflow=\left\{ \comprouteflow{\route}:\route\in\routes\right\} $
+for all cooperative users that satisfies all demand requirements.
+There are three main requirements that we have from the set of constraints:
+non-compliant (Eulerian) demand is satisfied, compliant (Lagrangian)
+demand is satisfied, and mass balance across junctions is satisfied.
+The first two are obvious from the above constraints, while the third
+one needs proof.
+\begin{prop}
+For a feasible $\veccomprouteflow$ to the set of Equations (\ref{eq:od-flow})
+and (\ref{eq:link-flow}), $\forall\junction\in\junctions$, $\sum_{\link\in\inlinks{\junction}}\linkflow{\link}=\sum_{\link\in\outlinks{\junction}}\linkflow{\link}$.\end{prop}
+\begin{proof}
+From the model consistency condition above, we only need to prove
+the following statement: 
+\[
+\sum_{\link\in\inlinks{\junction}}\sum_{\routesthroughlink}\comprouteflow{\route}=\sum_{\link\in\outlinks{\junction}}\sum_{\routesthroughlink}\comprouteflow{\route}
+\]
+Let $\injunctionroutes{\junction}$ be the routes that pass through
+links in the incoming links of junction $\junction$. Let $\outjunctionroutes{\junction}$
+be the same for outgoing links. Then $\injunctionroutes{\junction}=\left\{ \route\in\routes:\inlinks{\junction}\cap\route\neq\emptyset\right\} $.
+We also know that by the definition of a route, any route that passes
+through an incoming link of a junction (not a source or sink) must
+pass through an outgoing link, and therefore $\injunctionroutes{\junction}\subseteq\outjunctionroutes{\junction}$.
+A similar argument can be made to show $\outjunctionroutes{\junction}\subseteq\injunctionroutes{\junction}$.
+This shows that $\injunctionroutes{\junction}=\outjunctionroutes{\junction}$.
+Then,
+
+\[
+\sum_{\link\in\inlinks{\junction}}\sum_{\routesthroughlink}\comprouteflow{\route}=\sum_{\injunctionroutes{\junction}}\comprouteflow{\route}=\sum_{\outjunctionroutes{\junction}}\comprouteflow{\route}=\sum_{\link\in\outlinks{\junction}}\sum_{\routesthroughlink}\comprouteflow{\route}
+\]
+
+\end{proof}
+
+\subsection{Reducing total latency by rerouting cooperative users\label{sub:Minimizing-Total-Travel}}
+
+We now formulate the problem of minimizing total latency (or equivalently,
+total travel time) with route assignments of cooperative vehicles
+as the decision variable. There are two classes of latency functions
+studied in the literature: first~\cite{Nie2010c,roughgarden2001stackelberg,Papadimitriou2010},
+where the link latency is assumed to be the function of flow in the
+link, and second~\cite{Tong2000,lo2002cell,daganzo1994cell,lighthill1955kinematic,richards1956shock},
+where density is assumed to affect link latencies. We generically
+introduce latency as a value $\latency_{\link}$ associated with the
+state and properties of a link $\link\in\links$ and discuss the different
+models of latency as it pertains to different flow models in Section
+\ref{sec:le:Convex-Optimization-Program}. We can therefore express the
+total latency on a link as the flow times the latency, or $\linkflow{\link}\latency_{\link}$.
+
+We can now express a general form of the Lagrangian-Eulerian flow,
+route assignment problem in a standard optimization program formulation:
+
+\begin{eqnarray}
+\begin{array}{rcc}
+\underset{\linkflow{\link}|\link\in\links,\comprouteflow{}|\route\in\routes}{\text{minimize}} &  & \sum_{\link\in\links}\linkflow{\link}\latency_{\link}\\
+\text{subject to:}\\
+ &  & \begin{aligned}\linkflow{\link} & = &  & \sum\nolimits _{\routesthroughlink}\comprouteflow{\route}+\prevnclinkflow{\link} &  & \forall\link\in\links\\
+\sum_{\routesthroughod}\comprouteflow{\route} & = &  & \odflow{\origin}{\destination} &  & \forall\origin\in\origins,\destination\in\destinations
+\end{aligned}
+\end{array}\label{eq:le}
+\end{eqnarray}
+
+
+where the objective represents the total latency in the network, the
+first constraint relates cooperative route flows and noncooperative
+link flows to total link flows, and the last constraint states that
+the compliant route flows must be partitioned in a way that satisfies
+the nominal origin-destination demand.
+
 
 
 \section{Accounting for response of noncooperative demand via bounded tolerance}
 \label{sec:le:Accounting-for-Response}
 
-\input{previous-articles/le/complacency}
+Recall from our discussion in Section~\ref{sec:le:Modeling-Partial-Participance},
+that due to imperfect perceptions of the travel times, the travelers
+forming the non-cooperative demand may be assumed to be boundedly
+rational, and may not change their nominal paths. This assumption
+is especially valid when the travel times of non-cooperative users
+do not significantly change when the cooperative users are routed
+in a socially optimal manner. In contrast, if the cooperative vehicles
+cause an excessive increase in latency on some routes for noncooperative
+vehicles, then this assumption may not be realistic~(see \cite{aswani2011game,roughgarden2001stackelberg,6744679}).
+For this reason, we have to enhance the model for rerouting cooperative
+vehicles under stricter conditions.
+
+
+\subsection{Bounded tolerance\label{sub:Motivating-limited-complacency}}
+
+A traditional approach to predicting vehicle route choice comes from
+the field of traffic assignment (e.g. \cite{wardrop1952some,lo2002cell,papageogiou1990})
+and Nash equilibria in game theory (e.g. \cite{roughgarden2002bad,Papadimitriou2010}),
+often described as \emph{user equilibrium} in the context of traffic
+assignment and introduced in \cite{wardrop1952some}. The congestion
+games literature considers Stackelberg games, which are used to analyze
+how selfish users respond to a centrally-controlled subset of users
+in a principled way (see \cite{Krichene2012,roughgarden2001stackelberg}).
+Our approach in this chapter is simpler. The reasonability of our approach
+can be argued using a bounded tolerance assumption on the part of
+noncooperative vehicles. We replace the assumption of stationarity
+with a stronger assumption that stationarity is only achieved if all
+routes on the network do not have a latency increase greater than
+a certain amount, proportional to the nominal latency experienced
+before rerouting the cooperative vehicles. Tolerance is assumed in
+the sense that if latencies on a route do not noticeably increase,
+then noncooperative vehicles do not seek better paths. However, the
+tolerance to increase delay is still limited in the sense that as
+latency increases on a route, noncooperative vehicles will eventually
+switch. The term \emph{tolerance }is used to address the fact that
+the bounded rationality models assumed in~\cite{Hu199751,Guo2011}
+allow decisions to be made by the noncooperative users, while our
+bounded tolerance model specifies how much perturbation of the nominal
+is allowed, before the assumption the assumption is no longer valid
+that noncooperative users do not change routes.
+
+
+\subsection{Modeling bounded tolerance\label{sub:Modeling-limited-complacency}}
+
+The discussion in Section \ref{sub:Motivating-limited-complacency}
+dictates that one must have knowledge about a nominal network state
+with which to compare final network state conditions. Therefore, we
+introduce as input, the nominal latency $\origlatency_{\route}$ for
+every route $\route\in\routes$. We then select as a model of bounded
+tolerance the condition that the final latency on a route may not
+be a factor $\left(1+\complacencyscale\right)$ greater than the nominal
+latency $\origlatency_{\route}$, where $\alpha\in\mathbb{R}_{+}$
+can be seen as the \emph{tolerance scale factor}. The latency on a
+route can be computed by summing the latencies experienced on all
+links in $\route=\left\{ \route_{1},\ldots,\route_{\left|\route\right|}\right\} $:
+
+\[
+\latency_{\route}=\sum_{\link\in\route}\latency_{\link}
+\]
+
+
+We can now express the bounded tolerance condition constraints:
+
+\begin{eqnarray}
+\sum_{\link\in\route}\latency_{\link} & \le\left(1+\complacencyscale\right)\origlatency_{\route} & \forall\route\in\routes\label{eq:limcomp-nonconvex}
+\end{eqnarray}
+
+
+Adding this constraint to Problem~\ref{eq:le} completes the \emph{partial
+cooperation, bounded tolerance} problem. Section~\ref{sec:le:Convex-Optimization-Program}
+describes how this problem applies to different flow models and latency
+models. We now introduce another tolerance model and describe the
+class of problems to which it can be applied.
+
+
+\subsection{Comparative tolerance\label{sub:Comparative-complacency}}
+
+The model for bounded tolerance described above places a limit on
+the increase of latency on a particular route. An alternative approach
+would be to limit the increase in utility that alternative routes
+gain over a particular route. In other words, the model developed
+in Section \ref{sub:Modeling-limited-complacency} assumes that a
+particular route flow would be complacent on its original route as
+long as its own latency does not increase too much, \emph{while not
+considering the possibility that the utilities of alternative routes
+may have increased significantly}. To address this limitation, we
+introduce a \emph{comparative tolerance} model and discuss the underlying
+modeling assumptions.
+
+We first assume for a given route $\route\in\routes$ with origin
+$\origin_{\route}\in\origins$ and destination $\destination_{\route}\in\destinations$,
+and assuming a tolerance scale factor $\alpha=0$ (no tolerance to
+delays induced by cooperative flows), that the allowable difference
+between the route's final latency and the final latency of all other
+routes sharing the same origin and destination is the largest difference
+in nominal latencies between itself and all other routes, or 0 if
+the considered route has the smallest nominal latency. Then, if the
+scale factor $\alpha$ is greater than 0, this allowable difference
+is increased by $\alpha\origlatency_{\route}$. Mathematically, we
+can express this condition as follows:
+
+\begin{eqnarray*}
+\latency_{\route}-\latency_{\bar{\route}}\le & \max\left(0,\max_{\tilde{\route}|\origin,\destination\in\tilde{\route},\tilde{\route}\neq\route}\left(\origlatency_{\route}-\origlatency_{\tilde{\route}}\right)\right)+\alpha\origlatency_{\route} & \forall\bar{\route}:\origin,\destination\in\bar{\route},\bar{\route}\neq\route\\
+ &  & \forall\route:\origin,\destination\in\route,\forall\origin\in\origins,\forall\destination\in\destinations
+\end{eqnarray*}
+
+
+While this formulation more accurately captures the concept of traveler
+behavior under improved comparative information about alternative
+routes, it introduces many more constraints than the bounded tolerance
+formulation in Section \ref{sub:Modeling-limited-complacency}. Additionally,
+since the LHS of the constraint is a less-than inequality that contains
+the subtraction of two functions of decision variables, common assumptions
+on the latency functions will typically lead to a non-convex constraint.
+
+One assumption that will guarantee convexity of the above constraints
+is if all links have affine latency functions. It can be seen by considering
+that the LHS is the summation of link latencies along a particular
+route, and the RHS is a constant that can be computed a priori. In
+Section \ref{sub:Linear-Latency} we will give a numerical example
+of a simple network with linear latency functions, comparing the output
+of our model assuming first simple bounded tolerance, and then considering
+comparative tolerance.
+
 
 
 \section{Formulating bounded tolerance as a convex optimization problem\label{sec:le:Convex-Optimization-Program}}
 
-\input{previous-articles/le/flowmodels}
+The preceding sections discussed a generic model for route-based flow
+optimization on a flow network with mixed Lagrangian-Eulerian demands,
+without identifying any specific flow model. In this section, we discuss
+two types of flow models, horizontal queues and vertical queues. We
+show for each case how the modeling assumptions can be made into convex
+constraints, enabling one to solve the partial cooperation, bounded
+tolerance model as a convex optimization problem. We begin our discussion
+showing how vertical queues fit cleanly within our model (Section~\ref{sub:Vertical-Queueing}).
+However, modeling horizontal queues (e.g. highway networks) requires
+some additional theoretical setup. What has worked for modeling internet,
+supply chains, etc. does not work for highway networks, as they are
+nonlinear systems with non-convex constraints that depend on the density
+of the links, rather than the flows. Its discussion constitutes the
+bulk of the section (Section~\ref{sub:Horizontal-Queueing}).
+
+
+\subsection{Vertical queues\label{sub:Vertical-Queueing}}
+
+Several types of networks, such as communication networks or machine
+queues (e.g. \cite{roughgarden2001stackelberg}), can model link
+latencies as a function of the aggregated flow on the link. To contrast
+with the model discussed in Section \ref{sub:Horizontal-Queueing},
+we refer to such networks as \emph{vertical queues}. In this section,
+we show an example of how the concepts of partial cooperation and
+bounded tolerance can be modeled as a convex optimization program
+for a specific class of vertical queues, and give a brief discussion
+on how the results extend to a more general class of vertical queues.
+
+
+\subsubsection{Example: M/M/1 queueing model\label{sub:M/M/1-Queueing-Model}}
+
+A common way to model latencies for communication networks is the
+M/M/1 queue~(e.g. \cite{aswani2011game}), which assumes Poisson
+arrivals and exponential service times. On a link $\link\in\links$,
+the average latency as a function of the rate of Poisson arrivals
+(the flow) $\linkflow{}$ is given by the equation:
+
+\begin{equation}
+\latency_{\link}\left(\linkflow{}\right)=\frac{\occupationtime_{\link}}{\processtime_{\link}-\linkflow{}}\label{eq:vq}
+\end{equation}
+
+
+where $\occupationtime_{\link}$ is the occupation rate and $\processtime_{\link}$
+is the processing rate. The flow on a link must be less than the processing
+rate for the system to be stable. The function $\latency_{\link}\left(\cdot\right)$
+is convex in $\left[0,\mu_{\link}\right)$. We can now substitute
+Equation \eqref{eq:vq} into \eqref{eq:le} and \eqref{eq:limcomp-nonconvex}
+to obtain the following program:
+
+\begin{eqnarray}
+\begin{array}{rcc}
+\underset{\linkflow{\link}|\link\in\links,\routeflow{\route}|\route\in\routes}{\text{minimize}} &  & \sum\nolimits _{\link\in\links}\frac{\occupationtime_{\link}\linkflow{\link}}{\processtime_{\link}-\linkflow{\link}}\\
+\text{subject to:}\\
+ &  & \begin{aligned}\sum\nolimits _{\link\in\route}\frac{\occupationtime_{\link}}{\processtime_{\link}-\linkflow{\link}} & \le &  & \origlatency_{\route}\left(1+\complacencyscale\right) &  & \forall\route\in\routes\\
+\linkflow{\link} & = &  & \sum\nolimits _{\routesthroughlink}\comprouteflow{\route}+\prevnclinkflow{\link} &  & \forall\link\in\links\\
+\sum_{\routesthroughod}\comprouteflow{\route} & = &  & \odflow{\origin}{\destination} &  & \forall\origin\in\origins,\destination\in\destinations
+\end{aligned}
+\end{array}\label{eq:le-1}
+\end{eqnarray}
+
+
+where again, $\complacencyscale$ is given and corresponds to the
+maximal threshold tolerable by users if Lagrangian (cooperative) demand
+perturbs the nominal flow. This program is convex and can be solved
+by standard convex solvers (with some algebraic manipulations for
+disciplined convex programming solvers). Indeed, the objective is
+the summation of convex functions, and the first constraint is a convex
+inequality \emph{(less-than} inequality with a summation of convex
+functions on the LHS).
+
+
+\subsubsection{Class of convex vertical queues\label{sub:Class-of-Convex}}
+
+This section shows that if all link latencies are convex, increasing
+functions of flow~(e.g. following the modeling assumptions of \cite{roughgarden2001stackelberg}),
+then the partial cooperation, bounded tolerance problem is guaranteed
+to be convex.
+
+From the discussion in Section \ref{sub:M/M/1-Queueing-Model}, we
+can generalize the class of latency functions for vertical queues,
+which lead to a convex formulation. In Equation \eqref{eq:le}, only
+the objective contains latency terms, and in Equation \eqref{eq:limcomp-nonconvex},
+the LHS of the inequality contains latency terms. Therefore, we need
+to verify the convexity of the objective and the bounded tolerance
+constraints.
+
+A well known-result of convex analysis is that the summation of convex
+functions preserves convexity. Therefore, the convexity of the bounded
+tolerance constraint is guaranteed if the latency function on every
+link is convex. Additionally, for a link $\link\in\links$, the total
+link latency, $\linkflow{\link}\latency_{\link}\left(\linkflow{\link}\right)$,
+is convex from the assumptions on $\latency_{\link}$, and therefore
+the sum of all total link latencies (which is the objective) is guaranteed
+to be convex.
+
+
+\subsection{Horizontal queues\label{sub:Horizontal-Queueing}}
+
+A standard assumption in transportation networks is that latencies
+are not determined uniquely by the flow on the link, but rather how
+densely populated the link is. Such latency models are referred to
+as \emph{horizontal queue}s, as the congestion on a link occupies
+physical space which may propagate in the horizontal direction. In
+this section, we show how the partial cooperation and bounded tolerance
+models can be extended to horizontal queues. First we develop the
+relationship between link flow and link density, the resulting latency
+model, and how a convex optimization problem can be formulated for
+networks with horizontal queues.
+
+
+\subsubsection{Link model\label{sub:Link-model}}
+
+
+\paragraph{Constraining flow by link densities}
+
+For each horizontal queuing link $\link\in\links$, in addition to
+having a link flow $\linkflow{\link}$, a horizontal queue link also
+has a density of vehicles $\density_{\link}$, expressing the number
+of vehicles occupying a link divided by the length $\length_{\link}$.
+Relating the density of a link to its flow, each link also has a trapezoidal
+fundamental diagram specified by three parameters: free-flow velocity
+$\ffspeed_{\link}$, congestion velocity $\congspeed_{\link}$, and
+max flow $\flowmax{\link}$.
+From these parameters, one can compute the critical density $\densitycrit_{\link}$
+and jam density $\densitymax_{\link}$. Given that we are assuming
+the network is in equilibrium, then outflow must equal inflow for
+each link~(see \cite{gomes2008behavior} for a detailed analysis
+of horizontal queue equilibria). Therefore, only need to consider
+the single variable $\linkflow{\link}$ when analyzing flow on a link,
+rather than considering both the inflow and outflow of a link. We
+express the $\density_{\link}$ (as traditionally assumed by the LWR
+equation~\cite{daganzo1994cell,daganzo1995cell,lighthill1955kinematic,richards1956shock}),
+we have two coupled variables $\linkflow{\link}$ and $\density_{\link}$,
+with the following constraints:
+
+\begin{eqnarray}
+\linkflow{\link} & \le & \ffspeed_{\link}\density_{\link}\label{eq:constraint-demand}\\
+\linkflow{\link} & \le\congspeed_{\link} & \left(\densitymax_{\link}-\density_{\link}\right)\label{eq:constraint-supply}\\
+0\le\linkflow{\link} & \le & \flowmax{\link}\label{eq:constraint-maxflow}
+\end{eqnarray}
+
+
+where \eqref{eq:constraint-demand} restricts the outflow of link
+$\link$, \eqref{eq:constraint-supply} restricts the inflow,
+and \eqref{eq:constraint-maxflow} is a physical capacity of the
+link. These constraints are a relaxation of the fundamental diagram,
+initially introduced by \cite{gomes2006optimal}.
+
+
+\paragraph{Latencies}
+
+For a link $\link\in\links$, the latency $\ell_{\link}$ is obtained
+by multiplying the length and velocity of the link, where the velocity
+of the link is a function of both flow and density\@. With a notational
+change (the latency now depending on two variables), the latency function
+is given by:
+
+\[
+\ell_{\link}\left(\flow,\density\right)=\frac{\length_{\link}\density}{\flow}
+\]
+
+
+and the total latency $\linkflow{\link}\latency_{\link}\left(\linkflow{\link},\density_{\link}\right)$
+on a link is given simply by the number of vehicles on a link, or
+$\length_{\link}\density$. Note that a nominal link latency must
+be determined from both a nominal flow and nominal density, requiring
+more information than the point queue model, which only needs nominal
+link flows.
+
+
+\subsubsection{Relaxation of Junction Model\label{sub:Relaxation-of-Junction}}
+
+In order to guarantee uniqueness of solutions of junction problems
+in LWR networks, it is common to assume that the sum of flows across
+junctions is maximal, while respecting the prescribed turning ratios.
+\cite{daganzo1995cell} describes a junction model for 2-to-1 merges
+and 1-to-2 diverges tailored to the CTM model, while \cite{garavello2006traffic}
+describe a more general junction model allowing $n$-to-$m$ merges
+for the continuous LWR network model, which includes the Daganzo model
+as a special case with triangular fundamental diagrams and limited
+merge/diverge types. We refer to the flow-maximizing junction models
+as the \emph{unrelaxed }junction model, and the flow-density relationship
+in Section~\ref{sub:Link-model} as the \emph{relaxed} junction model
+as it does not include a flow maximization condition.
+
+One technical reason why the relaxed model is used is that a flow-maximization
+condition would lead to a non-convex problem formulation. Another
+argument that can be made is that for certain junction types, some
+\emph{split-ratio vector} or \emph{priority vector }(see \cite{Coclite2002})
+may exist that would lead to the flow solution given by the optimization
+problem. Therefore, since this problem has no fixed split-ratios,
+it can be considered a free variable and the optimization problem
+has discovered one of the many possible solutions to some junction.
+This argument has limits, as there is no such free parameter for 1-to-1
+junction types, for instance.
+
+There have been methods proposed for dealing with the implicit ``car
+holding'' issue introduced from the relaxation, such as adding penalty
+terms in the objective~(see \cite{ziliaskopoulos2000linear}), but
+we do not consider these in our analysis.
+
+
+\subsubsection{Optimization program\label{sub:Optimization-program}}
+
+For the horizontal queues network, we can now express the total latency
+minimization problem expressed in Section \eqref{sub:Modeling-limited-complacency}:
+
+\begin{align}
+\begin{array}{rcc}
+\underset{\linkflow{\link},\density_{\link}|\link\in\links,\routeflow{\route}|\route\in\routes}{\text{minimize}} &  & \sum\nolimits _{\link\in\links}\length_{\link}\density_{\link}\\
+\text{subject to:}\\
+ &  & \begin{aligned}\sum\nolimits _{\link\in\route}\frac{\length_{\link}\density_{\link}}{\linkflow{\link}} & \le &  & \left(1+\complacencyscale\right)\origlatency_{\route} &  & \forall\route\in\routes\\
+\linkflow{\link} & \le &  & \ffspeed_{\link}\density_{\link} &  & \forall\link\in\links\\
+\linkflow{\link} & \le &  & \congspeed_{\link}\left(\densitymax_{\link}-\density_{\link}\right) &  & \forall\link\in\links\\
+0 & \le &  & \linkflow{\link}\le\flowmax{\link} &  & \forall\link\in\links\\
+\linkflow{\link} & = &  & \sum\nolimits _{\routesthroughlink}\comprouteflow{\route}+\prevnclinkflow{\link} &  & \forall\link\in\links\\
+\sum_{\routesthroughod}\comprouteflow{\route} & = &  & \odflow{\origin}{\destination} &  & \forall\origin\in\origins,\destination\in\destinations
+\end{aligned}
+\end{array}\label{eq:hqproblem}
+\end{align}
+
+
+This formulation is not convex, specifically the bounded tolerance
+constraint is not convex. There is a superseding problem with the
+formulation, that the bounded tolerance constraints and outflow constraints
+($\linkflow{\link}\le\congspeed_{\link}\left(\densitymax_{\link}-\density_{\link}\right)$)
+are guaranteed to be non-binding. Several of the constraints can be
+shown to be non-binding by observing that a solution must satisfy
+$\density_{\link}=\frac{\linkflow{\link}}{\ffspeed_{\link}}$. We
+prove that next.
+\begin{lem}
+\label{lem:rho}If the solution $\veccomprouteflow^{*},\vecdensity^{*}$
+is optimal for Problem~\ref{eq:hqproblem}, then $\forall\link\in\links$:
+\textup{$\density_{\link}^{*}=\frac{\linkflow{\link}^{*}}{\ffspeed_{\link}}$}\end{lem}
+\begin{proof}
+Assume $\exists\density_{\link}>\frac{\linkflow{\link}^{*}}{\ffspeed_{\link}}$.
+Reducing $\density_{\link}$ to $\frac{\linkflow{\link}^{*}}{\ffspeed_{\link}}$
+only decreases the LHS of the first constraint in Problem~\eqref{eq:hqproblem}.
+The second constraint becomes an equality by construction. The RHS
+of the third constraint increases. Since the flow terms are not changed,
+we see that the feasibility of the problem is maintained. Additionally,
+the objective strictly decreases, thus proving that a solution with
+such a $\density_{\link}$ is sub-optimal.
+\end{proof}
+We can now simplify Problem~\ref{eq:hqproblem} by substituting in
+the value of $\vecdensity$ from Lemma~\ref{lem:rho}, and using
+the following notational change for the parameters $\length_{\link}$
+and  $a_{\link}=\frac{L_{\link}}{v_{\link}}$:
+
+\begin{eqnarray}
+\min_{\linkflow{\link}|\link\in\links,\comprouteflow{\route}|\route\in\routes} & \sum_{\link\in\mathcal{L}}a_{\link}\linkflow{\link}\label{eq:rhosimp}\\
+\text{subject to:}\nonumber \\
+ & \sum_{\link\in\route}\length_{\link}\ffspeed_{\link}\le\left(1+\complacencyscale\right)\origlatency_{\route} & \forall\route\in\routes\nonumber \\
+ & \linkflow{\link}\le\ffspeed_{\link}\left(\frac{\linkflow{\link}}{\ffspeed_{\link}}\right) & \forall\link\in\links\nonumber \\
+ & \linkflow{\link}\le\congspeed_{\link}\left(\densitymax_{\link}-\frac{\linkflow{\link}}{\ffspeed_{\link}}\right) & \forall\link\in\links\nonumber \\
+ & 0\le\linkflow{\link}\le\flowmax{\link} & \forall\link\in\links\nonumber \\
+ & \linkflow{\link}=\sum\nolimits _{\routesthroughlink}\comprouteflow{\route}+\prevnclinkflow{\link} & \forall\link\in\links\nonumber \\
+ & \sum_{\routesthroughod}\comprouteflow{\route}=\odflow{\origin}{\destination} & \forall\origin\in\origins,\destination\in\destinations\nonumber \\
+\nonumber 
+\end{eqnarray}
+
+
+We can now detect non-binding constraints easily. The first constraint
+in Problem~\eqref{eq:rhosimp} must be satisfied because the
+LHS is the free-flow travel time of the route and is minimal, while
+the RHS must be greater or equal to free-flow (keeping in mind $\alpha\ge0$).
+The second constraint is always an equality, by Lemma~\ref{lem:rho}.
+The third constraint is guaranteed from the assumption of a trapezoidal
+fundamental diagram. The simplified problem is now:
+
+\begin{eqnarray}
+\min_{\linkflow{\link}|\link\in\links,\comprouteflow{\route}|\route\in\routes} & \sum_{\link\in\mathcal{L}}a_{\link}\linkflow{\link}\label{eq:rhosimp-1}\\
+\text{subject to:}\nonumber \\
+ & 0\le\linkflow{\link}\le\flowmax{\link} & \forall\link\in\links\nonumber \\
+ & \linkflow{\link}=\sum\nolimits _{\routesthroughlink}\comprouteflow{\route}+\prevnclinkflow{\link} & \forall\link\in\links\nonumber \\
+ & \sum_{\routesthroughod}\comprouteflow{\route}=\odflow{\origin}{\destination} & \forall\origin\in\origins,\destination\in\destinations\nonumber 
+\end{eqnarray}
+
+
+The above problem is now in a linear program formulation. We now show
+that the concept of noncooperative flow can be replaced by a capacity
+reduction on all the links. Let us rework some of the expressions
+in terms of the cooperative and noncooperative vehicles:
+
+\begin{eqnarray}
+\min_{\comprouteflow{\route}|\route\in\routes} & \sum_{\link\in\links}a_{\link}\prevnclinkflow{\link}+\sum_{\link\in\links}a_{\link}\sum_{\routesthroughlink}\comprouteflow{\route}\label{eq:subbed}\\
+\text{subject to:}\nonumber \\
+ & -\prevnclinkflow{\link}\le0\le\sum_{\routesthroughlink}\comprouteflow{\route}\le\flowmax{\link}-\prevnclinkflow{\link} & \forall\link\in\links\nonumber \\
+ & \sum_{\routesthroughod}\comprouteflow{\route}=\odflow{\origin}{\destination} & \forall\origin\in\origins,\destination\in\destinations\nonumber 
+\end{eqnarray}
+
+
+We can now simplify further. The first term in the objective is constant,
+since $\noncomprouteflow{\route}$ is not a decision variable. Then,
+the second constraint can be simplified by introducing a reduced capacity
+constant, $\bar{\flow}_{\link}^{\max}=\flowmax{\link}-\prevnclinkflow{\link}$.
+If we drop the \emph{cooperative} pretense from the decision variable,
+then we have reduced the problem to a modified capacity, constant
+latency, Lagrangian system optimal problem, which is simplified and
+linear:
+
+\begin{eqnarray}
+\min_{\routeflow{\route}|\route\in\routes} & \sum_{\link\in\links}a_{\link}\sum_{\routesthroughlink}\routeflow{\route}\label{eq:subbed-1}\\
+\text{subject to:}\nonumber \\
+ & 0\le\sum_{\routesthroughlink}\routeflow{\route}\le\bar{\flow}_{\link}^{\max} & \forall\route\in\routes\nonumber \\
+ & \sum_{\routesthroughod}\routeflow{\route}=\odflow{\origin}{\destination} & \forall\origin\in\origins,\destination\in\destinations\nonumber 
+\end{eqnarray}
+
+\begin{lem}
+\label{lem:main}Let $\vecrouteflow^{*}=\left\{ \routeflow{\route}^{*}:\route\in\routes\right\} $
+be a solution to Problem~\eqref{eq:subbed-1}. Then
+
+\begin{eqnarray*}
+\veccomprouteflow' & = & \vecrouteflow^{*}\\
+\density'_{\link} & = & \frac{\prevnclinkflow{\link}+\sum_{\routesthroughlink}\routeflow{\route}^{*}}{\ffspeed_{\link}}
+\end{eqnarray*}
+
+
+is a solution to Problem \eqref{eq:hqproblem}.\end{lem}
+\begin{proof}
+Using Lemma \ref{lem:rho}, the equality $\linkflow{\link}=\prevnclinkflow{\link}+\sum_{\routesthroughlink}\comprouteflow{\route}$,
+and the variable name substitution made in Problem \ref{eq:subbed-1},
+the result follows immediately.\end{proof}
+\begin{cor}
+\label{cor:An-optimal-solution}An optimal solution to Problem~\eqref{eq:hqproblem}
+is a feasible solution of the unrelaxed junction model in Section~\ref{sub:Relaxation-of-Junction}.\end{cor}
+\begin{proof}
+Since the flow on every link is in free flow ($\linkflow{\link}=\ffspeed_{\link}\density_{\link},\forall\link\in\links$),
+the supply $\sum_{\link\in\inlinks{\junction}}\ffspeed_{\link}\density_{\link}$
+at every junction $\junction\in\junctions$ is equal to the flow across
+the junction $\sum_{\link\in\inlinks{\junction}}\linkflow{\link}$,
+and is therefore maximal.
+\end{proof}
+This corollary shows that solving for the static social optimum on
+networks with horizontal queues does not encounter the non-convexity
+issues typically associated with the CTM constraints in dynamic traffic
+problems. For instance, \cite{ziliaskopoulos2000linear} uses the
+relaxed junction model (which allows ``car-holding'') that we present
+in Section~\ref{sub:Link-model} to solve the single destination
+social optimum problem as a linear program, and \cite{gomes2006optimal}
+use a relaxed junction model to solve an optimal ramp metering problem
+as a linear program (with a zero-relaxation gap under certain conditions).
+
+Commonly considered problems in traffic assignment such as social
+optimum for purely Lagrangian flow ($\prevnclinkflow{\link}=0,\forall\link\in\links$)
+and purely Eulerian flow ($\comprouteflow{\route}=0,\forall\route\in\routes$)
+serve as special cases of Corollary~\ref{cor:An-optimal-solution}
+and therefore an optimal solution can be found for both problems for
+the unrelaxed junction model by solving the linear program in Problem~\eqref{eq:subbed-1}. 
+
+
+\subsubsection{Limiting deviations in density\label{sub:Limiting-Deviations-in}}
+
+There are limitations in the expressiveness of the current horizontal
+queues model under total latency minimization. To circumvent these
+issues, this section proposes the addition of constraints that restrict
+the allowable densities to be within the locality of the nominal densities
+that are used to compute nominal latencies.
+
+The purpose of these constraints is to prevent the optimization program
+from setting all links to be in the free-flow state, which has the
+negative effect of over-simplifying the model developed here-within
+(Section \eqref{sub:Optimization-program}). Instead, total latencies
+across the network can be minimized \emph{while considering likely
+congestion patterns}. To motivate the usefulness of such a model,
+one can make a physical argument that rerouting may only cause bounded
+deviations in the density, and that congestion may not be cleared
+due to rerouting because of additional issues such as weaving or the
+physical road conditions.
+
+To restrict the densities to only take certain values, we require
+that each link $\link\in\links$, includes an upper and lower density
+bound, $\densityupper_{\link}$ and $\densitylower_{\link}$ respectively.
+We append to the program in Equation \eqref{eq:hqproblem}, the set
+of constraints bounding the allowable densities:
+
+\begin{eqnarray*}
+\densitylower_{\link} & \le\density_{\link}\le\densityupper_{\link} & \forall\link\in\links
+\end{eqnarray*}
+
+
+In Section~\ref{sec:le:Numerical-Results}, we show an example of a
+network with horizontal queues with density bounds that has the bounded
+tolerance constraint as a tight constraint. This demonstrates that
+bounding the allowable densities can capture the characteristics of
+bounded tolerance for networks with horizontal queues.
+
+
+\subsection{Algorithm for data preconditioning\label{sub:Preparing-Input-Data}}
+
+If input data into our problem is taken from a physical network with
+inherent sources of noise, it is likely that there will be a number
+of conditions that will cause the raw data to be incompatible with
+the problem constraints, thus making the problem infeasible. For instance,
+a link's estimated density may not lie within the fundamental diagram
+constraints in Section \ref{sub:Link-model}, or there may not be
+exact mass balance across junctions. If the estimates from the stationary
+sensors are reasonable, then these constraint violations will not
+be severe, but even small deviations will render the optimization
+program infeasible. Therefore the input data must be filtered to be
+preconditioned to meet the requirements. We propose an optimization
+program formulation.
+
+The constraints that concern noncooperative flow are the following:
+
+\begin{eqnarray}
+ & \linkflow{\link}\le\ffspeed_{\link}\density_{\link} & \forall\link\in\links\label{eq:prepconstraintsbegin}\\
+ & \linkflow{\link}\le\congspeed_{\link}\left(\densitymax_{\link}-\density_{\link}\right) & \forall\link\in\links\\
+ & 0\le\linkflow{\link}\le\flowmax{\link} & \forall\link\in\links\\
+ & \linkflow{\link}=\sum_{\routesthroughlink}\routeflow{\route} & \forall\link\in\links\label{eq:prepconstraints}
+\end{eqnarray}
+
+
+These constraints are all convex (indeed, linear) in the decision
+variables $\linkflow{\link},\routeflow{\route}$. Then, let $\hat{\flow}_{\link},\hat{\density}_{\link}$
+be the input flow and density respectively on link $\link\in\hat{\links}$,
+where $\hat{\links}\subseteq\links$ are the links with input data
+available. Our objective will be to minimize some definition of distance
+from the input data to the selected data that violates none of the
+above constraints. If we select as the distance measurement the \emph{n-norm},
+$n\ge1$, then we have the following convex optimization program for
+obtaining amenable input data:
+
+\begin{eqnarray*}
+\underset{\linkflow{\link},\density_{\link}:\link\in\links}{\mytext{minimize}} & \sum_{\link\in\inputlinks}\left\Vert \hat{\flow}_{\link}-\linkflow{\link}\right\Vert _{n}+\left\Vert \hat{\density}_{\link}-\density_{\link}\right\Vert _{n}\\
+\text{subject to:} & \text{Constraints }\eqref{eq:prepconstraintsbegin}-\eqref{eq:prepconstraints}
+\end{eqnarray*}
+
+
+The result of the optimization problem is a set of route-based flows
+$\left\{ \routeflow{\route}:\route\in\routes\right\} $. Finally,
+the route flows would then be partitioned into both cooperative and
+noncooperative flows, which then gets the data in a suitable format.
+
+While the formulation presented specifically discusses horizontal
+queue constraints, the same methods can be extended to other problems
+with convex constraints, such as M/M/1 queues presented in Section~\ref{sub:M/M/1-Queueing-Model}.
+
 
 
 \section{Numerical results}
 \label{sec:le:Numerical-Results}
 
-\input{previous-articles/le/numerical}
+We demonstrate the highly practical nature of our work by applying
+the model to two different problems. We focus on a multi-destination
+network of horizontal queues. This problem demonstrates the generality
+of our method to the multi-commodity case and the ability to solve
+real-world transportation planning problems on a regional level. First,
+we demonstrate the simplicity of the model on a small network of vertical
+queues, to which we apply both models of tolerance and compare the
+benefits gained by re-routing.
+
+
+\subsection{Linear Latency\label{sub:Linear-Latency}}
+
+\begin{wrapfigure}{o}{0.25\columnwidth}%
+\begin{centering}
+\includegraphics[width=0.25\columnwidth]{previous-articles/le/le-figures/simple-network}
+\par\end{centering}
+
+\protect\caption{Network diagram\label{fig:Simple-network-diagram}}
+\end{wrapfigure}%
+Figure~\ref{fig:Simple-network-diagram} depicts an illustrative,
+two parallel routes network. Flow enters at the source and exits at
+the sink and can travel along either the ``left'' route or the ``right''
+route. Each link $\link\in\links$ has a linear latency function $\latency_{\link}\left(\linkflow{}\right)=a_{\link}\linkflow{}+b_{\link}$.
+The link properties given in Figure~\ref{tab:Simple-network-parameters}
+show that the left link has a lower \emph{zero-flow} latency than
+the right link, but has a higher marginal cost per unit flow. As the
+left route becomes more congested, its latency will eventually increase
+until the right route has equal utility. From a user equilibrium viewpoint,
+as the network is loaded with additional flow, the latencies across
+the two routes will remain the same. But from a social optimum viewpoint,
+additional flow will always be routed to the right route since it
+will always have a lower marginal cost than the left route.
+\begin{table}
+\centering
+\subfloat[\label{tab:Simple-network-parameters}]{
+\begin{tabular}{|c|c|c|c|}
+\hline 
+Name & $a$ $\left(\frac{s^{2}}{\text{units}}\right)$ & $b$ $\left(s\right)$ & $\flowmax{}$ $\left(\frac{\text{units}}{s}\right)$\tabularnewline
+\hline 
+\hline 
+source & 1 & 0 & 1\tabularnewline
+\hline 
+sink & 1 & 0 & 1\tabularnewline
+\hline 
+left & 1 & 0 & 1\tabularnewline
+\hline 
+right & 0.5 & 0.5 & 1\tabularnewline
+\hline 
+\end{tabular}
+}\hfill%
+\subfloat[\label{tab:Demands}]{
+\begin{tabular}{|c|c|c|}
+\hline 
+Type & Description & $\flow$ ($\frac{\text{cars}}{\text{s}}$)\tabularnewline
+\hline 
+\hline 
+O-D (Lagrangian) & source-sink & 0.8\tabularnewline
+\hline 
+Link (Eulerian) & source & 0.2\tabularnewline
+\hline 
+Link (Eulerian) & sink & 0.1\tabularnewline
+\hline 
+Link (Eulerian) & left & 0.1\tabularnewline
+\hline 
+Link (Eulerian) & right & 0.2\tabularnewline
+\hline 
+\end{tabular}
+}
+\caption{Summary of illustrative network properties. \textbf{\ref{tab:Simple-network-parameters}}: Link-level input parameters. \textbf{\ref{tab:Demands}:} Network-level input demands}
+\end{table}
+
+
+As described in Figure~\ref{tab:Demands}, we assume the network
+is loaded with both cooperative and noncooperative flow. There is
+a total of 0.2 units-per-second of noncooperative flow, with 0.1 units-per-second
+of flow on both the left and right link. In addition, there is 0.8
+units-per-second of flow on the network, which we assume is initially
+distributed amongst the left and right routes in a manner that achieves
+user equilibrium.
+
+We now show how our route optimization framework can be applied to
+this network to optimally route the cooperative flow. Results are
+given over a range of bounded rationality scale factor to show the
+sensitivity of our results to the scale factor. Since the latency
+functions are linear, both the standard bounded rationality model
+and comparative bounded rationality model are solved using well-developed
+and highly efficient convex optimization tools~(see \cite{cvxpy}).
+In addition to comparing the two models against each other, we compare
+them both against the Stackelberg game solution of the routing problem.
+The Stackelberg game solution gives a minimum social cost with the
+assumption that the noncooperative flow will be routed in a user equilibrium
+manner. Stackelberg analysis is only possible in the case when origin-destination
+demands can be uniquely determined for all users of the network, which
+holds for our simple network. This does not hold in general, and this
+case will studied subsequently (Section~\ref{sub:Horizontal-Queueing-Network:}).
+\begin{figure}
+\centering%
+\subfloat{%
+\includegraphics[scale=0.7]{previous-articles/le/le-figures/complacency_models_simple_network}%
+\label{fig:Route-latencies}
+}\hfill%
+\subfloat{%
+\includegraphics[scale=0.7]{previous-articles/le/le-figures/complacency_models_simple_network_total_latency}
+\label{fig:Total-latencies}
+}%
+\caption{Comparison of simple bounded tolerance
+and comparative tolerance. \textbf{\ref{fig:Route-latencies}:} Route
+latencies. Comparative tolerance allows smaller deviations in route
+latencies than bounded tolerance. \textbf{\ref{fig:Total-latencies}:}
+Total latencies. The total latencies decrease more slowly with the
+comparative tolerance model versus the bounded tolerance model. The
+total route flows approach the Stackelberg equilibrium as the tolerance
+scale factor goes to infinite.}%
+\label{fig:Comparison-of-simple}
+\end{figure}
+
+
+Figure~\ref{fig:Comparison-of-simple} summarizes the numerical results
+on the simple network. The route latencies as a function of the bounded
+rationality scale factor are shown in Figure~\ref{fig:Route-latencies},
+while total latencies are shown in Figure~\ref{fig:Total-latencies}.
+As expected, as the bounded rationality scale factor increases, so
+do the benefits of re-routing. Additionally, the comparative bounded
+rationality model improves at a slower rate than the standard bounded
+rationality model. This is due to the fact that the comparative model
+permits the right route to be ``aware'' of the latency improvements
+on the left route, while the standard model only limits deviations
+in route latencies in comparison to a route's individual \emph{nominal}
+latency and ignores the improvements on the left route.
+
+The results tell us that as the scale factor increases, the model
+converges to the Stackelberg solution. It may appear counter-intuitive
+that the model with inherently no tolerance factor could perform better
+than the tolerance models. The explanation is that the tolerance models
+are overly-conservative due to the assumption that no noncooperative
+flow changes routes, and the routing strategy will not drastically
+improve one route over another route. On the other hand, the Stackelberg
+solution shifts all noncooperative flow to the left route and the
+cooperative flow accommodates this shift in a socially optimal manner.
+Since all noncooperative flow is on a single route and improves upon
+its nominal latency, discrepancies in route latencies are no longer
+a behavioral issue, allowing the Stackelberg to be as liberal as necessary
+with latency increases on the right route.
+
+
+\subsection{Horizontal queueing network\label{sub:Horizontal-Queueing-Network:}}
+
+\begin{figure}[h]
+\centering
+\subfloat[Multiple-destination network with horizontal queues. There are many overlapping routes between \emph{Source} and \emph{Sink A}, while \emph{Sink B} and \emph{Sink C} are origin-destinations which have demands on the same network as \emph{Sink A} demands.]{
+\includegraphics[width=0.4\columnwidth]{previous-articles/le/le-figures/HighwayNetworkDos}%
+\label{fig:Multiple-destination-network-wit}
+}\hfill%
+\subfloat[Total latency on network of horizontal
+queues as a function of tolerance scale.]{
+\includegraphics[width=0.5\columnwidth]{previous-articles/le/le-figures/hqsimresults}%
+\label{fig:Total-latency-on}
+}%
+\end{figure}
+
+As discussed in Section~\ref{sub:Horizontal-Queueing}, given the
+nonlinear dynamics of horizontal queueing cells, modeling horizontal
+queues is in general a more difficult process than vertical queues.
+It is also important to consider a more general network than the compact
+one in Section~\ref{sub:Linear-Latency}, one with multiple destinations,
+and therefore multiple Lagrangian demand types. In this section, we
+model a mid-sized multi-destination network of horizontal queues within
+the partial cooperation, bounded tolerance framework. We follow with
+numerical results on how the routing strategies change with respect
+to the parameters of the tolerance model.
+
+
+\subsubsection{Network properties and demands\label{sub:Network-properties-and}}
+
+Figure~\ref{fig:Multiple-destination-network-wit} shows a topological
+description of the network. Since only \emph{Sink A }can be reached
+through multiple routes, the algorithm only decides how to partition
+the demand across the routes originating from \emph{Source} and leading
+to \emph{Sink A}. The algorithm will take as input some network and
+link level properties, as recorded in Table~\ref{tab:Multi-destination-network-proper}.
+The nominal state given in Table~\ref{tab:prophq} shows that links
+3, 8 and 9 were heavily congested, while the other links were close
+to free flow. Furthermore, as discussed in Section~\ref{sub:Limiting-Deviations-in},
+the densities must have more constraints than just the fundamental
+diagram constraints (Equations~\eqref{eq:constraint-demand}-\eqref{eq:constraint-maxflow}).
+Table~\ref{tab:prophq} tells us that this problem assumes that links
+do not shift from their nominal state (links with a nominal free flow/congestion
+state must maintain this state).
+\begin{table}
+\subfloat[\label{tab:prophq}]{%
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\cline{1-1} \cline{3-17} 
+{\scriptsize{}Name} &  & {\scriptsize{}0} & {\scriptsize{}1} & {\scriptsize{}2} & {\scriptsize{}3} & {\scriptsize{}4} & {\scriptsize{}5} & {\scriptsize{}6} & {\scriptsize{}7} & {\scriptsize{}8} & {\scriptsize{}9} & {\scriptsize{}10} & {\scriptsize{}11} & {\scriptsize{}12} & {\scriptsize{}13} & {\scriptsize{}14}\tabularnewline
+\cline{1-1} \cline{3-17} 
+{\scriptsize{}Length ($m$)} &  & {\scriptsize{}0.5} & {\scriptsize{}0.1} & {\scriptsize{}1.0} & {\scriptsize{}1.5} & {\scriptsize{}0.3} & {\scriptsize{}0.1} & {\scriptsize{}0.6} & {\scriptsize{}0.4} & {\scriptsize{}1.0} & {\scriptsize{}1.5} & {\scriptsize{}1.0} & {\scriptsize{}0.7} & {\scriptsize{}0.8} & {\scriptsize{}1.0} & {\scriptsize{}0.1}\tabularnewline
+\cline{1-1} \cline{3-17} 
+{\scriptsize{}Nom. flow ($\frac{\text{units}}{s}$)} &  & {\scriptsize{}0.15} & {\scriptsize{}0.05} & {\scriptsize{}0.03} & {\scriptsize{}0.02} & {\scriptsize{}0.05} & {\scriptsize{}0.05} & {\scriptsize{}0} & {\scriptsize{}0.02} & {\scriptsize{}0.01} & {\scriptsize{}0.02} & {\scriptsize{}0} & {\scriptsize{}0.02} & {\scriptsize{}0.01} & {\scriptsize{}0.05} & {\scriptsize{}0.05}\tabularnewline
+\cline{1-1} \cline{3-17} 
+{\scriptsize{}Nom. density ($\frac{\text{units}}{m}$)} &  & {\scriptsize{}0.15} & {\scriptsize{}0.05} & {\scriptsize{}0.03} & {\scriptsize{}4.99} & {\scriptsize{}0.05} & {\scriptsize{}0.05} & {\scriptsize{}0} & {\scriptsize{}0.02} & {\scriptsize{}4.99} & {\scriptsize{}4.99} & {\scriptsize{}0} & {\scriptsize{}0.02} & {\scriptsize{}0.01} & {\scriptsize{}0.05} & {\scriptsize{}0.05}\tabularnewline
+\cline{1-1} \cline{3-17} 
+{\scriptsize{}State constraint} &  & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}Cong} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}Cong} & {\scriptsize{}Cong} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF}\tabularnewline
+\cline{1-1} \cline{3-17} 
+\end{tabular}
+
+}
+
+\subfloat[\label{tab:demandhq}]{%
+\begin{tabular}{|c|c|c|c|c|}
+\cline{1-1} \cline{3-5} 
+Sink Dest. &  & A & B & C\tabularnewline
+\cline{1-1} \cline{3-5} 
+Flow ($\frac{\text{users}}{s}$) &  & 0.5 & 0.5 & 0.5\tabularnewline
+\cline{1-1} \cline{3-5} 
+\end{tabular}
+
+}
+
+\protect\caption{\label{tab:Multi-destination-network-proper}Multi-destination network
+properties. \textbf{\ref{tab:prophq}:} Link properties, including
+nominal state. \textbf{\ref{tab:demandhq}: }demand input into network}
+\end{table}
+ Table~\ref{tab:demandhq} tells us that there is 0.5 $\frac{\text{users}}{sec}$
+demand between all origin-destination pairs on the network. For simplicity,
+we assume that all demand is cooperative as well to focus analysis.
+
+
+\subsubsection{Numerical results\label{sub:Numerical-results}}
+
+The results of our numerical calculations are summarized in Figure~\ref{fig:Total-latency-on}.
+As supported by the results for vertical queues in Section~\ref{sub:Linear-Latency},
+the relief of network congestion is greater the more tolerance is
+assumed in the users. Additionally, it is noted that the network does
+not immediately push into free flow (social optimum), but rather decongests
+links to an amount dependent on the tolerance scale factor. This is
+a desirable behavior of the model, as it is not reasonable to assume
+that congestion can be completely avoided just through re-routing
+schemes. Lastly, we see the intuitive result that the bounded tolerance
+model will converge to the more familiar social optimum as the scale
+factor increases.
+
 
 
 \section{Summary of Results}
 \label{sec:le:Conclusion}
 
-\input{previous-articles/le/conclusion}
+We have presented a framework rerouting flow in an socially optimal
+way with mixed Lagrangian-Eulerian information. The cooperative flow
+has known nominal routes, while the noncooperative flow has known
+flow counts across links. In order to anticipate network conditions
+for all users after re-routing has been applied, the model combines
+the two types of information in a complementary way; by only allowing
+the cooperative flow to change routes, we have removed the necessity
+of having origin-destination demand information for all users on the
+network. Furthermore, by looking at the static flow problem, we can
+study practical networks with multiple origins and multiple destinations,
+where dynamic multi-commodity problems often suffer from intractability
+issues.
+
+The framework also addresses the behavioral nature of the noncooperative
+users, which we call \emph{bounded tolerance }and \emph{comparative
+tolerance}, by only allowing perturbations of the nominal state of
+the network that boundedly impact the noncooperative flow in a negative
+manner. The tolerance model comes about as a response to the lack
+of origin-destination information that does not permit the game-theoretic
+Stackelberg game analysis, but does allow us to require only Eulerian
+information across the majority of the network. We show that the comparative
+tolerance model will in general limit network latency improvements
+more so than the bounded tolerance model, but since the comparative
+tolerance model allows individual routes to compare latencies with
+other routes, it is arguably a more accurate model of noncooperative
+flow behavior.
+
+By taking a convex optimization-based approach, the framework is shown
+to efficiently solve many classes of network flow problems. The horizontal
+queue, highway network problem can be modeled as a convex optimization
+program, which permits one to study highway networks of practical
+size. The multi-destination network of horizontal queues gives an
+example of how the framework can be applied to multi-commodity type
+networks such as highways with multiple onramps and off-ramps. A live
+data feed of Lagrangian GPS sensors and Eulerian loop detectors, in
+conjunction with the data pre-conditioning algorithm, would enable
+the framework to run in an ``online'' sense, and provide automatic,
+daily routing advice for a traffic management agency during rush hour
+periods. We conclude that the partial cooperation, bounded tolerance
+model can allow a traffic management operator to make beneficial re-routing
+decisions with much less origin-destination demand input required. 
