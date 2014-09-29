@@ -38,12 +38,12 @@ In the later part of the article we propose attacks to create congestion based o
 	\includegraphics[width=.5\textwidth]{previous-articles/smart-america/diagrams/Catchme-article-diagram-2}
 	\label{fig:globalFreeway}
 	}
-	\caption{The physical roadway, sensors, connected vehicles and controllers near a freeway/onramp junction in Figure~\ref{fig:freewayEntry} form a cyber-physical network we refer to as a local freeway control system. The mask icons (white/black masks for indirect/direct vulnerabilities) denote vulnerability points in the local control network.  In Figure~\ref{fig:globalFreeway}, the local controllers are wired together, then connected to a command center via a relay box to form the global control system. This article analyzes vulnerability locations associated with each component.}
+	\caption[Local and global freeway control system architectures with labeled vulnerability points.]{The physical roadway, sensors, connected vehicles and controllers near a freeway/onramp junction in Figure~\ref{fig:freewayEntry} form a cyber-physical network we refer to as a local freeway control system. The mask icons (white/black masks for indirect/direct vulnerabilities) denote vulnerability points in the local control network.  In Figure~\ref{fig:globalFreeway}, the local controllers are wired together, then connected to a command center via a relay box to form the global control system. This article analyzes vulnerability locations associated with each component.}
 	\end{figure}
     		Modern freeways encompass control and monitoring mechanisms which enable traffic management to mitigate congestion and improve traffic flow in real-time. While the exact combination of sensors, controllers and transmitters differ from location to location, this article chooses one particular instantiation of a freeway control system, which we find to be representative. Figure~\ref{fig:freewayEntry} shows a control system installed near a junction of a freeway and an onramp. We consider three elements of the control system:
     		\begin{itemize}
     			\item Sensors, used to gather information about the freeway state. For example, loop detectors are used to acquire the flow of vehicles along the freeway and onramps/offramps, while the trajectory of vehicles equipped with GPS (or containing GPS-powered smartphone applications) can be used for estimating real-time traffic conditions~\cite{work2010traffic}.
-    			\item Actuators, used to influence the evolution and efficiency of the freeway. The most common actuation strategy is \emph{ramp metering}, where traffic lights installed on freeway onramps control the influx of vehicles to the mainline. Other actuators include variable speed limit control~\cite{MuralidharanaCustom} and variable message signs. For the purposes of this article, the ramp meters are the only actuators we will consider.
+    			\item Actuators, used to influence the evolution and efficiency of the freeway. The most common actuation strategy is \emph{ramp metering}, where traffic lights installed on freeway onramps control the influx of vehicles to the mainline. Other actuators include variable speed limit control~\cite{Muralidharana} and variable message signs. For the purposes of this article, the ramp meters are the only actuators we will consider.
     			\item Local controllers, such as \emph{2070} boxes~\cite{AASHTO2012} and the older \emph{170} boxes~\cite{FHWA1978}, which allows interaction between the sensors and ramp meters.
     		\end{itemize}
     		We assume control boxes are wired to the nearby metering light and have a wireless connection to nearby sensors. Vehicles with navigation devices such as TomTom~\cite{tomtom} automatically analyze radio-broadcasted traffic reports from traffic control centers to improve their navigating functionality.
@@ -137,7 +137,7 @@ We will consider two fictional but realizable attack scenarios and study their c
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.7\textwidth]{diagrams/trucks}
-    \caption{Diagram of the VIP-Lane attack on the Aimsun micro-simulation. Trucks passing by transmit fake traffic count data in an attempt to spoof the readings received by the traffic count sensors. The count sensors are deceived into inferring high-density conditions, causing large amounts of metering on the on ramps while creating free-flow conditions on the mainline.}
+    \caption[Diagram of the VIP-Lane attack on the Aimsun micro-simulation.]{Diagram of the VIP-Lane attack on the Aimsun micro-simulation. Trucks passing by transmit fake traffic count data in an attempt to spoof the readings received by the traffic count sensors. The count sensors are deceived into inferring high-density conditions, causing large amounts of metering on the on ramps while creating free-flow conditions on the mainline.}
     \label{fig:smart-roads-diagram}
 \end{figure}
 
@@ -151,7 +151,7 @@ A depiction of the VIP-lane attack is shown in Figure~\ref{fig:smart-roads-truck
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.95\textwidth]{diagrams/smart-roads}
-    \caption{System diagram for SmartRoads project. The Aimsun micro-simulator (Label A) interfaces with the Connected Corridors Control System (Label B) through databases. The C2WindTunnel (Label C) system models networking and serves as the attack point. Sensors information intercepts are indirect attacks, while metering command intercepts are direct attacks.}
+    \caption[System diagram for SmartRoads project depicting Aimsun microsimulator, Connected Corridors system, and C2WindTunnel software.]{System diagram for SmartRoads project. The Aimsun micro-simulator (Label A) interfaces with the Connected Corridors Control System (Label B) through databases. The C2WindTunnel (Label C) system models networking and serves as the attack point. Sensors information intercepts are indirect attacks, while metering command intercepts are direct attacks.}
     \label{fig:smart-roads-truck}
 \end{figure}
 
@@ -303,7 +303,7 @@ For example, the next proposition shows that a linear combination of the objecti
 				\begin{figure}[ht]
 					\centering
 					  \includegraphics[width=.7\textwidth]{previous-articles/smart-america/diagrams/interactive}
-					\caption{The interactive method for multi-objective optimization embeds the Decision Maker (DM) in the optimization loop, allowing the DM to direct the search of the Pareto front. The optimal controller adapts the advice of the DM to \emph{scalarize} the multiple objectives and solve a new optimization problem. The results of the optimization are then fed back to the DM, and the cycle repeats until satisfaction.}
+					\caption[The interactive method for multi-objective optimization embeds the Decision Maker (DM) in the optimization loop, allowing the DM to direct the search of the Pareto front.]{The interactive method for multi-objective optimization embeds the Decision Maker (DM) in the optimization loop, allowing the DM to direct the search of the Pareto front. The optimal controller adapts the advice of the DM to \emph{scalarize} the multiple objectives and solve a new optimization problem. The results of the optimization are then fed back to the DM, and the cycle repeats until satisfaction.}
 					\label{fig:interactive}
 				\end{figure}
 				Unlike with the a~posteriori method, \emph{Interactive methods} are based upon a repeated interaction with the Decision Maker.
@@ -345,7 +345,7 @@ The attacks for the first example, \emph{box objective} (to be described), use a
   \includegraphics[width=.32\linewidth]{previous-articles/smart-america/diagrams/box9}%
   \label{fig:box9}%
 }%
-\caption{Figure~\ref{fig:i15} depicts a space-time diagram of vehicle densities on 19.4 mile stretch of I15 Freeway with no ramp metering. The box objective, and example of \emph{congestion-on-demand}, is applied in Figures~\ref{fig:box3}-\ref{fig:box9}. The user specifies a ``desired'' traffic jam between postmile 4.5 and 14, for a duration of 20 minutes between 8:20 and 8:40. For this, the $\alpha$ parameter (introduced in Equation~\eqref{eqn:alpha}) enables the proper design of tradeoffs in the objective.}
+\caption[I15 South box objective attack with multiple trade-off parameter values.]{Figure~\ref{fig:i15} depicts a space-time diagram of vehicle densities on 19.4 mile stretch of I15 Freeway with no ramp metering. The box objective, and example of \emph{congestion-on-demand}, is applied in Figures~\ref{fig:box3}-\ref{fig:box9}. The user specifies a ``desired'' traffic jam between postmile 4.5 and 14, for a duration of 20 minutes between 8:20 and 8:40. For this, the $\alpha$ parameter (introduced in Equation~\eqref{eqn:alpha}) enables the proper design of tradeoffs in the objective.}
 \end{figure}
 
 \subsubsection{Constructing the objective function}
@@ -382,7 +382,7 @@ The results of the box objective are presented in Figures~\ref{fig:box3}-\ref{fi
 \begin{figure}
 	\centering
 	\includegraphics[width=0.95\textwidth]{previous-articles/smart-america/diagrams/boxi15aimsun}
-	\caption{Box objective attack implemented on a microscopic model of I15 Freeway produced with Aimsun software.  The metering lights were set using the \emph{congestion-on-demand} strategy. Snapshots of traffic at the north and south extents of the box show that the strategy maintains congestion within the box and free-flow conditions outside the box. A link to a video of the microsimulation is provided~\cite{smartroadswebsite}. Best viewed in color.}
+	\caption[Box objective attack implemented on a microscopic model of I15 Freeway produced with Aimsun software.]{Box objective attack implemented on a microscopic model of I15 Freeway produced with Aimsun software.  The metering lights were set using the \emph{congestion-on-demand} strategy. Snapshots of traffic at the north and south extents of the box show that the strategy maintains congestion within the box and free-flow conditions outside the box. A link to a video of the microsimulation is provided~\cite{smartroadswebsite}. Best viewed in color.}
 	\label{fig:boxi15aimsun}
 \end{figure}
 
@@ -400,7 +400,7 @@ As a part of the SmartRoads project, we also implemented the box objective on an
 	\includegraphics[width=.42\textwidth]{previous-articles/smart-america/diagrams/cal-morse-freeway}%
 	\label{fig:calmorseslices}%
     }
-\caption{Attack to create traffic patterns in the form of Morse code. A coordinated ramp metering attack using the proposed algorithm is able to spell out ``C-A-L'' in Morse code over successive time-slices of the space-time diagram: C$=- \cdot - \cdot$, A$= \cdot -$, L$= \cdot - \cdot \cdot$. The entire space-time diagram of the attack is shown in Figure~\ref{fig:calmorsespacetime}, while three snapshots of the freeway are shown in Figure~\ref{fig:calmorseslices}, each slice spelling out one of the letters in ``C-A-L'' in blocks of congestion.}
+\caption[Attack to create traffic patterns in the form of Morse code. A coordinated ramp metering attack using the proposed algorithm is able to spell out ``C-A-L'' in Morse code over successive time-slices of the space-time diagram.]{Attack to create traffic patterns in the form of Morse code. A coordinated ramp metering attack using the proposed algorithm is able to spell out ``C-A-L'' in Morse code over successive time-slices of the space-time diagram: C$=- \cdot - \cdot$, A$= \cdot -$, L$= \cdot - \cdot \cdot$. The entire space-time diagram of the attack is shown in Figure~\ref{fig:calmorsespacetime}, while three snapshots of the freeway are shown in Figure~\ref{fig:calmorseslices}, each slice spelling out one of the letters in ``C-A-L'' in blocks of congestion.}
 \label{fig:cal_morse}
 \end{figure}
 
@@ -416,7 +416,7 @@ As a part of the SmartRoads project, we also implemented the box objective on an
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.95\textwidth]{previous-articles/smart-america/diagrams/flow-arbitrary}
-	\caption{Flow-chart for converting an arbitrary image to a \emph{congestion-on-demand} goal. ``Converting'' an objective of the form in Equation~\ref{eqn:jamondemand} allows an attacker to compute metering rates that produce space-time diagrams resembling the original image.}
+	\caption[Flow-chart for converting an arbitrary image to a \emph{congestion-on-demand} goal.]{Flow-chart for converting an arbitrary image to a \emph{congestion-on-demand} goal. ``Converting'' an objective of the form in Equation~\ref{eqn:jamondemand} allows an attacker to compute metering rates that produce space-time diagrams resembling the original image.}
 	\label{fig:flow-arbitrary}
 \end{figure}
 
@@ -470,7 +470,7 @@ J \left( \vectorize{u}, \vectorize{\rho} \right) = \sum_{i=1}^3 a_i \, f_i \left
 \begin{figure}[t]
 \centering
   \includegraphics[width=1\textwidth]{previous-articles/smart-america/diagrams/catchmehack}
-\caption{Space-time diagram with a ternary graph representing the $a_1,a_2,a_3$ coefficients (here 30\%, 55\% and 15\% respectively) used for the scalarization process in the catch-me-if-you-can example.  The trajectory of the driver (blue line) appears to always gain distance in relation to pursuants further upstream (black lines). Best viewed in color.}
+\caption[Space-time diagram with a ternary graph representing the $a_1,a_2,a_3$ coefficients (here 30\%, 55\% and 15\% respectively) used for the scalarization process in the catch-me-if-you-can example.  The trajectory of the driver (blue line) appears to always gain distance in relation to pursuants further upstream (black lines).]{Space-time diagram with a ternary graph representing the $a_1,a_2,a_3$ coefficients (here 30\%, 55\% and 15\% respectively) used for the scalarization process in the catch-me-if-you-can example.  The trajectory of the driver (blue line) appears to always gain distance in relation to pursuants further upstream (black lines). Best viewed in color.}
 \label{fig:catchmeOverview}
 \end{figure}
 The space-time diagram in Figure~\ref{fig:catchmeOverview}, for a 21 miles freeway with $6$ adjacent onramps and a 20 minutes simulation time, is an example output of the optimal control scalarization method. Such plots are useful for the DM to discern between ``good'' and ``bad'' simulations produced from metering rates.  The driver's trajectory is represented in blue, while the trajectory of three pursuants (a, b, c) are depicted losing ground on the driver.
@@ -495,7 +495,7 @@ The triangle in Figure~\ref{fig:catchmeOverview} is a visualization of the chose
   \label{fig:ter3}
 }%
 
-\caption{A grid exploration over the ternary graph. An optimization was conducted for a grid of coefficients regularly spaced on the ternary graph. The resulting scalarized objective is decomposed into the constituent objectives (normalized between 0 an 1) and plotted on separate summary ternary graphs.}
+\caption[A grid exploration over the ternary graph. An optimization was conducted for a grid of coefficients regularly spaced on the ternary graph.]{A grid exploration over the ternary graph. An optimization was conducted for a grid of coefficients regularly spaced on the ternary graph. The resulting scalarized objective is decomposed into the constituent objectives (normalized between 0 an 1) and plotted on separate summary ternary graphs.}
 \label{fig:triangles}
 \end{figure}
 Our approach for the a~posteriori method is to automatically ``explore the triangle of coefficients'' to help the \emph{Decision Maker} find a preferred coefficient solution or region of solutions. Figure~\ref{fig:triangles} presents the result of the a~posteriori method. We plot the values of each objective function for the optimal solution associated with all sets of $a_i$ coefficients. The lowest values of each $f_i$ are always reached with the highest values of $a_i$ (where $f_i$ has been normalized to take values between 0 and 1; see Section~\ref{sub:moo}). Any non-monotonicity in the graphs are attributed to early terminations of the optimizer's gradient descent or convergence to sub-optimal local minima. The conflicting nature of the objectives is apparent. Figure~\ref{fig:ter1} shows that $f_1$ is penalized more by high $a_3$ values than by high $a_2$ values, i.e. lowering the total travel time at the expense of congesting the region behind the driver.
@@ -525,7 +525,7 @@ The a~posteriori method provides the DM with a global overview of the Pareto fro
     \centering
     \subfloat[]{\includegraphics[width=.42\textwidth]{previous-articles/smart-america/diagrams/catchmetable1}\label{fig:catchme_table_1}}\hfill
     \subfloat[]{\includegraphics[width=.55\textwidth]{previous-articles/smart-america/diagrams/catchmetable2}\label{fig:catchme_table_2}}
-    \caption{Summary of \emph{catch-me-if-you-can} simulations generated via the interactive method are shown in Figure~\ref{fig:catchme_table_1}. Column 1 shows optimizations over individual objectives. Column 2 shows a transition from favoring $f_3$ to favoring $f_2$. Column 3 shows a progression across all three objectives. More interesting solutions of the multi-objective problem found via the use of the interface are shown in Figure~\ref{fig:webinterface}.}    
+    \caption[Summary of \emph{catch-me-if-you-can} simulations generated via the interactive method.]{Summary of \emph{catch-me-if-you-can} simulations generated via the interactive method are shown in Figure~\ref{fig:catchme_table_1}. Column 1 shows optimizations over individual objectives. Column 2 shows a transition from favoring $f_3$ to favoring $f_2$. Column 3 shows a progression across all three objectives. More interesting solutions of the multi-objective problem found via the use of the interface are shown in Figure~\ref{fig:webinterface}.}    
 \end{figure}
 
 Figure~\ref{fig:catchme_table_1} shows an overview of the results obtained while using the interactive interface. The first column shows simulations for the corners of the ternary graph, i.e. only one objective is active at a time. The results are intuitive in that optimizing $f_1$ (Figure~\ref{fig:catchme_table_1}.1) produces congestion everywhere behind the driver, optimizing $f_2$ (Figure~\ref{fig:catchme_table_1}.2) creates a distinct increase in congestion behind the driver, and optimizing $f_3$ (Figure~\ref{fig:catchme_table_1}.3) maintains critical density everywhere, equivalent to maximizing throughput at maximum freeway speeds.

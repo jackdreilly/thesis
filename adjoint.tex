@@ -8,11 +8,11 @@ differential equations}~(PDEs), are an efficient framework for modeling
 physical phenomena, such as freeway traffic evolution~\cite{garavello2006traffic,work2010traffic,frazzoli2002real} and supply
 chains~\cite{Brunnermeier1999}. Similarly, PDE systems of balance laws are useful in modeling gas pipeline flow~\cite{Gugat2011Gas,Rothfarb1970Optimal} and water channels~\cite{Gugat2012Contamination,Rabbani2010}. Optimization
 and  control of these networks is an active field of
-research~\cite{Gugat2005,Bayen2006,Kotsialos2004}. More generally, numerous
+research~\cite{Gugat2005,Bayen2006AdjointBased,Kotsialos2004}. More generally, numerous
 techniques exist for the control of conservation laws, such as, for example,
 backstepping~\cite{Coron2013,Glass2007}, Lyapunov-based methods~\cite{Coron2013}, and
 optimal control methods~\cite{Blanchard2013,Keller2013,jacquet2006optimal}.
-In particular, a common  approach is to compute the gradient of the cost functional via the \textit{adjoint method}~\cite{Giles2000Introduction,Jameson2000Aerodynamic,Raffard2008}.
+In particular, a common  approach is to compute the gradient of the cost functional via the \textit{adjoint method}~\cite{Giles2000,Jameson2000Aerodynamic,Raffard2008}.
 Nevertheless, its implementation in the framework of nonlinear conservation laws presents several difficulties linked to the discontinuous  character of the solutions. In particular, the presence of shocks in the solutions requires a careful sensitivity analysis based on the use of shift-differentials and generalized tangent vectors, see~\cite{Bressan1997ShiftDifferentiability,Ulbrich2002Sensitivity,Ulbrich2003AdjointBased}.
 
 Extensive study has also been conducted on the choice of method for effectively computing the gradient via the adjoint. In particular, the continuous adjoint
@@ -27,7 +27,7 @@ uses  automatic differentiation techniques to automatically generate an
 adjoint  solver from the numerical representation of the forward
 system~\cite{Muller2005,Giering1998}.
 
-It is well known that the numerical treatment of the adjoint method imposes a careful choice of the discretization scheme to avoid the introduction of numerical errors  at discontinuities~\cite{Giles2003Discrete}.
+It is well known that the numerical treatment of the adjoint method imposes a careful choice of the discretization scheme to avoid the introduction of numerical errors  at discontinuities~\cite{giles2003discrete}.
 Rigorous convergence results for optimization problems have been provided for Lax-Friedichs type schemes~\cite{Giles2010Convergencea} and relaxation methods~\cite{Banda2012Adjoint}.
 The case of road networks in free flow conditions is addressed in~\cite{Gugat2005}.
 In our more general setting of PDE networks and applications to freeway traffic control, the presence of junction conditions with both forward and backward-moving shockwaves led us the use of a modified Godunov scheme that precisely takes into account the flows at the network nodes. An alternative approach involves using Lax-Friedichs-type discretizations with higher-resolution interpolation schemes~\cite{Nessyahu1990NonOscillatory}. Moreover, general existence and stability results for the corresponding system of equations modeling traffic evolution on the network are still missing at the moment.
@@ -104,6 +104,7 @@ complexity of the finite differences approach for each additional control
 parameter makes the method unsuitable for real-time application on 
 moderately-sized freeway networks.
 
+
 Ramp metering is a common freeway control strategy, providing a means of 
 dynamically controlling freeway throughput without directly impeding mainline 
 flow or implementing complex tolling systems. While metering strategies have 
@@ -111,7 +112,7 @@ been developed using microscopic models~\cite{Ben-Akiva2003}, most strategies
 are based off macroscopic state parameters, such as vehicle density and the 
 density's relation to 
 speed~\cite{richards1956shock,lighthill1955kinematic,daganzo1995cell}. Reactive 
-metering strategies~\cite{Papageorgiou1991Alinea,Papamichail,Kachroo2003} use 
+metering strategies~\cite{Papageorgiou1991,Papamichail,Kachroo2003} use 
 feedback from freeway loop detectors to target a desired mainline density, 
 while predictive metering 
 strategies~\cite{Frejo2011,Kotsialos2004,gomes2006optimal,Chen1997} use a 
@@ -317,7 +318,7 @@ for a new unknown variable $\lambda\in\mathbb{R}^{\nlinks\ntime}$
 \Hx^{T}\lambda=-\Jx^{T}\label{eq:adjoint}
 \end{equation}
 
-Under certain additional conditions on the flux function and discretization scheme, the adjoint system in Equation~\eqref{eq:adjoint} may be shown to converge to the continuous adjoint system as the discretization steps go towards zero, as described in the following works~\cite{Banda2012Adjoint,Gugat2005,ulbrich2003adjoint}. No such convergence results exist in our setting of using a Godunov discretization with general $n\times m$ junctions.
+Under certain additional conditions on the flux function and discretization scheme, the adjoint system in Equation~\eqref{eq:adjoint} may be shown to converge to the continuous adjoint system as the discretization steps go towards zero, as described in the following works~\cite{Banda2012Adjoint,Gugat2005,Ulbrich2003AdjointBased}. No such convergence results exist in our setting of using a Godunov discretization with general $n\times m$ junctions.
 
 The expression for the gradient becomes:
 
@@ -367,7 +368,7 @@ by considering the adjoint method over the forward method.
 }
 \par\end{centering}
 
-\caption{Depiction of $D_{\state}$ and $D_{v}$ for an arbitrary graph. Fig.~\ref{fig:genneta}
+\caption[Depiction of $D_{\state}$ and $D_{v}$ for an arbitrary graph.]{Depiction of $D_{\state}$ and $D_{v}$ for an arbitrary graph. Fig.~\ref{fig:genneta}
 shows the underlying graphical structure for an arbitrary PDE network.
 Some control parameter $\convar_{1}$ has influence over junctions
 $A$, $B$, and $F$, while another control parameter $\convar_{2}$
@@ -648,7 +649,7 @@ of the open-source \emph{IpOpt} solver~\cite{Andreas2005}, an interior point, no
 as comparisons, two other case scenarios were run:
 \begin{enumerate}
 \item No control: the metering rate is set to 1 on all on-ramps at all times.
-\item Alinea~\cite{Papageorgiou1991Alinea}: a well-adopted, feedback-based ramp metering
+\item Alinea~\cite{Papageorgiou1991}: a well-adopted, feedback-based ramp metering
 algorithm commonly used in the practitioner's community. Alinea is computationally efficient and decentralized,
 making it a popular choice for large networks, but does not take estimated
 boundary flow data as input. Since Alinea has a number of tuning parameters,
@@ -670,7 +671,7 @@ Fig.~\ref{fig:Running-time-of}. Due to the impractically large running times ass
 \begin{figure}[h]
 \centering%
 \includegraphics[width=0.5\columnwidth]{previous-articles/adjoint/images/itergrad}%
-\caption{Running time of ramp metering algorithm using IpOpt with and without gradient information.
+\caption[Running time of ramp metering algorithm using IpOpt with and without gradient information.]{Running time of ramp metering algorithm using IpOpt with and without gradient information.
 Network consists of 4 links and 6 time-steps with synthetic boundary
 flux data. The method using gradient information via the adjoint
 method converged well before the completion of the \textit{first} step of the finite differences descent method.
@@ -749,7 +750,7 @@ c\left(S,T\right) = \sum_{\left(s\in S, \tau\in T\right)} \max \left[\text{TTT}\
 \includegraphics[width=0.45\columnwidth]{previous-articles/adjoint/images/queuediff}%
 \label{fig:long-sim-queue}%
 }%
-\caption{Profile differences for mainline densities and on-ramp queues. Evidenced
+\caption[Profile differences for mainline densities and on-ramp queues for controlled vs. uncontrolled instances.]{Profile differences for mainline densities and on-ramp queues. Evidenced
 	by the mainly negative differences in the mainline densities and the
 	mainly positive differences in the on-ramp queue lengths, the adjoint
 	ramp metering algorithm effectively limits on-ramp flows in order to

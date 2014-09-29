@@ -82,17 +82,17 @@ be difficult or very expensive to obtain.
 \subsection{Combining route-based demands with link-level flow information\label{sub:Scenario:-combining-route-based}}
 
 \begin{figure}
-\begin{centering}
-\subfloat[\label{fig:Information-collection-methods}]{%
-\fbox{\begin{minipage}[t]{0.4\columnwidth}%
-\includegraphics[height=2in]{previous-articles/le/le-figures/SystemArchitecture}%
-\end{minipage}}}\enskip{}\subfloat[\label{fig:Communication-between-informatio}]{%
-\fbox{\begin{minipage}[t]{0.43\columnwidth}%
-\includegraphics[height=2in]{previous-articles/le/le-figures/CommunicationDiagram}%
-\end{minipage}}}
-\par\end{centering}
-
-\protect\caption{Route guidance system architecture for using both route-based and
+\centering
+\subfloat[]{%
+\label{fig:Information-collection-methods}%
+\includegraphics[width=.48\columnwidth]{previous-articles/le/le-figures/SystemArchitecture}%
+}\hfill%
+\subfloat[]{%
+\label{fig:Communication-between-informatio}%
+\includegraphics[width=.48\columnwidth]{previous-articles/le/le-figures/CommunicationDiagram}%
+}
+\protect\caption[Route guidance system architecture for using both route-based and
+link-level flow information.]{Route guidance system architecture for using both route-based and
 link-level flow information. \textbf{(a)} An illustration of Lagrangian
 and Eulerian traffic information collection systems. \textbf{(1)}
 Path-based information is collected via GPS-equipped vehicles, from
@@ -177,7 +177,9 @@ can be relaxed by limiting the amount of re-routable flow.
 \begin{figure}[h]
 \centering
 \includegraphics[width=.5\columnwidth]{previous-articles/le/le-figures/MultiService}%
-\caption{Scenario with multiple vehicle navigation services. Individual service's
+\caption[Scenario with multiple vehicle navigation services. Individual service's
+data is aggregated by the central agency and not shared with other
+agencies.]{Scenario with multiple vehicle navigation services. Individual service's
 data is aggregated by the central agency and not shared with other
 agencies. The routing strategies are calculated by the traffic management
 agency, and the suggested routes are partitioned between the different
@@ -209,7 +211,7 @@ How can one predict the response of these untracked (which we refer
 to as noncooperative later) network users to the routing schemes being
 implemented for the tracked users?
 
-A standard approach, described as a Stackelberg game~(e.g.~\cite{roughgarden2001stackelberg,Krichene2012,aswani2011game}),
+A standard approach, described as a Stackelberg game~(e.g.~\cite{roughgarden2001stackelberg,Krichene2012a}),
 assumes that the users outside the control of the central agency will
 respond with a user equilibrium assignment. Since the origin-destination
 demands of the untracked users is unknown, solving for a user equilibrium
@@ -312,7 +314,7 @@ $\alpha$ & Tolerance scale factor.\tabularnewline
 \includegraphics[width=0.4\columnwidth]{previous-articles/le/le-figures/data_flow_diagram}
 \par\end{centering}
 
-\protect\caption{Data-flow diagram\label{fig:data-diagram}}
+\protect\caption[Data-flow diagram for the partial compliance routing problem.]{Data-flow diagram\label{fig:data-diagram}}
 \end{wrapfigure}%
 We present the general setting of the routing problem considered,
 as summarized in Figure~\ref{fig:data-diagram}. Consider a setting
@@ -551,7 +553,7 @@ is especially valid when the travel times of non-cooperative users
 do not significantly change when the cooperative users are routed
 in a socially optimal manner. In contrast, if the cooperative vehicles
 cause an excessive increase in latency on some routes for noncooperative
-vehicles, then this assumption may not be realistic~(see \cite{aswani2011game,roughgarden2001stackelberg,6744679}).
+vehicles, then this assumption may not be realistic~(see \cite{aswani2011game,roughgarden2001stackelberg,krichenetac}).
 For this reason, we have to enhance the model for rerouting cooperative
 vehicles under stricter conditions.
 
@@ -565,7 +567,7 @@ often described as \emph{user equilibrium} in the context of traffic
 assignment and introduced in \cite{wardrop1952some}. The congestion
 games literature considers Stackelberg games, which are used to analyze
 how selfish users respond to a centrally-controlled subset of users
-in a principled way (see \cite{Krichene2012,roughgarden2001stackelberg}).
+in a principled way (see \cite{Krichene2012a,roughgarden2001stackelberg}).
 Our approach in this chapter is simpler. The reasonability of our approach
 can be argued using a bounded tolerance assumption on the part of
 noncooperative vehicles. We replace the assumption of stationarity
@@ -1131,7 +1133,7 @@ benefits gained by re-routing.
 \includegraphics[width=0.25\columnwidth]{previous-articles/le/le-figures/simple-network}
 \par\end{centering}
 
-\protect\caption{Network diagram\label{fig:Simple-network-diagram}}
+\protect\caption[Network diagram for 2-link communication network routing example.]{Network diagram\label{fig:Simple-network-diagram}}
 \end{wrapfigure}%
 Figure~\ref{fig:Simple-network-diagram} depicts an illustrative,
 two parallel routes network. Flow enters at the source and exits at
@@ -1219,7 +1221,7 @@ case will studied subsequently (Section~\ref{sub:Horizontal-Queueing-Network:}).
 \includegraphics[scale=0.7]{previous-articles/le/le-figures/complacency_models_simple_network_total_latency}
 \label{fig:Total-latencies}
 }%
-\caption{Comparison of simple bounded tolerance
+\caption[Comparison of simple bounded tolerance and comparative tolerance.]{Comparison of simple bounded tolerance
 and comparative tolerance. \textbf{\ref{fig:Route-latencies}:} Route
 latencies. Comparative tolerance allows smaller deviations in route
 latencies than bounded tolerance. \textbf{\ref{fig:Total-latencies}:}
