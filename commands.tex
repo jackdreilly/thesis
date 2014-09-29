@@ -1,3 +1,17 @@
+\newtheorem{remark}{Remark}[chapter]
+\newtheorem{prop}{Proposition}[chapter]
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{condition}{Condition}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lem}{Lemma}[chapter]
+\newtheorem{cor}{Corollary}[chapter]
+\newtheorem{assumption}{Assumption}[chapter]
+
+\let\originalleft\left
+\let\originalright\right
+\renewcommand{\left}{\mathopen{}\mathclose\bgroup\originalleft}
+\renewcommand{\right}{\aftergroup\egroup\originalright}
+
 \newcommand{\R}{\mathbb{R}}
 
 

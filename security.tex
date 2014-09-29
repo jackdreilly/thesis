@@ -182,7 +182,25 @@ An attacker can negatively influence the performance of the freeway network or a
 
 \subsubsection{Optimal Control Formulation}
 
-Using the discrete model in Section~\ref{sec:continous-and-discrete-traffic-model-for-ramp-metering} and notation introduced in Section~\ref{sec:ramp-metering-admm}, we seek a method to compute a coordinated ramp metering policy $u\left[i,k\right]$ over all space $i\in\left[1,N\right]$ and time $k\in\left[1,T\right]$, which minimizes (or reduces) some specified objective. We cast the problem as a finite-horizon optimal control problem, as done in Section~\ref{par:Optimization-Problem}.
+Using the discrete model in Section~\ref{sec:continous-and-discrete-traffic-model-for-ramp-metering} mathematically expressed as follows:
+
+\begin{align}
+    \delta\left[i,k\right] & = \min\left(v \rho\left[i,k\right], f^{\max} \right) \\
+    \sigma\left[i,k\right] & = \min\left(w\left(\rho^{\max} - \rho\left[i,k\right]\right), f^{\max}\right) \\
+    d\left[i,k\right] & = u\left[i,k\right]\min \left(l\left[i,k\right] / \triangle t, r^{\max}\right) \\
+    f^{\text{in}}\left[i,k\right] & = \min\left(\sigma\left[i,k\right], d\left[i-1,k\right] + \beta\left[i,k\right] \delta\left[i,k\right]\right) \\
+    f^{\text{out}}\left[i,k\right] & = 
+    \begin{cases}
+    \delta\left[i,k\right] & \quad \mbox{if } \frac{p f^{\text{in}}\left[i+1,k\right] }{\beta\left[i,k\right] \left(1 + p\right)} \ge \delta\left[i,k\right] \\
+    \frac{f^{\text{in}}\left[i+1,k\right] - d\left[i+1,k\right]}{\beta\left[i,k\right]} & \quad \mbox{if } \frac{f^{\text{in}}[i+1,k]}{1 + p} \ge d\left[i+1,k\right] \\
+    \frac{p f^{\text{in}}\left[i+1,k\right]}{\left(1 + p\right) \beta\left[i,k\right]} & \quad \mbox{otherwise}
+    \end{cases} \\
+    r\left[i,k\right] & = f^{\text{in}}\left[i,k\right] - \beta\left[i,k\right] f^{\text{out}}\left[i,k\right] \\
+    \rho\left[i,k+1\right] & = \rho\left[i,k\right] + \frac{\triangle t}{\triangle x} \left(f^{\text{in}}\left[i,k\right] - f^{\text{out}}\left[i,k\right]\right)\\
+    l\left[i,k+1\right] & = l\left[i,k\right] + \triangle t \left(D\left[i,k\right] - r\left[i,k\right]\right),
+\end{align}
+
+we seek a method to compute a coordinated ramp metering policy $u\left[i,k\right]$ over all space $i\in\left[1,N\right]$ and time $k\in\left[1,T\right]$, which minimizes (or reduces) some specified objective. We cast the problem as a finite-horizon optimal control problem, as done in Section~\ref{par:Optimization-Problem}.
 
 We succinctly express the discrete, controllable dynamical system given in Section~\ref{sec:continous-and-discrete-traffic-model-for-ramp-metering} by:
 	\begin{equation}
@@ -240,9 +258,6 @@ We utilize the discrete adjoint method discussed in Section~\ref{sec:discrete-ad
 				\item He can give more general preferences on the Pareto front, for example a preference for one of the objective functions, or for a given subset of the Pareto front.
 			\end{itemize}
 
-			
-
-			
 			
 		\subsubsection{Finite-horizon Optimal Control and Multi-objective Optimization}
 			\paragraph{Scalarization}
@@ -506,25 +521,19 @@ The a~posteriori method provides the DM with a global overview of the Pareto fro
 
  A web application\footnote{Interactive web application demo available at~\cite{smartroadswebsite}.} (diagram in Figure~\ref{fig:webinterface}) was developed to allow a full exploration of the interactive method. The DM first selects his desired coefficients $(a_i)$ by clicking on the appropriate spot within triangle b). Then, after a scalarization using the particular coefficients and an optimization of the resultant objective, the interface plots the space-time diagram of the resulting simulation in window a), along with the driver's trajectory. Any other vehicle's trajectory can be visualized by clicking at the starting point of the desired trajectory. To enhance the exploration process, the interactive program also chooses two random (but nearby) sets of coefficients and plots their simulation in c1) and c2).
 
-
 \begin{figure}[t]
-	\centering
-	  \includegraphics[width=1\textwidth]{previous-articles/smart-america/diagrams/catchmetable1}
-	\caption{Summary of \emph{catch-me-if-you-can} simulations generated via the interactive method. Column 1 shows optimizations over individual objectives. Column 2 shows a transition from favoring $f_3$ to favoring $f_2$. Column 3 shows a progression across all three objectives.}
-	\label{fig:catchme_table_1}
+    \centering
+    \subfloat[]{\includegraphics[width=.42\textwidth]{previous-articles/smart-america/diagrams/catchmetable1}\label{fig:catchme_table_1}}\hfill
+    \subfloat[]{\includegraphics[width=.55\textwidth]{previous-articles/smart-america/diagrams/catchmetable2}\label{fig:catchme_table_2}}
+    \caption{Summary of \emph{catch-me-if-you-can} simulations generated via the interactive method are shown in Figure~\ref{fig:catchme_table_1}. Column 1 shows optimizations over individual objectives. Column 2 shows a transition from favoring $f_3$ to favoring $f_2$. Column 3 shows a progression across all three objectives. More interesting solutions of the multi-objective problem found via the use of the interface are shown in Figure~\ref{fig:webinterface}.}    
 \end{figure}
+
 Figure~\ref{fig:catchme_table_1} shows an overview of the results obtained while using the interactive interface. The first column shows simulations for the corners of the ternary graph, i.e. only one objective is active at a time. The results are intuitive in that optimizing $f_1$ (Figure~\ref{fig:catchme_table_1}.1) produces congestion everywhere behind the driver, optimizing $f_2$ (Figure~\ref{fig:catchme_table_1}.2) creates a distinct increase in congestion behind the driver, and optimizing $f_3$ (Figure~\ref{fig:catchme_table_1}.3) maintains critical density everywhere, equivalent to maximizing throughput at maximum freeway speeds.
 
 The second column (Figures~\ref{fig:catchme_table_1}.A-C) shows an interactive shift from favoring $f_3$ (minimize travel times) to favoring $f_2$ (trajectory boundary congestion). The shift progressively limits congestion formation, and intelligently removes more congestion \emph{ahead} of the driver, as to not decrease the delay of pursuant vehicles.
 
 The last column of Figure~\ref{fig:catchme_table_1} demonstrates how the interactive process allows for fine-tuning of the balance of the objectives. Figure~\ref{fig:catchme_table_1}.a appears to be overly congested within the driver's trajectory. An interactive progression towards lower total travel times concludes with a desirable congestion boundary in Figure~\ref{fig:catchme_table_1}.c.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=1\textwidth]{previous-articles/smart-america/diagrams/catchmetable2}
-\caption{More solutions of the multi-objective problem found via the use of the interface of Figure~\ref{fig:webinterface}}
-\label{fig:catchme_table_2}
-\end{figure}
 Figure~\ref{fig:catchme_table_2} shows a few more examples of the coefficient space exploration. It shows result that all seem correct while being very different: this is the definition of the Pareto front. This is why interacting with the DM is necessary to chose the ``best'' attack.
 
 In particular, examples a), b) and c) of Figure~\ref{fig:catchme_table_2} were given by the random exploration tool of the interface of Figure~\ref{fig:webinterface}. Their common idea is to hide a clearer path for the driver into a big congestion that covers almost the entire freeway. They are examples of situations that fulfill the objective (the vehicle escapes, the followers are slowed down), but that would not have been find easily without the interactive process.
