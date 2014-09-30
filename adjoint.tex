@@ -27,7 +27,7 @@ uses  automatic differentiation techniques to automatically generate an
 adjoint  solver from the numerical representation of the forward
 system~\cite{Muller2005,Giering1998}.
 
-It is well known that the numerical treatment of the adjoint method imposes a careful choice of the discretization scheme to avoid the introduction of numerical errors  at discontinuities~\cite{giles2003discrete}.
+It is well known that the numerical treatment of the adjoint method imposes a careful choice of the discretization scheme to avoid the introduction of numerical errors  at discontinuities~\cite{Apice2010Modeling}.
 Rigorous convergence results for optimization problems have been provided for Lax-Friedichs type schemes~\cite{Giles2010Convergencea} and relaxation methods~\cite{Banda2012Adjoint}.
 The case of road networks in free flow conditions is addressed in~\cite{Gugat2005}.
 In our more general setting of PDE networks and applications to freeway traffic control, the presence of junction conditions with both forward and backward-moving shockwaves led us the use of a modified Godunov scheme that precisely takes into account the flows at the network nodes. An alternative approach involves using Lax-Friedichs-type discretizations with higher-resolution interpolation schemes~\cite{Nessyahu1990NonOscillatory}. Moreover, general existence and stability results for the corresponding system of equations modeling traffic evolution on the network are still missing at the moment.
@@ -571,7 +571,7 @@ an optimization problem with PDE-network constraints:
 & 0\le\convar\le1 & \forall\convar\in\control  \label{eq:box}
 \end{eqnarray}
 
-Standard methods exist for the handling of geometric constraints on $\mathbf{u}$ in descent methods (such as box constraints in Equation~\eqref{eq:box}), such as projection methods~\cite{d2010modeling} and barrier methods~\cite{Fiacco1990Nonlinear,Boyd2010b,Bayen2006}.
+Standard methods exist for the handling of geometric constraints on $\mathbf{u}$ in descent methods (such as box constraints in Equation~\eqref{eq:box}), such as projection methods~\cite{Apice2010Modeling} and barrier methods~\cite{Fiacco1990Nonlinear,Boyd2010b}.
 
 \subsection{Partial Derivative Calculations for Ramp Metering}
 \label{sec:Applications-to-Optimal}

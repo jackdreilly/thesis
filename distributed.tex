@@ -298,7 +298,7 @@ where $\gamma$ is the \emph{discrete adjoint} variable and Equation~\eqref{eq:ad
 \subsection{Distributed, Coordinated Optimal Ramp Metering and VSL} % (fold)
 \label{sec:ramp-metering-admm}
 
-We apply distributed optimization via subnetwork splitting to the problem of coordinated, predictive freeway onramp metering and VSL control~\cite{Papageorgiou1991Alinea,Frejo2011,Reilly2013AdjointBased,Muralidharana}, where traffic lights on freeway onramps are used to regulate the flow entering freeway mainlines and speed limits are dynamically adapted in order to prevent congestion and improve such metrics as driver travel time and speed variability. The term \emph{coordinated} indicates that many traffic lights and VSL signs along a freeway stretch will act cooperatively, given that conditions near one onramp or VSL sign may eventually affect conditions at a neighboring onramp or VSL sign. The term \emph{predictive} indicates that the metering/VSL strategy should anticipate future conditions on the roadway using traffic demand predictions and an underlying model of the evolution of the freeway system.
+We apply distributed optimization via subnetwork splitting to the problem of coordinated, predictive freeway onramp metering and VSL control~\cite{Papageorgiou1991,Frejo2011,Reilly2013AdjointBased,Muralidharana}, where traffic lights on freeway onramps are used to regulate the flow entering freeway mainlines and speed limits are dynamically adapted in order to prevent congestion and improve such metrics as driver travel time and speed variability. The term \emph{coordinated} indicates that many traffic lights and VSL signs along a freeway stretch will act cooperatively, given that conditions near one onramp or VSL sign may eventually affect conditions at a neighboring onramp or VSL sign. The term \emph{predictive} indicates that the metering/VSL strategy should anticipate future conditions on the roadway using traffic demand predictions and an underlying model of the evolution of the freeway system.
 
 \begin{figure}
 \subfloat[A single freeway junction near link $i$.]{
@@ -369,7 +369,7 @@ The dependency graph $\left(V,E\right)$ for such a network has a natural structu
   \label{fig:spacetime}
 \end{figure}
 
-We first investigate the numerical convergence of the A-ADMM metering and VSL controller on a model 4-lane freeway network spanning 12 miles ($N=12$) with 3 onramps and 2 offramps over a 2 hour simulation ($T=120$). We consider three different partitionings by splitting the network into 2,3 and 4 subnetworks, respectively. We also simulated the following alternative controllers for comparison:
+We first investigate the numerical convergence of the A-ADMM metering and VSL controller on a model 4-lane freeway network spanning 12 miles ($N=12$) with 3 onramps and 2 offramps over a 2 hour simulation ($T=120$). We consider three different partitionings by splitting the network into 2, 3 and 4 subnetworks, respectively. We also simulated the following alternative controllers for comparison:
 
 \begin{itemize}
   \item No control: Metering rates are set to maximum ramp flux rates $C$ and speeds are set to free flow velocity $V$.
@@ -383,7 +383,7 @@ Figure~\ref{fig:spacetime} gives a space-time depiction of the mainline and onra
 \begin{figure}[t]
   \centering
   \includegraphics[width=.7\columnwidth]{previous-articles/admm/figures-lowres/bcScen/runtime}
-  \caption{Total travel time vs. computation time for several different different control schemes and subnetwork partitionings. The no-communication results are omitted due to poor performance.}
+  \caption{Total travel time vs. computation time for several different different control schemes and subnetwork (SN) partitionings. The no-communication results are omitted due to poor performance.}
   \label{fig:runtime}
 \end{figure}
 
@@ -410,5 +410,8 @@ The convergence results for the 12 mile freeway network are summarized in Figure
 
 MPC simulations were run on a calibrated model of the I15 South freeway in San Diego, CA with boundary flow data taken from measurements recording during a morning rush hour. The simulation spans 20 miles ($N=32$), contains 9 onramps and runs over a 170 minute window ($T=1000$) with an MPC update time of 17 minutes and a horizon of 25 minutes. The network is partitioned into 5 subnetworks and is depicted geographically in Figure~\ref{sub:i15}.
 
-Table~\ref{tab:i15} gives a summary of the performance of the A-ADMM MPC controller along with other controllers. The results indicate that the A-ADMM controller performs nearly as well as the centralized MPC controller, which can be viewed as a lower-bound on the performance of MPC 
-controllers with limited horizons. The communicative and non-communicative approaches were not able to improve upon no control.
+Table~\ref{tab:i15} gives a summary of the performance of the A-ADMM MPC controller along with other controllers. The results indicate that the A-ADMM controller performs nearly as well as the centralized MPC controller, which can be viewed as a lower-bound on the performance of MPC controllers with limited horizons. The communicative approach performed worse than the non-communicative approach because its iterative terminated after reaching a set number iterations on a highly inefficient solution, due to its lack of convergence guarantees.
+
+\section*{Acknowledgments}
+
+We would like to acknowledge Professor Roberto Horowitz, Dr. Gabriel Gomes, and Dr. Ajith Muralidharan of UC Berkeley for their work on linear formulations of freeway optimal control problems~\cite{gomes2006optimal,Muralidharana} which greatly improved the practical nature of the theory developed within this work.
