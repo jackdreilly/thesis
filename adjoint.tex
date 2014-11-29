@@ -8,7 +8,7 @@ differential equations}~(PDEs), are an efficient framework for modeling
 physical phenomena, such as freeway traffic evolution~\cite{garavello2006traffic,work2010traffic,frazzoli2002real} and supply
 chains~\cite{Brunnermeier1999}. Similarly, PDE systems of balance laws are useful in modeling gas pipeline flow~\cite{Gugat2011Gas,Rothfarb1970Optimal} and water channels~\cite{Gugat2012Contamination,Rabbani2010}. Optimization
 and  control of these networks is an active field of
-research~\cite{Gugat2005,Bayen2006AdjointBased,Kotsialos2004}. More generally, numerous
+research~\cite{Gugat2005,Bayen2006,Kotsialos2004}. More generally, numerous
 techniques exist for the control of conservation laws, such as, for example,
 backstepping~\cite{Coron2013,Glass2007}, Lyapunov-based methods~\cite{Coron2013}, and
 optimal control methods~\cite{Blanchard2013,Keller2013,jacquet2006optimal}.
@@ -28,9 +28,9 @@ adjoint  solver from the numerical representation of the forward
 system~\cite{Muller2005,Giering1998}.
 
 It is well known that the numerical treatment of the adjoint method imposes a careful choice of the discretization scheme to avoid the introduction of numerical errors  at discontinuities~\cite{Apice2010Modeling}.
-Rigorous convergence results for optimization problems have been provided for Lax-Friedichs type schemes~\cite{Giles2010Convergencea} and relaxation methods~\cite{Banda2012Adjoint}.
+Theoretical convergence results for optimization problems have been provided for Lax-Friedichs type schemes~\cite{Giles2010Convergencea} and relaxation methods~\cite{Banda2012Adjoint}.
 The case of road networks in free flow conditions is addressed in~\cite{Gugat2005}.
-In our more general setting of PDE networks and applications to freeway traffic control, the presence of junction conditions with both forward and backward-moving shockwaves led us the use of a modified Godunov scheme that precisely takes into account the flows at the network nodes. An alternative approach involves using Lax-Friedichs-type discretizations with higher-resolution interpolation schemes~\cite{Nessyahu1990NonOscillatory}. Moreover, general existence and stability results for the corresponding system of equations modeling traffic evolution on the network are still missing at the moment.
+In our more general setting of PDE networks and applications to freeway traffic control, the presence of junction conditions with both forward and backward-moving shockwaves led us the use of a modified Godunov scheme that precisely takes into account the flows at the network nodes. An alternative approach involves using Lax-Friedichs-type discretization with higher-resolution interpolation schemes~\cite{Nessyahu1990NonOscillatory}. Moreover, general existence and stability results for the corresponding system of equations modeling traffic evolution on the network are still missing at the moment.
 Therefore, establishing rigorous convergence results for the gradient computation in this framework is out of the scope of this thesis. Here we made the choice of the discrete adjoint approach, which derives the gradient directly from the discretized system, thus avoiding dealing with weak boundary conditions in the continuous system~\cite{garavello2006traffic,work2010traffic,strub2006weak}.
 
 % we could use a variant of the lax-friedrichs.
@@ -90,7 +90,7 @@ of finding a globally optimal solution, the downside is that the model of the
 linearized physical system may greatly differ from the actual system to which 
 the control policies would be applied.
 
-Another approach avoids discretization of the continuous system by taking advantage of certain simplifying assumptions in the dynamics. In~\cite{Fugenschuh2006Combinatorial}, the problem of finding optimal split ratios on a traffic networks is efficiently solved by deriving non-linear and linear algebraic formulations of a simplified form of the continuous system dynamics which only considers forward-moving shockwaves. In~\cite{Apice2010Modeling}, a mixed-integer linear program (MILP) formulation is posed for the optimal routing of goods on a supply chain, leading to efficient solutions of this particular application. The number of integer constraints needed in the MILP formulation is proportional to the number of non-linear constraints in the underlying system and has a direct impact on the efficiency of MILP solvers. Applications to highly non-linear systems such as freeway traffic may prefer non-linear programming approaches such as the adjoint method using non-linear discretization techniques, which avoid integer constraints and allow the constraints to capture more complex dynamics.
+Another approach avoids discretization of the continuous system by taking advantage of certain simplifying assumptions in the dynamics. In~\cite{Fugenschuh2006Combinatorial}, the problem of finding optimal split ratios on a traffic networks is efficiently solved by deriving non-linear and linear algebraic formulations of a simplified form of the continuous system dynamics which only considers forward-moving shockwaves. In~\cite{Apice2010Modeling}, a \emph{mixed-integer linear program} (MILP) formulation is posed for the optimal routing of goods on a supply chain, leading to efficient solutions of this particular application. The number of integer constraints needed in the MILP formulation is proportional to the number of non-linear constraints in the underlying system and has a direct impact on the efficiency of MILP solvers. Applications to non-linear and non-smooth systems such as freeway traffic may prefer non-linear programming approaches such as the adjoint method using non-linear discretization techniques, which avoid integer constraints and allow the constraints to capture more complex dynamics.
 
 Alternatively, nonlinear optimization techniques can be applied to the 
 discretized system without any modification to the underlying dynamics. This 
@@ -137,8 +137,7 @@ partial derivatives have a sparsity structure resulting in gradient computation
 times linear in the number of state and control variables for networks of small 
 vertex degree. Memory usage is also linear when sparse data structures are utilized. The results are 
 demonstrated by running a coordinated ramp metering strategy on a 19 mile 
-freeway stretch in California faster than real-time, while giving traffic 
-performance superior to that of state of the art practitioners tools.
+freeway stretch in California faster than real-time (i.e. the computational time is faster than physical time), while giving traffic performance superior to that of state of the art practitioners tools.
 
 % \todo{this is incorrect, make the overview match}
 % The rest of the article is organized as follows. 
@@ -163,7 +162,11 @@ Section~\ref{sec:preliminaries} developed a method for discretizing networked, s
 \subsection{State, Control, and Governing Equations\label{sec:State,-control,-and}}
 
 We now focus on controlling systems of the form
-in Equation~\eqref{eq:composed-flux} in which some parts of the state
+in Equation~\eqref{eq:composed-flux}:
+\[
+\discrete{\link}{\tind+1}=\discrete{\link}{\tind}-\dfrac{\Delta t}{\Delta x}\left(\left(\god_{\jdown{\link}}\left(\juncstate{\jdown{\link}}{\tind}\right)\right)_{\link}-\left(\god_{\jup{\link}}\left(\juncstate{\jup{\link}}{\tind}\right)\right)_{\link}\right)\label{eq:composed-flux},
+\]
+in which some parts of the state
 can be controlled directly (for example, in the form of boundary control).
 We wish to solve the system in Equation~\eqref{eq:composed-flux} $T$
 time-steps forward, i.e. we wish to determine the discrete state values
@@ -352,22 +355,16 @@ to $O(\ntime\left(\DegreeSymbol{\state}\nlinks+\DegreeSymbol{\control}\ncontrols
 by considering the adjoint method over the forward method.
 
 \begin{figure}
-\begin{centering}
-\subfloat[\label{fig:genneta}]{\begin{centering}
-\includegraphics[width=0.33\columnwidth]{previous-articles/adjoint/figs-gen/gen-net}
-\par\end{centering}
-
-}\subfloat[\label{fig:gennetb}]{\begin{centering}
-\includegraphics[width=0.33\columnwidth]{previous-articles/adjoint/figs-gen/gen-net-dx}
-\par\end{centering}
-
-}\subfloat[\label{fig:gennetc}]{\begin{centering}
-\includegraphics[width=0.33\columnwidth]{previous-articles/adjoint/figs-gen/gen-net-dv}
-\par\end{centering}
-
-}
-\par\end{centering}
-
+\centering%
+\subfloat[\label{fig:genneta}]{
+\includegraphics[width=0.31\columnwidth]{previous-articles/adjoint/figs-gen/gen-net}
+}\hfill%
+\subfloat[\label{fig:gennetb}]{
+\includegraphics[width=0.31\columnwidth]{previous-articles/adjoint/figs-gen/gen-net-dx}
+}\hfill%
+\subfloat[\label{fig:gennetc}]{
+\includegraphics[width=0.31\columnwidth]{previous-articles/adjoint/figs-gen/gen-net-dv}
+}%
 \caption[Depiction of $D_{\state}$ and $D_{v}$ for an arbitrary graph.]{Depiction of $D_{\state}$ and $D_{v}$ for an arbitrary graph. Fig.~\ref{fig:genneta}
 shows the underlying graphical structure for an arbitrary PDE network.
 Some control parameter $\convar_{1}$ has influence over junctions
@@ -380,7 +377,7 @@ sum of junctions degrees equal to six, which is maximal over the other
 control parameter $\convar_{2}$. leading to the result $D_{\control}=6$.
 Note that in Fig.~\ref{fig:gennetc}, the link going from junction
 $A$ to junction $B$ is counted twice: once as an outgoing link $\vec{AB}$
-and once as in incoming link $\vec{BA}$.\label{fig:Depicting--and}}
+and once as in incoming link $\vec{BA}$.\label{fig:Depicting--and}}%
 \end{figure}
 
 A graphical depiction of $D_{\state}$ and $D_{\control}$ are given
@@ -571,19 +568,19 @@ an optimization problem with PDE-network constraints:
 & 0\le\convar\le1 & \forall\convar\in\control  \label{eq:box}
 \end{eqnarray}
 
-Standard methods exist for the handling of geometric constraints on $\mathbf{u}$ in descent methods (such as box constraints in Equation~\eqref{eq:box}), such as projection methods~\cite{Apice2010Modeling} and barrier methods~\cite{Fiacco1990Nonlinear,Boyd2010b}.
+Standard methods exist for the handling of geometric constraints on $\control$ in descent methods (such as box constraints in Equation~\eqref{eq:box}), such as projection methods~\cite{Apice2010Modeling} and barrier methods~\cite{Fiacco1990Nonlinear,Boyd2010b}.
 
 \subsection{Partial Derivative Calculations for Ramp Metering}
 \label{sec:Applications-to-Optimal}
 
 To use the adjoint method as described in Section~\ref{sec:discrete-adjoint-method},
 we need to compute the partial derivative matrices $\Hx$, $\Hu$,
-$\tilde{C}_{\state}$ and $\tilde{C}_{\control}$. Computing the partial
+$C_{\state}$ and $C_{\control}$. Computing the partial
 derivatives with respect to the cost function is straight forward:
 
 \begin{eqnarray*}
-\pfrac{\tilde{\cost}}{\discrete{\link}{\tind}}= & \Delta tL_{i} & 1\le i\le2\nlinks,0\le k\le T-1\\
-\pfrac{\tilde{\cost}}{\ramp_{2\link}^{\tind}}= & \barrierTerm\left(\frac{1}{1-\ramp_{2\link}^{\tind}}-\frac{1}{\ramp_{2\link}^{\tind}}\right) & 1\le i\le\nlinks,0\le k\le T-1
+\pfrac{\cost}{\discrete{\link}{\tind}}= & \Delta tL_{i} & 1\le i\le2\nlinks,0\le k\le T-1\\
+\pfrac{\cost}{\ramp_{2\link}^{\tind}}= & \barrierTerm\left(\frac{1}{1-\ramp_{2\link}^{\tind}}-\frac{1}{\ramp_{2\link}^{\tind}}\right) & 1\le i\le\nlinks,0\le k\le T-1
 \end{eqnarray*}
 
 
@@ -698,11 +695,9 @@ The network is shown in Fig.~\ref{fig:Model-of-section}.
 
 
 Link length data was obtained using the Scenario Editor software developed
-as part of the \textit{Connected Corridors} project, a collaboration between
-UC Berkeley and PATH research institute in Berkeley, California.
-Fundamental diagram parameters, split ratios, and boundary data were
-also obtained using calibration techniques developed by Connected
-Corridors. Densities resulting in free-flow speeds were chosen as
+as part of the \textit{Connected Corridors} project. Fundamental diagram parameters, split ratios, and boundary data were
+also obtained using calibration techniques developed by \emph{Connected
+Corridors}. Densities resulting in free-flow speeds were chosen as
 initial conditions on the mainline and on-ramps. The data used in calibration
 was taken from PeMS sensor data~\cite{Chen2003} during a morning rush hour period,
 scaled to generate congested conditions. The input data was chosen
@@ -754,7 +749,7 @@ c\left(S,T\right) = \sum_{\left(s\in S, \tau\in T\right)} \max \left[\text{TTT}\
 	by the mainly negative differences in the mainline densities and the
 	mainly positive differences in the on-ramp queue lengths, the adjoint
 	ramp metering algorithm effectively limits on-ramp flows in order to
-	reduce mainly congestion. \textit{View in color.}\label{fig:long-sim}}
+	reduce mainly congestion. \textit{Best viewed in color.}\label{fig:long-sim}}
 \end{figure}			
 
 Fig.~\ref{fig:long-sim} shows a difference profile for both density and queue lengths between the
@@ -879,6 +874,5 @@ scalability of the approach by implementing a coordinated ramp metering
 algorithm using the adjoint method and applying the algorithm to the I-15 South 
 freeway in California. The algorithm runs in a fraction of real-time 
 and produces significant improvements over existing algorithms. The ramp 
-metering algorithm has been fully implemented within Connected 
-Corridors~\cite{CC} system, a project by UC Berkeley and PATH for integrated 
-corridor management, as a component of the traffic simulator module.
+metering algorithm has been fully implemented within \emph{Connected 
+Corridors}~\cite{CC} system as a component of the traffic simulator module.

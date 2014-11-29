@@ -1,8 +1,6 @@
 \chapter{Optimization-based Framework for Rerouting a Subset of Users with Mixed Lagrangian-Eulerian Demand}
 \label{chapter:le}
 
-\textbf{Note: } This work was part of a collaboration with Walid Krichene, Saurabh Amin, Kenza Skali-Lama and Alexandre Bayen. 
-
 \section{Introduction}
 \label{sec:le:introduction}
 
@@ -12,8 +10,8 @@
 The problem of traffic assignment handles users' route and departure
 time decisions and how individual behaviors impact the performance
 of the underlying traffic network. If all user decide in a self-optimizing
-manner, then the resulting network state is a \emph{user equilibrium~(e.g.
-\cite{wardrop1952some})}. If every user acts in a manner that
+manner, then the resulting network state is a \emph{user equilibrium}~(e.g.
+\cite{wardrop1952some}). If every user acts in a manner that
 is beneficial to societal goals, it is said to be a \emph{system}
 or \emph{social optimum}. Socially optimal schemes are studied under
 the assumption that a central agency controls \emph{all }the users,
@@ -1305,18 +1303,19 @@ Table~\ref{tab:prophq} tells us that this problem assumes that links
 do not shift from their nominal state (links with a nominal free flow/congestion
 state must maintain this state).
 \begin{table}
+\tiny
 \subfloat[\label{tab:prophq}]{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
 \cline{1-1} \cline{3-17} 
-{\scriptsize{}Name} &  & {\scriptsize{}0} & {\scriptsize{}1} & {\scriptsize{}2} & {\scriptsize{}3} & {\scriptsize{}4} & {\scriptsize{}5} & {\scriptsize{}6} & {\scriptsize{}7} & {\scriptsize{}8} & {\scriptsize{}9} & {\scriptsize{}10} & {\scriptsize{}11} & {\scriptsize{}12} & {\scriptsize{}13} & {\scriptsize{}14}\tabularnewline
+{Name} &  & {0} & {1} & {2} & {3} & {4} & {5} & {6} & {7} & {8} & {9} & {10} & {11} & {12} & {13} & {14}\tabularnewline
 \cline{1-1} \cline{3-17} 
-{\scriptsize{}Length ($m$)} &  & {\scriptsize{}0.5} & {\scriptsize{}0.1} & {\scriptsize{}1.0} & {\scriptsize{}1.5} & {\scriptsize{}0.3} & {\scriptsize{}0.1} & {\scriptsize{}0.6} & {\scriptsize{}0.4} & {\scriptsize{}1.0} & {\scriptsize{}1.5} & {\scriptsize{}1.0} & {\scriptsize{}0.7} & {\scriptsize{}0.8} & {\scriptsize{}1.0} & {\scriptsize{}0.1}\tabularnewline
+{Length ($m$)} &  & {0.5} & {0.1} & {1.0} & {1.5} & {0.3} & {0.1} & {0.6} & {0.4} & {1.0} & {1.5} & {1.0} & {0.7} & {0.8} & {1.0} & {0.1}\tabularnewline
 \cline{1-1} \cline{3-17} 
-{\scriptsize{}Nom. flow ($\frac{\text{units}}{s}$)} &  & {\scriptsize{}0.15} & {\scriptsize{}0.05} & {\scriptsize{}0.03} & {\scriptsize{}0.02} & {\scriptsize{}0.05} & {\scriptsize{}0.05} & {\scriptsize{}0} & {\scriptsize{}0.02} & {\scriptsize{}0.01} & {\scriptsize{}0.02} & {\scriptsize{}0} & {\scriptsize{}0.02} & {\scriptsize{}0.01} & {\scriptsize{}0.05} & {\scriptsize{}0.05}\tabularnewline
+{Nom. flow ($\frac{\text{units}}{s}$)} &  & {0.15} & {0.05} & {0.03} & {0.02} & {0.05} & {0.05} & {0} & {0.02} & {0.01} & {0.02} & {0} & {0.02} & {0.01} & {0.05} & {0.05}\tabularnewline
 \cline{1-1} \cline{3-17} 
-{\scriptsize{}Nom. density ($\frac{\text{units}}{m}$)} &  & {\scriptsize{}0.15} & {\scriptsize{}0.05} & {\scriptsize{}0.03} & {\scriptsize{}4.99} & {\scriptsize{}0.05} & {\scriptsize{}0.05} & {\scriptsize{}0} & {\scriptsize{}0.02} & {\scriptsize{}4.99} & {\scriptsize{}4.99} & {\scriptsize{}0} & {\scriptsize{}0.02} & {\scriptsize{}0.01} & {\scriptsize{}0.05} & {\scriptsize{}0.05}\tabularnewline
+{Nom. density ($\frac{\text{units}}{m}$)} &  & {0.15} & {0.05} & {0.03} & {4.99} & {0.05} & {0.05} & {0} & {0.02} & {4.99} & {4.99} & {0} & {0.02} & {0.01} & {0.05} & {0.05}\tabularnewline
 \cline{1-1} \cline{3-17} 
-{\scriptsize{}State constraint} &  & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}Cong} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}Cong} & {\scriptsize{}Cong} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF} & {\scriptsize{}FF}\tabularnewline
+{State constraint} &  & {F} & {F} & {F} & {C} & {F} & {F} & {F} & {F} & {C} & {C} & {F} & {F} & {F} & {F} & {F}\tabularnewline
 \cline{1-1} \cline{3-17} 
 \end{tabular}
 

@@ -1,26 +1,26 @@
 \chapter{Introduction}
 \label{sec:introduction}
 
-\subsection{Motivation}
+\section{Motivation}
 \label{sec:motivation}
 
 % \todo[inline]{lots of ``systems'' written here}
 
-Modern physical systems, particularly those associated with public use such as freeway networks and water supplies, exist within a world with decreasing physical space and resources. For instance, freeways often cannot add additional lanes to accommodate increased demands. Thus, one must rely upon better management systems and control algorithms in order to maximize performance within the limitations of the existing system. These ``smart'' systems make use of sensing instrumentation to estimate real-time conditions and modeling of the underlying physical dynamics to predict and plan for future states.
+Modern infrastructure, particularly systems associated with public use such as freeway networks and water supplies, exist within a world with decreasing physical space and resources. For instance, freeways often cannot add additional lanes to accommodate increased demands. Thus, one must rely upon better management systems and control algorithms in order to maximize performance within the limitations of the existing system. These ``smart'' systems make use of sensing instrumentation to estimate real-time conditions and modeling of the underlying physical dynamics to predict and plan for future states.
 
-The focus of this thesis is the development of methods for the intelligent modeling and control of such networked dynamical systems. The goal is to provide operational managers with scalable, flexible, and robust algorithms that can leverage the well-instrumented and highly-connected control infrastructure present on modern systems. 
+The focus of this thesis is the development of methods for the advanced modeling and control of such networked dynamical systems. The goal is to provide operational managers with scalable, flexible, and robust algorithms that can leverage the well-instrumented and highly-connected control infrastructure present on modern systems. 
 
-The remainder of this section discusses the \emph{Connected Corridors} project (Section~\ref{sec:connected-corridors}) on integrated freeway-corridor management (ICM), which served as the context in which this work was conducted, followed by an overview of \emph{model predictive control} (MPC) methods and their suitability in solving some of the main objectives put forth in the \emph{Connected Corridors} project (Section~\ref{sec:model-predictive-control}). The section concludes with a summary of the original contributions presented in this thesis (Section~\ref{sec:contributions}).
+The remainder of this section discusses the \emph{Connected Corridors} project (Section~\ref{sec:connected-corridors}) on \emph{integrated corridor management} (ICM), which served as the context in which this work was conducted, followed by an overview of \emph{model predictive control} (MPC) methods and their suitability in solving some of the main objectives put forth in the \emph{Connected Corridors} project (Section~\ref{sec:model-predictive-control}). The section concludes with a summary of the original contributions presented in this thesis (Section~\ref{sec:contributions}).
 
-\subsection{Connected Corridors}
+\section{Connected Corridors}
 \label{sec:connected-corridors}
 
-\emph{Connected-Corridors} is a project funded by the California Department of Transportation with the goal of creating the next generation of traffic management tools~\cite{connected-corridors,miller2010san}. While most current systems consider the freeway networks as independent from the city-street \emph{arterial} road networks, \emph{Connected Corridors} is tasked with creating an integrated approach to traffic management (referred to as ICM) which accounts for their dual performance. The project has demonstrated innovative control and estimation approaches to ICM on macroscopic and microscopic simulation environments (presented in Section~\ref{sec:numerical-results-adjoint}), with the ultimate plan of transferring the knowledge to a physical test-site within California.
+\emph{Connected-Corridors} is a project funded by the California Department of Transportation with the goal of creating the next generation of traffic management tools~\cite{connected-corridors,miller2010san}. While most current systems consider the freeway networks as independent from the city-street \emph{arterial} road networks, \emph{Connected Corridors} is tasked with creating an integrated approach to traffic management (referred to as ICM) which accounts for their dual performance. The project has demonstrated innovative control and estimation approaches to ICM on macroscopic and microscopic simulation environments (presented in Section~\ref{sec:numerical-results-adjoint}), with the ultimate plan of transferring the knowledge to a physical test-site within California located near the I210 freeway.
 
 The proposed ICM system possesses the following capabilities.
 
 \begin{itemize}
-	\item \textbf{Estimation}: Operators have access to a real-time estimation of the traffic state along the major freeways and adjacent arterials~\cite{work2010traffic,Jacqueta}.
+	\item \textbf{Estimation}: Operators have access to a real-time estimation of the traffic state along the major freeways and adjacent arterials~\cite{work2010traffic,Jacqueta,eisenman2006number}.
 	\item \textbf{Simulation}: Well-calibrated and efficient traffic models allow operators to simulate many different future traffic conditions~\cite{Muralidharan2009b,dervisoglu2014macroscopic,Hunter}.
 	\item \textbf{Control}: Traffic signal and message sign plans are computed online for a variety of specialized objectives and serve as an optimized decision support tool~\cite{Reilly2013b,Reilly2014b}.
 \end{itemize}
@@ -29,14 +29,14 @@ Control schemes implemented by the system include coordinated traffic light mete
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.8\textwidth]{diagrams/f2}
+	\includegraphics[width=0.7\textwidth]{diagrams/f2}
 	\caption[\emph{Connected Corridors} control system architecture.]{The freeway state estimation, prediction and calibration submodules enable an MPC-based framework that computes coordinated, predictive decision-support strategies for numerous applications. Limited customization is required to extend the adjoint-based MPC controller to specific objectives or actuation types.}
 	\label{fig:decision-support}
 \end{figure}
 
 To satisfy the above requirements, \emph{Connected Corridors} focuses on a number of submodules which are developed independently, but composed in a variety of ways to create high-level, comprehensive support tools. Figure~\ref{fig:decision-support} shows several of the developed submodules and how they can be composed to create an MPC controller (explained in Section~\ref{sec:model-predictive-control}). Subsequently, the controller submodule is leveraged by a number of actuation strategies which have similar architectural requirements. For instance, both ramp metering and dynamic rerouting require real-time estimation and a calibrated freeway model to compute effective control strategies. Via submodule composition, much of the technology can be reused between the applications. This work contains the theory and implementation of constructing such controller submodules which efficiently exploit the structure of freeway networks.
 
-\subsection{Model Predictive Control}
+\section{Model Predictive Control}
 \label{sec:model-predictive-control}
 
 Central to the \emph{Connected Corridors} approach of freeway traffic decision support is the concept of \emph{model predictive control} (MPC)~\cite{Muralidharana,Donoghue2013Splitting,Frejo2011}. Generally speaking, MPC schemes successively compute a control policy which maximizes the performance, according to a provided criteria, of the system over the immediate future, where this work assumes the future to be of finite duration. The policy generated from the MPC scheme is recomputed as frequently as the real-time state estimation and computation times permit. Thus, associated with an MPC problem are two time periods: the \emph{update time} representing how often the MPC policy is recomputed online, and the \emph{time horizon} representing how far into the future for which the MPC policy will account. A more detailed treatment of MPC schemes is given in Section~\ref{sec:model-predictive-control-overview-adjoint-section}.
@@ -45,12 +45,12 @@ The requirements of an online MPC controller for a traffic system are depicted i
 
 The focus of this thesis is the efficient and flexible design of MPC optimization techniques and their applications to freeway control systems. At the heart of the developed approach is the \emph{discrete adjoint} method for gradient computations within first-order gradient descent methods (Chapter~\ref{chapter:adjoint}). The efficiency of the developed method enables \emph{online} application of MPC to the control of large freeway networks (on the order of tens of miles) with frequent recomputations (on the order of one minute) to ``close the loop'' with real-time measurements.
 
-In addition to the well-established ramp metering control infrastructure, the emergence of smartphones and connected vehicles and crowd-sourcing data collection~\cite{Reilly2013,Ervasti2011,dashti2013evaluating} has made mass rerouting strategies a new, viable form of control. This thesis acknowledges this potential by including an investigation of rerouting strategies for a subset of flow on networks. Inspired by the increasing penetration of navigation devices in vehicles (e.g. dedicated units, smartphone applications), a single navigation provider may advise a signification portion of the total flow on some networks, thus potentially affecting traffic conditions based on their advice. This potential can be harnessed to reduce the inefficiencies of \emph{selfish routing}~\cite{roughgarden2002bad,krichenetac} and drive network behavior towards \emph{socially optimal} conditions.
+In addition to the well-established ramp metering control infrastructure, the emergence of smartphones and connected vehicles and crowd-sourcing data collection~\cite{Reilly2013,Ervasti2011,dashti2013evaluating} has made mass rerouting strategies a new, viable form of control. This thesis showcases this potential by including an investigation of rerouting strategies for a subset of flow on networks. Inspired by the increasing penetration of navigation devices in vehicles (e.g. dedicated units, smartphone applications), a single navigation provider may advise a signification portion of the total flow on some networks, thus potentially affecting traffic conditions based on their advice. This potential can be harnessed to reduce the inefficiencies of \emph{selfish routing}~\cite{roughgarden2002bad,krichenetac} and drive network behavior towards \emph{socially optimal} conditions.
 
-\subsection{Contributions}
+\section{Contributions}
 \label{sec:contributions}
 
-This thesis contains the following contributions to the problem of optimal control of networked dynamical systems.
+This thesis contains the following contributions to the problem of optimal control of networked dynamical systems, applied to the field of traffic control.
 
 \begin{itemize}
 	\item \textbf{A novel continuous freeway traffic model suitable for finite-horizon optimal control problems}~\cite{delle2014pde,Reilly2013b}.
@@ -63,11 +63,11 @@ This thesis contains the following contributions to the problem of optimal contr
 		\item This work develops a framework for converting a continuous time and space control problem on a physical network, where edges behave according to a conservation law, into a discrete, finite-horizon optimal control problem using Godunov discretization.
 		\item The application of the discrete adjoint method~\cite{Giles2000,Duffy2009,Apice2010Modeling,Gugat2005} to compute gradients for the above problem is presented, with an analysis of the linear scalability of the approach in discrete time and discrete space for sparse network structures.
 		\item An explicit formulation of the discrete adjoint method is given for the application of coordinated ramp metering control~\cite{Papageorgiou1991,Frejo2011,Kotsialos2004,gomes2006optimal} for freeway networks.
-		\item MPC numerical simulations on a macroscopic model of the I15 South Freeway in San Diego, California demonstrate the practical nature and the robustness to measurement noise of the research.
+		\item Simulations of MPC on a macroscopic model of the I15 South Freeway in San Diego, California demonstrate the practical nature and the robustness to measurement noise of the research.
 	\end{itemize}
 	\item \textbf{A decentralized algorithm and control infrastructure for networked dynamical systems}~\cite{Reilly2014b}.
 	\begin{itemize}
-		\item This thesis presents a new distributed optimization method based on the alternating directions methods of multipliers (ADMM)~\cite{Boyd2010a,gabay1976dual,mota2012distributed} algorithm for solving  optimal control problems over subnetworks in parallel. The splitting method is done in such a way to only require communication between physically-neighboring subnetworks.
+		\item This thesis presents a new distributed optimization method based on the \emph{alternating directions methods of multipliers} (ADMM)~\cite{Boyd2010a,gabay1976dual,mota2012distributed} algorithm for solving  optimal control problems over subnetworks in parallel. The splitting method is done in such a way to only require communication between physically-neighboring subnetworks.
 		\item Differing from similar work where subsystems only share control variables~\cite{mota2012distributed,camponogara2009distributed}, the presented method allows for subsystems to share both control \emph{and state} variables, an assumption necessary for the distributed control of traffic networks and hydrological systems.
 		\item A discrete adjoint formulation is presented for efficient solution of subsystems with coupled control and state variables.
 		\item An implementation of a distributed ramp metering and variable speed limit controller is simulated on a realistic macroscopic freeway network, demonstrating advantages over other proposed communicative controllers.
@@ -86,7 +86,7 @@ This thesis contains the following contributions to the problem of optimal contr
 	\end{itemize}
 \end{itemize}
 
-\subsection{Organization}
+\section{Organization}
 \label{sec:organization}
 
 The rest of the article is organized as follows.
@@ -98,3 +98,5 @@ Chapter~\ref{chapter:adjoint} presents the discrete adjoint approach to optimal 
 Chapter~\ref{chapter:security} presents a study of traffic control systems and their vulnerabilities. After defining the specific control system under consideration and its security weaknesses, the work gives an in-depth study of coordinated ramp metering attacks.
 
 Finally, we conclude with a overview of the work presented, as well as directions for future research.
+
+The material presented in Chapters~\ref{chapter:freeway-network-model} and~\ref{chapter:adjoint} was done collaboratively as part of the \emph{Optimal Reroute Strategies for Traffic Management} (ORESTE) project between UC Berkeley and INRIA research institute in Sophia-Antipolis, France. Chapter~\ref{chapter:security} also contains research stemming from collaborations with Sebastien Martin and Mathias Payer. Chapters~\ref{sec:distributed_optimization_of_coupled_dynamical_systems} and~\ref{chapter:le} contains research conducted independently.
